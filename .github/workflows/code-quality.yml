@@ -50,7 +50,7 @@ jobs:
           EOF
 
       - name: Use golangci-lint action
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9
         with:
           version: latest
           args: "--timeout=5m"
