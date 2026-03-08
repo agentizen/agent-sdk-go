@@ -337,9 +337,13 @@ r.WithTracer(tracer)
 ### Structured Output
 
 <details>
-<summary>Parse LLM responses into Go structs</summary>
+<summary>Guide the LLM to produce JSON and parse the response</summary>
+
+`WithOutputType` communicates a JSON schema to the LLM so it returns structured JSON. Automatic Go struct parsing is not yet implemented — `result.FinalOutput` is currently the raw response string. Unmarshal it yourself:
 
 ```go
+import "encoding/json"
+
 type WeatherReport struct {
     City        string  `json:"city"`
     Temperature float64 `json:"temperature"`
@@ -347,14 +351,24 @@ type WeatherReport struct {
 }
 
 a := agent.NewAgent("Weather Reporter")
-a.WithOutputType(&WeatherReport{})
+a.WithOutputType(&WeatherReport{}) // hints to the LLM to return JSON matching this shape
+a.SetSystemInstructions("Return your response as valid JSON only.")
 
 result, err := r.Run(ctx, a, &runner.RunOptions{
     Input: "Give me a weather report for Paris.",
 })
+if err != nil {
+    log.Fatal(err)
+}
 
-report, ok := result.StructuredOutput.(*WeatherReport)
+var report WeatherReport
+if err := json.Unmarshal([]byte(result.FinalOutput.(string)), &report); err != nil {
+    log.Fatal(err)
+}
+fmt.Println(report.City, report.Temperature)
 ```
+
+> **Note:** Automatic unmarshaling into the registered output type is planned but not yet implemented.
 
 </details>
 
