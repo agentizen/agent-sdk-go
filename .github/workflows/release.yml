@@ -33,18 +33,3 @@ jobs:
         args: release --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Generate Release Notes
-      id: release_notes
-      run: |
-        echo "## What's Changed" > RELEASE_NOTES.md
-        git log --pretty=format:"* %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> RELEASE_NOTES.md
-        echo "" >> RELEASE_NOTES.md
-        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$(git describe --tags --abbrev=0 HEAD^)...${GITHUB_REF#refs/tags/}" >> RELEASE_NOTES.md
-
-    - name: Update Release
-      uses: softprops/action-gh-release@v2
-      with:
-        body_path: RELEASE_NOTES.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
