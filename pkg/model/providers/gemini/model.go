@@ -361,7 +361,7 @@ func buildGenerateContentConfig(req *model.Request) *genai.GenerateContentConfig
 			cfg.TopP = genai.Ptr[float32](float32(*req.Settings.TopP))
 		}
 		if req.Settings.MaxTokens != nil {
-			cfg.MaxOutputTokens = int32(*req.Settings.MaxTokens)
+			cfg.MaxOutputTokens = int32(min(*req.Settings.MaxTokens, math.MaxInt32))
 		}
 	}
 
