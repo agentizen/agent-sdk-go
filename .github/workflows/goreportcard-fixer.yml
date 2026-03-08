@@ -29,11 +29,10 @@ jobs:
 
       - name: Fix Go module setup
         run: |
-          if [ -f go.mod ]; then
-            mv go.mod go.mod.bak
+          MODULE="github.com/citizenofai/agent-sdk-go"
+          if [ ! -f go.mod ] || ! grep -q "^module ${MODULE}" go.mod; then
+            go mod init "${MODULE}"
           fi
-          go mod init github.com/citizenofai/agent-sdk-go
-          echo "replace github.com/citizenofai/agent-sdk-go => ./" >> go.mod
           go mod tidy
 
       - name: Install Go Report Card tools
@@ -107,7 +106,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
+          git add -- . ':!go.mod.bak'
           git commit -m "Fix Go Report Card issues [skip ci]" -m "Automatically fixed by GitHub Actions workflow"
           git push origin HEAD:${{ github.head_ref }}
 
@@ -118,7 +117,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           BRANCH="fix/goreportcard-$(date +%Y%m%d-%H%M%S)"
           git checkout -b "$BRANCH"
-          git add .
+          git add -- . ':!go.mod.bak'
           git commit -m "Fix Go Report Card issues [skip ci]" -m "Automatically fixed by GitHub Actions workflow"
           git push origin "$BRANCH"
           gh pr create \
