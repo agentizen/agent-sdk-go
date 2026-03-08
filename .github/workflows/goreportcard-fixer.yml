@@ -13,7 +13,8 @@ jobs:
     name: Fix Go Report Card Issues
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # This gives permission to push to the repository
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -101,23 +102,29 @@ jobs:
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit changes
-        if: steps.git-check.outputs.changes == 'true' && github.event_name != 'pull_request'
+      - name: Commit and push fixes to PR branch
+        if: steps.git-check.outputs.changes == 'true' && github.event_name == 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Fix Go Report Card issues [skip ci]" -m "Automatically fixed by GitHub Actions workflow"
+          git push origin HEAD:${{ github.head_ref }}
 
-      - name: Push changes
+      - name: Create fix branch and open PR
         if: steps.git-check.outputs.changes == 'true' && github.event_name != 'pull_request'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
-          
-      - name: Create PR with fixes
-        if: steps.git-check.outputs.changes == 'true' && github.event_name == 'pull_request'
         run: |
-          echo "Changes were made to fix Go Report Card issues."
-          echo "Please commit these changes to your PR." 
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="fix/goreportcard-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          git add .
+          git commit -m "Fix Go Report Card issues [skip ci]" -m "Automatically fixed by GitHub Actions workflow"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "Fix Go Report Card issues" \
+            --body "Automatically fixed by the Go Report Card Fixer workflow." \
+            --base "${{ github.ref_name }}" \
+            --head "$BRANCH"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
