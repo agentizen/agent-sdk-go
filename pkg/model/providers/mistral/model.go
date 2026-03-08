@@ -69,6 +69,17 @@ type chatCompletionUsageInfo struct {
 	TotalTokens      int `json:"total_tokens"`
 }
 
+// chatMessage is our own request-side message struct that supports tool_call_id,
+// which the gage-technologies/mistral-go SDK's ChatMessage does not expose.
+// Since we build the HTTP request payload manually (as map[string]interface{}),
+// we can use this local type freely without touching the vendor.
+type chatMessage struct {
+	Role       string                 `json:"role"`
+	Content    string                 `json:"content,omitempty"`
+	ToolCalls  []mistralsdk.ToolCall  `json:"tool_calls,omitempty"`
+	ToolCallID string                 `json:"tool_call_id,omitempty"`
+}
+
 // GetResponse gets a single response from the model with retry logic.
 func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model.Response, error) {
 	var (
@@ -441,15 +452,15 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 }
 
 // buildChatMessagesFromRequest flattens a model.Request into Mistral chat messages.
-func buildChatMessagesFromRequest(req *model.Request) []mistralsdk.ChatMessage {
+func buildChatMessagesFromRequest(req *model.Request) []chatMessage {
 	if req == nil {
 		return nil
 	}
 
-	var messages []mistralsdk.ChatMessage
+	var messages []chatMessage
 
 	if strings.TrimSpace(req.SystemInstructions) != "" {
-		messages = append(messages, mistralsdk.ChatMessage{
+		messages = append(messages, chatMessage{
 			Role:    mistralsdk.RoleSystem,
 			Content: req.SystemInstructions,
 		})
@@ -460,7 +471,7 @@ func buildChatMessagesFromRequest(req *model.Request) []mistralsdk.ChatMessage {
 		// no-op
 	case string:
 		if strings.TrimSpace(v) != "" {
-			messages = append(messages, mistralsdk.ChatMessage{
+			messages = append(messages, chatMessage{
 				Role:    mistralsdk.RoleUser,
 				Content: v,
 			})
@@ -471,27 +482,90 @@ func buildChatMessagesFromRequest(req *model.Request) []mistralsdk.ChatMessage {
 			if !ok {
 				continue
 			}
+
+			// Handle tool_result messages (from runner after tool execution).
+			// These carry {"type":"tool_result","tool_call":{...},"tool_result":{...}}
+			// and must be sent to Mistral as role=tool with tool_call_id.
+			if msgType, _ := msg["type"].(string); msgType == "tool_result" {
+				toolCall, _ := msg["tool_call"].(map[string]interface{})
+				toolCallID, _ := toolCall["id"].(string)
+				toolResult, _ := msg["tool_result"].(map[string]interface{})
+				var resultContent string
+				if toolResult != nil {
+					resultContent = fmt.Sprintf("%v", toolResult["content"])
+				}
+				messages = append(messages, chatMessage{
+					Role:       mistralsdk.RoleTool,
+					Content:    resultContent,
+					ToolCallID: toolCallID,
+				})
+				continue
+			}
+
 			role, _ := msg["role"].(string)
 			if role == "" {
-				role = string(mistralsdk.RoleUser)
+				role = mistralsdk.RoleUser
 			}
 			content, _ := msg["content"].(string)
+
+			// Assistant messages may carry tool_calls with no text content.
+			if role == mistralsdk.RoleAssistant {
+				chatMsg := chatMessage{
+					Role:    mistralsdk.RoleAssistant,
+					Content: strings.TrimSpace(content),
+				}
+				if rawToolCallsIface, ok := msg["tool_calls"].([]interface{}); ok {
+					var tcMaps []map[string]interface{}
+					for _, tc := range rawToolCallsIface {
+						if tcMap, ok := tc.(map[string]interface{}); ok {
+							tcMaps = append(tcMaps, tcMap)
+						}
+					}
+					chatMsg.ToolCalls = convertToMistralToolCalls(tcMaps)
+				}
+				messages = append(messages, chatMsg)
+				continue
+			}
+
 			if strings.TrimSpace(content) == "" {
 				continue
 			}
-			messages = append(messages, mistralsdk.ChatMessage{
+			messages = append(messages, chatMessage{
 				Role:    role,
 				Content: content,
 			})
 		}
 	default:
-		messages = append(messages, mistralsdk.ChatMessage{
+		messages = append(messages, chatMessage{
 			Role:    mistralsdk.RoleUser,
 			Content: fmt.Sprintf("%v", v),
 		})
 	}
 
 	return messages
+}
+
+// convertToMistralToolCalls converts a slice of raw tool call maps to mistralsdk.ToolCall slice.
+func convertToMistralToolCalls(rawToolCalls []map[string]interface{}) []mistralsdk.ToolCall {
+	var toolCalls []mistralsdk.ToolCall
+	for _, tc := range rawToolCalls {
+		id, _ := tc["id"].(string)
+		fn, _ := tc["function"].(map[string]interface{})
+		if fn == nil {
+			continue
+		}
+		name, _ := fn["name"].(string)
+		arguments, _ := fn["arguments"].(string)
+		toolCalls = append(toolCalls, mistralsdk.ToolCall{
+			Id:   id,
+			Type: mistralsdk.ToolTypeFunction,
+			Function: mistralsdk.FunctionCall{
+				Name:      name,
+				Arguments: arguments,
+			},
+		})
+	}
+	return toolCalls
 }
 
 // buildChatParamsFromRequest builds ChatRequestParams from a generic request.
