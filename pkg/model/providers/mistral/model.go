@@ -74,10 +74,10 @@ type chatCompletionUsageInfo struct {
 // Since we build the HTTP request payload manually (as map[string]interface{}),
 // we can use this local type freely without touching the vendor.
 type chatMessage struct {
-	Role       string                 `json:"role"`
-	Content    string                 `json:"content,omitempty"`
-	ToolCalls  []mistralsdk.ToolCall  `json:"tool_calls,omitempty"`
-	ToolCallID string                 `json:"tool_call_id,omitempty"`
+	Role       string                `json:"role"`
+	Content    string                `json:"content,omitempty"`
+	ToolCalls  []mistralsdk.ToolCall `json:"tool_calls,omitempty"`
+	ToolCallID string                `json:"tool_call_id,omitempty"`
 }
 
 // GetResponse gets a single response from the model with retry logic.
