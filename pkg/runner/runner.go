@@ -130,6 +130,14 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 	// Start a goroutine to run the agent loop
 	go func() {
 		defer close(eventCh)
+		// Flush the global tracer at the end of each streaming run so that
+		// buffered events (e.g. Langfuse) are sent even when the buffer
+		// threshold has not been reached yet.
+		defer func() {
+			if t := tracing.GetGlobalTracer(); t != nil {
+				_ = t.Flush()
+			}
+		}()
 
 		// Call run start hooks
 		if err := r.callRunStartHooks(ctx, agent, opts.Input, opts, eventCh); err != nil {
@@ -269,12 +277,16 @@ func (r *Runner) setupTracing(ctx context.Context, agent AgentType, input interf
 		return ctx, func() {}, nil
 	}
 
-	// Create tracer
-	tracer, err := tracing.TraceForAgent(agent.Name)
-	if err != nil {
-		// Log error but continue without tracing
-		fmt.Fprintf(os.Stderr, "Failed to create tracer: %v\n", err)
-		return ctx, func() {}, nil
+	// Use the global tracer (e.g. LangfuseTracer) if one has been set,
+	// otherwise fall back to a per-agent file tracer.
+	tracer := tracing.GetGlobalTracer()
+	if _, isNoop := tracer.(*tracing.NoopTracer); isNoop {
+		var err error
+		tracer, err = tracing.TraceForAgent(agent.Name)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to create tracer: %v\n", err)
+			return ctx, func() {}, nil
+		}
 	}
 
 	// Add tracer to context
@@ -282,6 +294,8 @@ func (r *Runner) setupTracing(ctx context.Context, agent AgentType, input interf
 
 	// Record agent start event
 	tracing.AgentStart(tracingCtx, agent.Name, input)
+
+	isGlobalTracer := tracer == tracing.GetGlobalTracer()
 
 	// Create cleanup function for deferred execution
 	cleanup := func() {
@@ -291,8 +305,11 @@ func (r *Runner) setupTracing(ctx context.Context, agent AgentType, input interf
 		if err := tracer.Flush(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error flushing tracer: %v\n", err)
 		}
-		if err := tracer.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error closing tracer: %v\n", err)
+		// Only close the tracer if it is not the shared global tracer.
+		if !isGlobalTracer {
+			if err := tracer.Close(); err != nil {
+				fmt.Fprintf(os.Stderr, "Error closing tracer: %v\n", err)
+			}
 		}
 	}
 
