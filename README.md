@@ -17,13 +17,13 @@
 <p align="center">
     <a href="https://github.com/citizenofai/agent-sdk-go/actions/workflows/code-quality.yml"><img src="https://github.com/citizenofai/agent-sdk-go/actions/workflows/code-quality.yml/badge.svg" alt="Code Quality"></a>
     <a href="https://goreportcard.com/report/github.com/citizenofai/agent-sdk-go"><img src="https://goreportcard.com/badge/github.com/citizenofai/agent-sdk-go" alt="Go Report Card"></a>
-    <a href="https://github.com/citizenofai/agent-sdk-go/blob/main/go.mod"><img src="https://img.shields.io/github/go-mod/go-version/adraynrion/agent-sdk-go" alt="Go Version"></a>
+    <a href="https://github.com/citizenofai/agent-sdk-go/blob/main/go.mod"><img src="https://img.shields.io/github/go-mod/go-version/citizenofai/agent-sdk-go" alt="Go Version"></a>
     <a href="https://pkg.go.dev/github.com/citizenofai/agent-sdk-go"><img src="https://pkg.go.dev/badge/github.com/citizenofai/agent-sdk-go.svg" alt="PkgGoDev"></a><br>
     <a href="https://github.com/citizenofai/agent-sdk-go/actions/workflows/codeql-analysis.yml"><img src="https://github.com/citizenofai/agent-sdk-go/actions/workflows/codeql-analysis.yml/badge.svg" alt="CodeQL"></a>
-    <a href="https://github.com/citizenofai/agent-sdk-go/blob/main/LICENSE"><img src="https://img.shields.io/github/license/adraynrion/agent-sdk-go" alt="License"></a>
-    <a href="https://github.com/citizenofai/agent-sdk-go/stargazers"><img src="https://img.shields.io/github/stars/adraynrion/agent-sdk-go" alt="Stars"></a>
-    <a href="https://github.com/citizenofai/agent-sdk-go/graphs/contributors"><img src="https://img.shields.io/github/contributors/adraynrion/agent-sdk-go" alt="Contributors"></a>
-    <a href="https://github.com/citizenofai/agent-sdk-go/commits/main"><img src="https://img.shields.io/github/last-commit/adraynrion/agent-sdk-go" alt="Last Commit"></a>
+    <a href="https://github.com/citizenofai/agent-sdk-go/blob/main/LICENSE"><img src="https://img.shields.io/github/license/citizenofai/agent-sdk-go" alt="License"></a>
+    <a href="https://github.com/citizenofai/agent-sdk-go/stargazers"><img src="https://img.shields.io/github/stars/citizenofai/agent-sdk-go" alt="Stars"></a>
+    <a href="https://github.com/citizenofai/agent-sdk-go/graphs/contributors"><img src="https://img.shields.io/github/contributors/citizenofai/agent-sdk-go" alt="Contributors"></a>
+    <a href="https://github.com/citizenofai/agent-sdk-go/commits/main"><img src="https://img.shields.io/github/last-commit/citizenofai/agent-sdk-go" alt="Last Commit"></a>
 </p>
 
 <p align="center">

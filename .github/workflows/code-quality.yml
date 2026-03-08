@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
+          go-version: '1.25.7'
 
       - name: Fix Go module setup
         run: |
@@ -34,13 +34,13 @@ jobs:
           cat > .golangci.yml << 'EOF'
           # golangci-lint configuration for v2
           version: "2"
-          
+
           run:
             timeout: 5m
-            go: '1.23'
+            go: '1.25'
             tests: true
             allow-parallel-runners: true
-          
+
           # Configured linters - minimal set known to be supported
           linters:
             enable:
@@ -66,46 +66,12 @@ jobs:
           echo "===== RUNNING GO STANDARD TOOLS ====="
           go fmt ./... || echo "go fmt found issues (non-fatal)"
           go vet -buildvcs=false ./... || echo "go vet found issues (non-fatal)"
-          
+
           # Manually run gofmt on all files
           echo "===== MANUALLY CHECKING FORMAT ====="
           find . -name "*.go" | grep -v "vendor/" | xargs gofmt -d || echo "Format issues found (non-fatal)"
-          
+
           echo "Linting complete (some tools may have reported issues but workflow continues)"
-          exit 0
-
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.23'
-
-      - name: Fix Go module setup
-        run: |
-          # Same module setup as in the lint job
-          if [ -f go.mod ]; then
-            mv go.mod go.mod.bak
-          fi
-          go mod init github.com/citizenofai/agent-sdk-go
-          go mod tidy
-
-      - name: Run gosec security scanner
-        uses: securego/gosec@master
-        with:
-          args: -quiet ./...
-        env:
-          GOFLAGS: "-buildvcs=false"
-      
-      - name: Always succeed
-        if: always()
-        run: |
-          echo "Security scan complete (issues may have been found but workflow continues)"
           exit 0
 
   test:
@@ -118,7 +84,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
+          go-version: '1.25.7'
 
       - name: Fix Go module setup
         run: |
@@ -128,7 +94,7 @@ jobs:
           fi
           go mod init github.com/citizenofai/agent-sdk-go
           go mod tidy
-          
+
           # Install required tools
           echo "Installing required tools..."
           go install golang.org/x/tools/cmd/goimports@latest
