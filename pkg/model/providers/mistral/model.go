@@ -157,7 +157,9 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 	if err != nil {
 		return nil, fmt.Errorf("mistral: HTTP request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -340,7 +342,9 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 	if err != nil {
 		return fmt.Errorf("mistral: HTTP request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
