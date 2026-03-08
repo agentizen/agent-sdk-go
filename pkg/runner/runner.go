@@ -1445,6 +1445,7 @@ func (r *Runner) processModelStream(
 				response.Content = event.Response.Content
 				response.ToolCalls = event.Response.ToolCalls
 				response.HandoffCall = event.Response.HandoffCall
+				response.Usage = event.Response.Usage
 			}
 
 			// Call agent hooks if provided
