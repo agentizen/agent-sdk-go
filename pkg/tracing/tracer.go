@@ -73,8 +73,11 @@ func NewFileTracer(agentName string) (*FileTracer, error) {
 	// Build and clean the path
 	filePath := filepath.Clean(filepath.Join(currentDir, fileName))
 
-	// Verify path is within the current directory
-	if !strings.HasPrefix(filePath, currentDir) {
+	// Verify path is within the current directory.
+	// Use filepath.Rel to correctly enforce directory boundaries, avoiding prefix-overlap
+	// attacks (e.g. /tmp/dir matching /tmp/directory) regardless of trailing separators.
+	relPath, relErr := filepath.Rel(currentDir, filePath)
+	if relErr != nil || strings.HasPrefix(relPath, "..") {
 		return nil, fmt.Errorf("invalid file path: path escapes the intended directory")
 	}
 
