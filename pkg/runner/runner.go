@@ -134,10 +134,14 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 		// buffered events (e.g. Langfuse) are sent even when the buffer
 		// threshold has not been reached yet.
 		defer func() {
+			tracing.AgentEnd(ctx, agent.Name, nil)
 			if t := tracing.GetGlobalTracer(); t != nil {
 				_ = t.Flush()
 			}
 		}()
+
+		// Emit agent start so tracers (e.g. Langfuse) can create a root trace.
+		tracing.AgentStart(ctx, agent.Name, opts.Input)
 
 		// Call run start hooks
 		if err := r.callRunStartHooks(ctx, agent, opts.Input, opts, eventCh); err != nil {
