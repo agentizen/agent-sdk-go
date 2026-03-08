@@ -181,7 +181,7 @@ provider.SetDefaultModel("claude-3-haiku-20240307")
 ```go
 import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/gemini"
 
-// Uses GOOGLE_API_KEY or GEMINI_API_KEY environment variable
+// Pass your Gemini API key explicitly
 provider := gemini.NewProvider("your-gemini-api-key")
 provider.SetDefaultModel("gemini-2.0-flash")
 ```
