@@ -1,17 +1,13 @@
-<p align="center">
-  <img src="./agent-sdk-go-header.gif" alt="Agent SDK Go">
-</p>
-
 <div align="center">
-  <p><strong>Build, deploy, and scale AI agents with ease</strong></p>
-  
-  <a href="https://go-agent.org"><img src="https://img.shields.io/badge/website-go--agent.org-blue?style=for-the-badge" alt="Website" /></a>
-  <a href="https://go-agent.org/#waitlist"><img src="https://img.shields.io/badge/Cloud_Waitlist-Sign_Up-4285F4?style=for-the-badge" alt="Cloud Waitlist" /></a>
-  
+  <p><strong>Build and orchestrate AI agents in Go — multi-provider, multi-agent, production-ready</strong></p>
 </div>
 
 <p align="center">
-  Agent SDK Go is an open-source framework for building powerful AI agents with Go that supports multiple LLM providers, function calling, agent handoffs, and more.
+  Agent SDK Go is an open-source framework for building powerful AI agents with Go. It supports multiple LLM providers, function calling, agent handoffs, structured output, streaming, and tracing.
+</p>
+
+<p align="center">
+  <em>This is a maintained fork of an unmaintained upstream project, reworked under <a href="https://github.com/citizenofai">citizenofai</a> to meet our production needs.</em>
 </p>
 
 <p align="center">
@@ -24,15 +20,6 @@
     <a href="https://github.com/citizenofai/agent-sdk-go/stargazers"><img src="https://img.shields.io/github/stars/citizenofai/agent-sdk-go" alt="Stars"></a>
     <a href="https://github.com/citizenofai/agent-sdk-go/graphs/contributors"><img src="https://img.shields.io/github/contributors/citizenofai/agent-sdk-go" alt="Contributors"></a>
     <a href="https://github.com/citizenofai/agent-sdk-go/commits/main"><img src="https://img.shields.io/github/last-commit/citizenofai/agent-sdk-go" alt="Last Commit"></a>
-</p>
-
-<p align="center">
-  <a href="https://go-agent.org/#waitlist">☁️ Cloud Waitlist</a> •
-  <a href="https://github.com/citizenofai/agent-sdk-go/blob/main/LICENSE">📜 License</a>
-</p>
-
-<p align="center">
-  Inspired by <a href="https://platform.openai.com/docs/assistants/overview">OpenAI's Assistants API</a> and <a href="https://github.com/openai/openai-agents-python">OpenAI's Python Agent SDK</a>.
 </p>
 
 ---
@@ -54,103 +41,53 @@
   - [Tracing](#tracing)
   - [Structured Output](#structured-output)
   - [Streaming](#streaming)
-  - [OpenAI Tool Definitions](#openai-tool-definitions)
-  - [Workflow State Management](#workflow-state-management)
   - [Bidirectional Agent Flow](#bidirectional-agent-flow)
 - [Examples](#-examples)
-- [Cloud Support](#-cloud-support)
 - [Development](#-development)
 - [Contributing](#-contributing)
 - [License](#-license)
-- [Acknowledgements](#-acknowledgements)
 
 ---
 
 ## 🔍 Overview
 
-Agent SDK Go provides a comprehensive framework for building AI agents in Go. It allows you to create agents that can use tools, perform handoffs to other specialized agents, and produce structured output - all while supporting multiple LLM providers.
+Agent SDK Go provides a comprehensive framework for building AI agents in Go. It lets you create agents that use tools, hand off to specialized sub-agents, produce structured output, and stream responses — all while supporting a wide range of LLM providers (cloud and local).
 
-**Visit [go-agent.org](https://go-agent.org) for comprehensive documentation, examples, and cloud service waitlist.**
+This repository is a maintained fork of an unmaintained project, actively reworked by [citizenofai](https://github.com/citizenofai) to add new providers (Gemini, Mistral, Azure OpenAI), fix upstream issues, and keep dependencies up-to-date.
 
 ## 🌟 Features
 
-- ✅ **Multiple LLM Provider Support** - Support for OpenAI, Anthropic Claude, and LM Studio
-- ✅ **Tool Integration** - Call Go functions directly from your LLM
-- ✅ **Agent Handoffs** - Create complex multi-agent workflows with specialized agents
-- ✅ **Structured Output** - Parse responses into Go structs
-- ✅ **Streaming** - Get real-time streaming responses
-- ✅ **Tracing & Monitoring** - Debug your agent flows
-- ✅ **OpenAI Compatibility** - Compatible with OpenAI tool definitions and API
-- ✅ **Workflow State Management** - Persist and manage state between agent executions
+- ✅ **Multiple LLM Providers** — OpenAI, Anthropic Claude, Google Gemini, Mistral, LM Studio (local), Azure OpenAI
+- ✅ **Function Calling / Tools** — Call any Go function directly from your LLM
+- ✅ **Agent Handoffs** — Build complex multi-agent pipelines with specialized agents
+- ✅ **Bidirectional Flow** — Agents can delegate tasks and return results back to the caller
+- ✅ **Structured Output Ready** — Design agents to produce structured/JSON responses; automatic Go struct parsing is planned
+- ✅ **Streaming** — Real-time token streaming with event-based API
+- ✅ **Tracing & Monitoring** — Built-in tracing for debugging agent flows
+- ✅ **OpenAI Compatibility** — Compatible with OpenAI tool definitions and API format
 
 ## 📦 Installation
 
-There are several ways to add this module to your project:
-
-### Option 1: Using `go get` (Recommended)
+### Using `go get` (Recommended)
 
 ```bash
 go get github.com/citizenofai/agent-sdk-go
 ```
 
-### Option 2: Add to your imports and use `go mod tidy`
+### Add to imports and run `go mod tidy`
 
-1. Add imports to your Go files:
-   ```go
-   import (
-       "github.com/citizenofai/agent-sdk-go/pkg/agent"
-       "github.com/citizenofai/agent-sdk-go/pkg/model/providers/lmstudio"
-       "github.com/citizenofai/agent-sdk-go/pkg/runner"
-       "github.com/citizenofai/agent-sdk-go/pkg/tool"
-       // Import other packages as needed
-   )
-   ```
-
-2. Run `go mod tidy` to automatically fetch dependencies:
-   ```bash
-   go mod tidy
-   ```
-
-### Option 3: Manually edit your `go.mod` file
-
-Add the following line to your `go.mod` file:
-```
-require github.com/citizenofai/agent-sdk-go latest
+```go
+import (
+    "github.com/citizenofai/agent-sdk-go/pkg/agent"
+    "github.com/citizenofai/agent-sdk-go/pkg/runner"
+    "github.com/citizenofai/agent-sdk-go/pkg/tool"
+    // add providers as needed
+)
 ```
 
-Then run:
 ```bash
 go mod tidy
 ```
-
-### New Project Setup
-
-If you're starting a new project:
-
-1. Create and navigate to your project directory:
-   ```bash
-   mkdir my-agent-project
-   cd my-agent-project
-   ```
-
-2. Initialize a new Go module:
-   ```bash
-   go mod init github.com/yourusername/my-agent-project
-   ```
-
-3. Install the Agent SDK:
-   ```bash
-   go get github.com/citizenofai/agent-sdk-go
-   ```
-
-### Troubleshooting
-
-- If you encounter version conflicts, you can specify a version:
-  ```bash
-  go get github.com/citizenofai/agent-sdk-go@v0.1.0  # Replace with desired version
-  ```
-
-- For private repositories or local development, consider using Go workspaces or replace directives in your go.mod file.
 
 > **Note:** Requires Go 1.23 or later.
 
@@ -165,24 +102,15 @@ import (
     "log"
 
     "github.com/citizenofai/agent-sdk-go/pkg/agent"
-    "github.com/citizenofai/agent-sdk-go/pkg/model/providers/openai"  // or providers/lmstudio or providers/anthropic
+    "github.com/citizenofai/agent-sdk-go/pkg/model/providers/openai"
     "github.com/citizenofai/agent-sdk-go/pkg/runner"
     "github.com/citizenofai/agent-sdk-go/pkg/tool"
 )
 
 func main() {
-    // Create a provider (OpenAI example)
+    // Create a provider (or use openai.NewProvider(os.Getenv("OPENAI_API_KEY")))
     provider := openai.NewProvider("your-openai-api-key")
-    provider.SetDefaultModel("gpt-3.5-turbo")
-
-    // Or use Anthropic Claude (example)
-    // provider := anthropic.NewProvider("your-anthropic-api-key")
-    // provider.SetDefaultModel("claude-3-haiku-20240307")
-
-    // Or use LM Studio (local model example)
-    // provider := lmstudio.NewProvider()
-    // provider.SetBaseURL("http://127.0.0.1:1234/v1")
-    // provider.SetDefaultModel("gemma-3-4b-it")
+    provider.SetDefaultModel("gpt-4o-mini")
 
     // Create a function tool
     getWeather := tool.NewFunctionTool(
@@ -196,7 +124,7 @@ func main() {
         "type": "object",
         "properties": map[string]interface{}{
             "city": map[string]interface{}{
-                "type": "string",
+                "type":        "string",
                 "description": "The city to get weather for",
             },
         },
@@ -206,174 +134,146 @@ func main() {
     // Create an agent
     assistant := agent.NewAgent("Assistant")
     assistant.SetModelProvider(provider)
-    assistant.WithModel("gpt-3.5-turbo")  // or "gemma-3-4b-it" for LM Studio or "claude-3-haiku-20240307" for Anthropic
+    assistant.WithModel("gpt-4o-mini")
     assistant.SetSystemInstructions("You are a helpful assistant.")
     assistant.WithTools(getWeather)
 
-    // Create a runner
+    // Create a runner and execute
     r := runner.NewRunner()
     r.WithDefaultProvider(provider)
 
-    // Run the agent
-    result, err := r.RunSync(assistant, &runner.RunOptions{
+    result, err := r.Run(context.Background(), assistant, &runner.RunOptions{
         Input: "What's the weather in Tokyo?",
     })
     if err != nil {
-        log.Fatalf("Error running agent: %v", err)
+        log.Fatalf("Error: %v", err)
     }
-
-    // Print the result
     fmt.Println(result.FinalOutput)
 }
 ```
 
 ## 🖥️ Provider Setup
 
-### OpenAI Setup
+### OpenAI
 
-To use the OpenAI provider:
+```go
+import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/openai"
 
-1. **Get an API Key**
-   - Sign up at [OpenAI](https://platform.openai.com/)
-   - Create an API key in your account settings
+provider := openai.NewProvider("your-openai-api-key")
+provider.SetDefaultModel("gpt-4o-mini")
+```
 
-2. **Configure the Provider**
-   ```go
-   provider := openai.NewProvider()
-   provider.SetAPIKey("your-openai-api-key")
-   provider.SetDefaultModel("gpt-3.5-turbo")  // or any other OpenAI model
-   ```
+### Anthropic Claude
 
-### Anthropic Setup
+```go
+import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/anthropic"
 
-<details>
-<summary>Click to expand setup instructions</summary>
+provider := anthropic.NewProvider("your-anthropic-api-key")
+provider.SetDefaultModel("claude-3-haiku-20240307")
+```
 
-To use the Anthropic provider:
+### Google Gemini
 
-1. **Get an API Key**
-   - Sign up at [Anthropic Console](https://console.anthropic.com/)
-   - Create an API key in your account settings
+```go
+import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/gemini"
 
-2. **Configure the Provider**
-   ```go
-   provider := anthropic.NewProvider("your-anthropic-api-key")
-   provider.SetDefaultModel("claude-3-haiku-20240307")  // or claude-3-sonnet/opus
-   
-   // Optional rate limiting configuration
-   provider.WithRateLimit(40, 80000) // 40 requests/min, 80,000 tokens/min
-   
-   // Optional retry configuration
-   provider.WithRetryConfig(3, 2*time.Second) // 3 retries with exponential backoff
-   ```
+// Pass your Gemini API key explicitly
+provider := gemini.NewProvider("your-gemini-api-key")
+provider.SetDefaultModel("gemini-2.0-flash")
+```
 
-</details>
+### Mistral
 
-### LM Studio Setup
+```go
+import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/mistral"
 
-<details>
-<summary>Click to expand setup instructions</summary>
+provider := mistral.NewProvider("your-mistral-api-key")
+provider.SetDefaultModel("mistral-small-latest")
+```
 
-To use the LM Studio provider:
+### LM Studio (local)
 
-1. **Install LM Studio**
-   - Download from [lmstudio.ai](https://lmstudio.ai/)
-   - Install and run the application
+```go
+import "github.com/citizenofai/agent-sdk-go/pkg/model/providers/lmstudio"
 
-2. **Load a Model**
-   - Download a model in LM Studio (Like Gemma-3-4B-It, Llama3, or other compatible models)
-   - Load the model
+provider := lmstudio.NewProvider()
+provider.SetBaseURL("http://127.0.0.1:1234/v1")
+provider.SetDefaultModel("gemma-3-4b-it") // replace with your loaded model
+```
 
-3. **Start the Server**
-   - Go to the "Local Server" tab
-   - Click "Start Server"
-   - Note the server URL (default: http://127.0.0.1:1234)
+### Azure OpenAI
 
-4. **Configure the Provider**
-   ```go
-   provider := lmstudio.NewProvider()
-   provider.SetBaseURL("http://127.0.0.1:1234/v1")
-   provider.SetDefaultModel("gemma-3-4b-it") // Replace with your model
-   ```
-
-</details>
+See [examples/azure_openai_example](./examples/azure_openai_example) for a full configuration example using Azure-hosted OpenAI endpoints.
 
 ## 🧩 Key Components
 
 ### Agent
 
-The Agent is the core component that encapsulates the LLM with instructions, tools, and other configuration.
+The `Agent` encapsulates an LLM with system instructions, tools, and optional handoff targets.
 
 ```go
-// Create a new agent
-agent := agent.NewAgent("Assistant")
-agent.SetSystemInstructions("You are a helpful assistant.")
-agent.WithModel("gemma-3-4b-it")
-agent.WithTools(tool1, tool2) // Add multiple tools at once
+a := agent.NewAgent("Assistant")
+a.SetModelProvider(provider)
+a.WithModel("gpt-4o-mini")
+a.SetSystemInstructions("You are a helpful assistant.")
+a.WithTools(tool1, tool2)
+a.WithHandoffs(subAgent1, subAgent2) // optional: enable agent delegation
 ```
 
 ### Runner
 
-The Runner executes agents, handling the agent loop, tool calls, and handoffs.
+The `Runner` drives the agent loop — executing turns, dispatching tool calls, and handling handoffs.
 
 ```go
-// Create a runner
-runner := runner.NewRunner()
-runner.WithDefaultProvider(provider)
+r := runner.NewRunner()
+r.WithDefaultProvider(provider)
 
-// Run the agent
-result, err := runner.RunSync(agent, &runner.RunOptions{
-    Input: "Hello, world!",
-    MaxTurns: 10, // Optional: limit the number of turns
+// Blocking run
+result, err := r.Run(ctx, agent, &runner.RunOptions{
+    Input:    "Hello!",
+    MaxTurns: 10,
 })
+
+// Streaming run
+streamResult, err := r.RunStreaming(ctx, agent, &runner.RunOptions{Input: "Hello!"})
+for event := range streamResult.Stream {
+    // handle model.StreamEventTypeContent, ToolCall, Done, Error ...
+}
 ```
 
 ### Tools
 
-Tools allow agents to perform actions using your Go functions.
+Tools expose Go functions to the LLM.
 
 ```go
-// Create a function tool
-tool := tool.NewFunctionTool(
-    "get_weather",
-    "Get the weather for a city",
+myTool := tool.NewFunctionTool(
+    "tool_name",
+    "Tool description",
     func(ctx context.Context, params map[string]interface{}) (interface{}, error) {
-        city := params["city"].(string)
-        return fmt.Sprintf("The weather in %s is sunny.", city), nil
+        // implementation
+        return result, nil
     },
 ).WithSchema(map[string]interface{}{
     "type": "object",
     "properties": map[string]interface{}{
-        "city": map[string]interface{}{
-            "type": "string",
-            "description": "The city to get weather for",
+        "param": map[string]interface{}{
+            "type":        "string",
+            "description": "Parameter description",
         },
     },
-    "required": []string{"city"},
+    "required": []string{"param"},
 })
 ```
 
 ### Model Providers
 
-Model providers allow you to use different LLM providers.
+All providers implement the same `model.Provider` interface, making them interchangeable:
 
 ```go
-// Create a provider for OpenAI
-openaiProvider := openai.NewProvider("your-openai-api-key")
-openaiProvider.SetDefaultModel("gpt-4")
-
-// Create a provider for Anthropic Claude
-anthropicProvider := anthropic.NewProvider("your-anthropic-api-key")
-anthropicProvider.SetDefaultModel("claude-3-haiku-20240307")
-
-// Create a provider for LM Studio
-lmStudioProvider := lmstudio.NewProvider()
-lmStudioProvider.SetBaseURL("http://127.0.0.1:1234/v1")
-lmStudioProvider.SetDefaultModel("gemma-3-4b-it")
-
-// Set a provider as the default provider
-runner := runner.NewRunner()
-runner.WithDefaultProvider(openaiProvider) // or anthropicProvider or lmStudioProvider
+// Swap providers without changing any agent or runner code
+r.WithDefaultProvider(geminiProvider)
+// or
+r.WithDefaultProvider(mistralProvider)
 ```
 
 ## 🔧 Advanced Features
@@ -384,95 +284,48 @@ runner.WithDefaultProvider(openaiProvider) // or anthropicProvider or lmStudioPr
 <summary>Create specialized agents that collaborate on complex tasks</summary>
 
 ```go
-// Create specialized agents
 mathAgent := agent.NewAgent("Math Agent")
 mathAgent.SetModelProvider(provider)
-mathAgent.WithModel("gemma-3-4b-it")
-mathAgent.SetSystemInstructions("You are a specialized math agent.")
+mathAgent.SetSystemInstructions("You are a specialized math agent. Solve the problem and return the result.")
 mathAgent.WithTools(calculatorTool)
 
 weatherAgent := agent.NewAgent("Weather Agent")
 weatherAgent.SetModelProvider(provider)
-weatherAgent.WithModel("gemma-3-4b-it")
 weatherAgent.SetSystemInstructions("You provide weather information.")
 weatherAgent.WithTools(weatherTool)
 
-// Create a frontend agent that coordinates tasks
+// Frontend agent delegates to specialists
 frontendAgent := agent.NewAgent("Frontend Agent")
 frontendAgent.SetModelProvider(provider)
-frontendAgent.WithModel("gemma-3-4b-it")
-frontendAgent.SetSystemInstructions(`You coordinate requests by delegating to specialized agents.
-For math calculations, delegate to the Math Agent.
-For weather information, delegate to the Weather Agent.`)
+frontendAgent.SetSystemInstructions("Route user requests to the appropriate specialist agent.")
 frontendAgent.WithHandoffs(mathAgent, weatherAgent)
 
-// Run the frontend agent
-result, err := runner.RunSync(frontendAgent, &runner.RunOptions{
-    Input: "What is 42 divided by 6 and what's the weather in Paris?",
-    MaxTurns: 20,
+r := runner.NewRunner()
+r.WithDefaultProvider(provider)
+result, err := r.Run(ctx, frontendAgent, &runner.RunOptions{
+    Input: "What is 42 * 17?",
 })
 ```
 
-See the complete example in [examples/multi_agent_example](./examples/multi_agent_example).
-
-</details>
-
-### Bidirectional Agent Flow
-
-<details>
-<summary>Create agents that can hand off tasks and receive results back</summary>
-
-Bidirectional agent flow allows agents to delegate tasks to other agents and receive results back once the tasks are complete. This enables more complex workflows with proper task context management.
-
-```go
-// Create specialized agents
-orchestratorAgent := agent.NewAgent("Orchestrator")
-orchestratorAgent.SetModelProvider(provider)
-orchestratorAgent.WithModel("gpt-4")
-orchestratorAgent.SetSystemInstructions("You coordinate tasks and analyze results.")
-
-workerAgent := agent.NewAgent("Worker")
-workerAgent.SetModelProvider(provider)
-workerAgent.WithModel("gpt-3.5-turbo")
-workerAgent.SetSystemInstructions("You process data and return results.")
-workerAgent.WithTools(processingTool)
-
-// Set up bidirectional handoffs
-orchestratorAgent.WithHandoffs(workerAgent)
-workerAgent.WithHandoffs(orchestratorAgent)  // Allow worker to return to orchestrator
-
-// Run the orchestrator agent
-result, err := runner.RunSync(orchestratorAgent, &runner.RunOptions{
-    Input: "Analyze this data: [complex data]",
-    MaxTurns: 10,
-})
-```
-
-Key components of bidirectional flow:
-- `TaskID`: Unique identifier for tracking tasks across agents
-- `ReturnToAgent`: Specifies which agent to return to after task completion
-- `IsTaskComplete`: Flag indicating whether the task is complete
-
-See the complete example in [examples/bidirectional_flow_example](./examples/bidirectional_flow_example).
+See [examples/multi_agent_example](./examples/multi_agent_example) and [examples/gemini_multi_agent_example](./examples/gemini_multi_agent_example).
 
 </details>
 
 ### Tracing
 
 <details>
-<summary>Debug your agent workflows with tracing</summary>
+<summary>Debug and monitor your agent flows</summary>
 
 ```go
-// Run with tracing enabled
-result, err := runner.RunSync(agent, &runner.RunOptions{
-    Input: "Hello, world!",
-    RunConfig: &runner.RunConfig{
-        TracingDisabled: false,
-        TracingConfig: &runner.TracingConfig{
-            WorkflowName: "my_workflow",
-        },
-    },
+import "github.com/citizenofai/agent-sdk-go/pkg/tracing"
+
+tracer := tracing.NewTracer()
+tracer.OnEvent(func(event tracing.Event) {
+    fmt.Printf("[%s] %s\n", event.Type, event.Message)
 })
+
+r := runner.NewRunner()
+r.WithTracer(tracer)
 ```
 
 </details>
@@ -480,233 +333,141 @@ result, err := runner.RunSync(agent, &runner.RunOptions{
 ### Structured Output
 
 <details>
-<summary>Parse responses into Go structs</summary>
+<summary>Guide the LLM to produce JSON and parse the response</summary>
+
+`WithOutputType` communicates a JSON schema to the LLM so it returns structured JSON. Automatic Go struct parsing is not yet implemented — `result.FinalOutput` is currently the raw response string. Unmarshal it yourself:
 
 ```go
-// Define an output type
+import "encoding/json"
+
 type WeatherReport struct {
     City        string  `json:"city"`
     Temperature float64 `json:"temperature"`
     Condition   string  `json:"condition"`
 }
 
-// Create an agent with structured output
-agent := agent.NewAgent("Weather Agent")
-agent.SetSystemInstructions("You provide weather reports")
-agent.SetOutputType(reflect.TypeOf(WeatherReport{}))
+a := agent.NewAgent("Weather Reporter")
+a.WithOutputType(&WeatherReport{}) // hints to the LLM to return JSON matching this shape
+a.SetSystemInstructions("Return your response as valid JSON only.")
+
+result, err := r.Run(ctx, a, &runner.RunOptions{
+    Input: "Give me a weather report for Paris.",
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+var report WeatherReport
+if err := json.Unmarshal([]byte(result.FinalOutput.(string)), &report); err != nil {
+    log.Fatal(err)
+}
+fmt.Println(report.City, report.Temperature)
 ```
+
+> **Note:** Automatic unmarshaling into the registered output type is planned but not yet implemented.
 
 </details>
 
 ### Streaming
 
 <details>
-<summary>Get real-time streaming responses</summary>
+<summary>Receive real-time token-by-token responses</summary>
 
 ```go
-// Run the agent with streaming
-streamedResult, err := runner.RunStreaming(context.Background(), agent, &runner.RunOptions{
-    Input: "Hello, world!",
+import "github.com/citizenofai/agent-sdk-go/pkg/model"
+
+streamResult, err := r.RunStreaming(ctx, agent, &runner.RunOptions{
+    Input: "Tell me a story.",
 })
 if err != nil {
-    log.Fatalf("Error running agent: %v", err)
+    log.Fatal(err)
 }
 
-// Process streaming events
-for event := range streamedResult.Stream {
+for event := range streamResult.Stream {
     switch event.Type {
     case model.StreamEventTypeContent:
         fmt.Print(event.Content)
     case model.StreamEventTypeToolCall:
-        fmt.Printf("\nCalling tool: %s\n", event.ToolCall.Name)
+        fmt.Printf("\n[Tool: %s]\n", event.ToolCall.Name)
     case model.StreamEventTypeDone:
-        fmt.Println("\nDone!")
+        fmt.Println("\n[Done]")
+    case model.StreamEventTypeError:
+        fmt.Printf("\n[Error: %v]\n", event.Error)
     }
 }
 ```
 
 </details>
 
-### OpenAI Tool Definitions
+### Bidirectional Agent Flow
 
 <details>
-<summary>Work with OpenAI-compatible tool definitions</summary>
+<summary>Delegate tasks to sub-agents and receive results back</summary>
 
-```go
-// Auto-generate OpenAI-compatible tool definitions from Go functions
-getCurrentTimeTool := tool.NewFunctionTool(
-    "get_current_time",
-    "Get the current time in a specified format",
-    func(ctx context.Context, params map[string]interface{}) (interface{}, error) {
-        return time.Now().Format(time.RFC3339), nil
-    },
-)
+Agents can hand off control to a specialist and, when the specialist finishes, hand back to the original caller — enabling complex pipelines where a coordinator agent orchestrates multiple specialists sequentially.
 
-// Convert it to OpenAI format (handled automatically when added to an agent)
-openAITool := tool.ToOpenAITool(getCurrentTimeTool)
+See [examples/bidirectional_flow_example](./examples/bidirectional_flow_example) for a full working example.
 
-// Add an OpenAI-compatible tool definition directly to an agent
-agent := agent.NewAgent("My Agent")
-agent.AddToolFromDefinition(openAITool)
-
-// Add multiple tool definitions at once
-toolDefinitions := []map[string]interface{}{
-    tool.ToOpenAITool(tool1),
-    tool.ToOpenAITool(tool2),
-}
-
-agent.AddToolsFromDefinitions(toolDefinitions)
-```
-
-</details>
-
-### Workflow State Management
-
-<details>
-<summary>Manage state between agent executions</summary>
-
-```go
-// Create a state store
-stateStore := mocks.NewInMemoryStateStore()
-
-// Create workflow configuration
-workflowConfig := &runner.WorkflowConfig{
-    RetryConfig: &runner.RetryConfig{
-        MaxRetries:         2,
-        RetryDelay:        time.Second,
-        RetryBackoffFactor: 2.0,
-    },
-    StateManagement: &runner.StateManagementConfig{
-        PersistState:        true,
-        StateStore:          stateStore,
-        CheckpointFrequency: time.Second * 5,
-    },
-    ValidationConfig: &runner.ValidationConfig{
-        PreHandoffValidation: []runner.ValidationRule{
-            {
-                Name:         "StateValidation",
-                Validate:     func(data interface{}) (bool, error) {
-                    state, ok := data.(*runner.WorkflowState)
-                    return ok && state != nil, nil
-                },
-                ErrorMessage: "Invalid workflow state",
-                Severity:     runner.ValidationWarning,
-            },
-        },
-    },
-}
-
-// Create workflow runner
-workflowRunner := runner.NewWorkflowRunner(baseRunner, workflowConfig)
-
-// Initialize workflow state
-state := &runner.WorkflowState{
-    CurrentPhase:    "",
-    CompletedPhases: make([]string, 0),
-    Artifacts:       make(map[string]interface{}),
-    LastCheckpoint:  time.Now(),
-    Metadata:        make(map[string]interface{}),
-}
-
-// Run workflow with state management
-result, err := workflowRunner.RunWorkflow(context.Background(), agent, &runner.RunOptions{
-    MaxTurns:       10,
-    RunConfig:      runConfig,
-    WorkflowConfig: workflowConfig,
-    Input:         state,
-})
-```
-
-See the complete example in [examples/workflow_example](./examples/workflow_example).
 </details>
 
 ## 📚 Examples
 
-The repository includes several examples to help you get started:
-
 | Example | Description |
 |---------|-------------|
-| [Multi-Agent Example](./examples/multi_agent_example) | Demonstrates how to create a system of specialized agents that can collaborate on complex tasks using a local LLM via LM Studio |
-| [OpenAI Example](./examples/openai_example) | Shows how to use the OpenAI provider with function calling capabilities |
-| [OpenAI Multi-Agent Example](./examples/openai_multi_agent_example) | Illustrates multi-agent functionality using OpenAI models, with proper tool calling and streaming support |
-| [Anthropic Example](./examples/anthropic_example) | Demonstrates how to use the Anthropic Claude API with tool calling capabilities |
-| [Anthropic Handoff Example](./examples/anthropic_handoff_example) | Shows how to implement agent handoffs with Anthropic Claude models |
-| [Bidirectional Flow Example](./examples/bidirectional_flow_example) | Demonstrates bidirectional agent communication with task delegation and return handoffs |
-| [TypeScript Code Review Example](./examples/typescript_code_review_example) | Shows a practical application with specialized code review agents that collaborate using bidirectional handoffs |
-| [Workflow Example](./examples/workflow_example) | Demonstrates advanced workflow management with state persistence between agent executions |
+| [multi_agent_example](./examples/multi_agent_example) | Multi-agent system using LM Studio (local LLM) |
+| [openai_example](./examples/openai_example) | OpenAI provider with function calling |
+| [openai_multi_agent_example](./examples/openai_multi_agent_example) | Multi-agent with OpenAI, tool calling and streaming |
+| [openai_advanced_workflow](./examples/openai_advanced_workflow) | Advanced OpenAI workflow with hooks and custom config |
+| [anthropic_example](./examples/anthropic_example) | Anthropic Claude with tool calling |
+| [anthropic_handoff_example](./examples/anthropic_handoff_example) | Agent handoffs with Anthropic Claude |
+| [gemini_example](./examples/gemini_example) | Google Gemini single-agent with function calling |
+| [gemini_multi_agent_example](./examples/gemini_multi_agent_example) | Multi-agent handoffs using Gemini |
+| [mistral_example](./examples/mistral_example) | Mistral provider with tool calling |
+| [azure_openai_example](./examples/azure_openai_example) | Azure-hosted OpenAI endpoint |
+| [bidirectional_flow_example](./examples/bidirectional_flow_example) | Bidirectional agent delegation and return |
+| [typescript_code_review_example](./examples/typescript_code_review_example) | Collaborative code review with specialised agents |
 
-### Running Examples with a Local LLM
+### Running an Example
 
-1. Make sure LM Studio is running with a server at `http://127.0.0.1:1234/v1`
-2. Navigate to the example directory
-   ```bash
-   cd examples/multi_agent_example # or any other example using LM Studio
-   ```
-3. Run the example
-   ```bash
-   go run .
-   ```
+**With a cloud provider:**
 
-### Running Examples with OpenAI
+```bash
+# OpenAI
+export OPENAI_API_KEY=your-api-key
+cd examples/openai_example && go run .
 
-1. Set your OpenAI API key as an environment variable
-   ```bash
-   export OPENAI_API_KEY=your-api-key
-   ```
-2. Navigate to the example directory
-   ```bash
-   cd examples/openai_example # or openai_multi_agent_example
-   ```
-3. Run the example
-   ```bash
-   go run .
-   ```
+# Anthropic
+export ANTHROPIC_API_KEY=your-api-key
+cd examples/anthropic_example && go run .
 
-### Running Examples with Anthropic
+# Gemini
+export GOOGLE_API_KEY=your-api-key
+cd examples/gemini_example && go run .
 
-1. Set your Anthropic API key as an environment variable
-   ```bash
-   export ANTHROPIC_API_KEY=your-anthropic-api-key
-   ```
-2. Navigate to the example directory
-   ```bash
-   cd examples/anthropic_example # or anthropic_handoff_example
-   ```
-3. Run the example
-   ```bash
-   go run .
-   ```
+# Mistral
+export MISTRAL_API_KEY=your-api-key
+cd examples/mistral_example && go run .
+```
 
-### Debugging
+**With a local LLM via LM Studio:**
 
-You can enable debug output for various components by setting the appropriate environment variable:
+```bash
+# 1. Start LM Studio with a loaded model and the local server running on http://127.0.0.1:1234
+cd examples/multi_agent_example && go run .
+```
 
-For general debugging (runner and core components):
+### Debug Flags
+
 ```bash
 DEBUG=1 go run examples/bidirectional_flow_example/main.go
-```
 
-For provider-specific debugging:
-```bash
-# OpenAI provider debugging
-OPENAI_DEBUG=1 go run examples/openai_multi_agent_example/main.go
-
-# Anthropic provider debugging
+# Provider-specific
+OPENAI_DEBUG=1    go run examples/openai_multi_agent_example/main.go
 ANTHROPIC_DEBUG=1 go run examples/anthropic_example/main.go
-
-# LM Studio provider debugging
-LMSTUDIO_DEBUG=1 go run examples/multi_agent_example/main.go
-```
-
-You can also combine multiple debug flags:
-```bash
-DEBUG=1 OPENAI_DEBUG=1 go run examples/typescript_code_review_example/main.go
+LMSTUDIO_DEBUG=1  go run examples/multi_agent_example/main.go
 ```
 
 ## 🛠️ Development
-
-<details>
-<summary>Development setup and workflows</summary>
 
 ### Requirements
 
@@ -714,41 +475,36 @@ DEBUG=1 OPENAI_DEBUG=1 go run examples/typescript_code_review_example/main.go
 
 ### Setup
 
-1. Clone the repository
-2. Run the setup script to install required tools:
-
 ```bash
+git clone https://github.com/citizenofai/agent-sdk-go.git
+cd agent-sdk-go
 ./scripts/ci_setup.sh
 ```
 
-### Development Workflow
+### Scripts
 
-The project includes several scripts to help with development:
-
-- `./scripts/lint.sh`: Runs formatting and linting checks
-- `./scripts/security_check.sh`: Runs security checks with gosec
-- `./scripts/check_all.sh`: Runs all checks including tests
-- `./scripts/version.sh`: Helps with versioning (run with `bump` argument to bump version)
+| Script | Purpose |
+|--------|---------|
+| `./scripts/lint.sh` | Formatting and linting |
+| `./scripts/security_check.sh` | Security scan (gosec) |
+| `./scripts/check_all.sh` | All checks including tests |
+| `./scripts/version.sh bump` | Bump version |
 
 ### Running Tests
 
-Tests are located in the `test` directory and can be run with:
-
 ```bash
 cd test && make test
-```
-
-Or use the check_all script to run all checks including tests:
-
-```bash
+# or
 ./scripts/check_all.sh
 ```
 
 ### CI/CD
 
-The project uses GitHub Actions for CI/CD. The workflow is defined in `.github/workflows/ci.yml`.
+GitHub Actions workflows are in `.github/workflows/`. The main pipelines are:
 
-</details>
+- `code-quality.yml` — lint, vet, security scan
+- `codeql-analysis.yml` — static security analysis
+- `release.yml` — automated releases via GoReleaser
 
 ## 👥 Contributing
 
@@ -756,27 +512,4 @@ Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for d
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/citizenofai/agent-sdk-go/blob/main/LICENSE) file for details.
-
-## 🙏 Acknowledgements
-
-This project is inspired by [OpenAI's Assistants API](https://platform.openai.com/docs/assistants/overview) and [OpenAI's Python Agent SDK](https://github.com/openai/openai-agents-py), with the goal of providing similar capabilities in Go while being compatible with local LLMs.
-
-## ☁️ Cloud Support
-
-For production deployments, we're developing a fully managed cloud service. Join our waitlist to be among the first to access:
-
-- **Managed Agent Deployment** - Deploy agents without infrastructure hassle
-- **Horizontal Scaling** - Handle any traffic volume
-- **Observability & Monitoring** - Track performance and usage
-- **Cost Optimization** - Pay only for what you use
-- **Enterprise Security** - SOC2 compliance and data protection
-
-**[Sign up for the Cloud Waitlist →](https://go-agent.org/#waitlist)**
-
-## 👥 Community & Support
-
-- **Website**: [go-agent.org](https://go-agent.org)
-- **GitHub Issues**: [Report bugs or request features](https://github.com/citizenofai/agent-sdk-go/issues)
-- **Discussions**: [Join the conversation](https://github.com/citizenofai/agent-sdk-go/discussions)
-- **Waitlist**: [Join the cloud service waitlist](https://go-agent.org/#waitlist) 
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
