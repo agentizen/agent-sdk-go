@@ -1,6 +1,7 @@
 package mistral
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"crypto/rand"
@@ -260,10 +261,34 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 	return events, nil
 }
 
-// streamResponseOnce performs a single streaming call and emits events.
-func (m *Model) streamResponseOnce(_ context.Context, request *model.Request, events chan<- model.StreamEvent) error {
-	client := m.Provider.getClient()
+// streamDeltaMessage mirrors the delta field in a streaming chunk with Content as
+// json.RawMessage so we can handle both string and array-of-parts formats without
+// JSON unmarshal errors.
+type streamDeltaMessage struct {
+	Role      string                   `json:"role"`
+	Content   json.RawMessage          `json:"content"`
+	ToolCalls []chatCompletionToolCall `json:"tool_calls,omitempty"`
+}
 
+// streamChoice mirrors a single choice in a streaming chunk.
+type streamChoice struct {
+	Index        int                `json:"index"`
+	Delta        streamDeltaMessage `json:"delta"`
+	FinishReason string             `json:"finish_reason,omitempty"`
+}
+
+// streamChunk mirrors a full SSE data frame from the Mistral streaming API.
+type streamChunk struct {
+	ID      string                  `json:"id"`
+	Model   string                  `json:"model"`
+	Choices []streamChoice          `json:"choices"`
+	Usage   chatCompletionUsageInfo `json:"usage,omitempty"`
+}
+
+// streamResponseOnce performs a single streaming call and emits events.
+// It issues its own HTTP request and deserializes delta.content as json.RawMessage
+// to handle both string and array-of-parts formats that Mistral may return.
+func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, events chan<- model.StreamEvent) error {
 	messages := buildChatMessagesFromRequest(request)
 	if len(messages) == 0 {
 		return fmt.Errorf("mistral: empty request input")
@@ -271,26 +296,82 @@ func (m *Model) streamResponseOnce(_ context.Context, request *model.Request, ev
 
 	params := buildChatParamsFromRequest(request)
 
-	stream, err := client.ChatStream(m.ModelName, messages, params)
+	requestData := map[string]interface{}{
+		"model":       m.ModelName,
+		"messages":    messages,
+		"temperature": params.Temperature,
+		"max_tokens":  params.MaxTokens,
+		"top_p":       params.TopP,
+		"random_seed": params.RandomSeed,
+		"safe_prompt": params.SafePrompt,
+		"stream":      true,
+	}
+	if params.Tools != nil {
+		requestData["tools"] = params.Tools
+		if params.ToolChoice != "" {
+			requestData["tool_choice"] = params.ToolChoice
+		}
+	}
+	if params.ResponseFormat != "" {
+		requestData["response_format"] = map[string]any{"type": params.ResponseFormat}
+	}
+
+	endpoint := m.Provider.endpoint
+	if endpoint == "" {
+		endpoint = mistralsdk.Endpoint
+	}
+	url := strings.TrimRight(endpoint, "/") + "/v1/chat/completions"
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(requestData); err != nil {
+		return fmt.Errorf("mistral: failed to encode request: %w", err)
+	}
+
+	httpClient := m.Provider.getHTTPClient()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &buf)
 	if err != nil {
-		return err
+		return fmt.Errorf("mistral: failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "text/event-stream")
+	req.Header.Set("Authorization", "Bearer "+m.Provider.APIKey)
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("mistral: HTTP request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
 	}
 
 	var (
 		contentBuilder strings.Builder
 		toolCalls      []model.ToolCall
 		usage          *model.Usage
+		scanner        = bufio.NewScanner(resp.Body)
 	)
 
-	for chunk := range stream {
-		if chunk.Error != nil {
-			return chunk.Error
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !strings.HasPrefix(line, "data: ") {
+			continue
 		}
+		data := strings.TrimPrefix(line, "data: ")
+		if data == "[DONE]" {
+			break
+		}
+
+		var chunk streamChunk
+		if err := json.Unmarshal([]byte(data), &chunk); err != nil {
+			return fmt.Errorf("mistral: error decoding stream response: %w", err)
+		}
+
 		if len(chunk.Choices) == 0 {
 			continue
 		}
-
-		choice := chunk.Choices[0]
 
 		if chunk.Usage.TotalTokens > 0 {
 			usage = &model.Usage{
@@ -300,14 +381,16 @@ func (m *Model) streamResponseOnce(_ context.Context, request *model.Request, ev
 			}
 		}
 
-		if choice.Delta.Content != "" {
-			contentBuilder.WriteString(choice.Delta.Content)
-			events <- model.StreamEvent{Type: model.StreamEventTypeContent, Content: choice.Delta.Content}
+		choice := chunk.Choices[0]
+
+		if content := normalizeMistralContent(choice.Delta.Content); content != "" {
+			contentBuilder.WriteString(content)
+			events <- model.StreamEvent{Type: model.StreamEventTypeContent, Content: content}
 		}
 
 		for _, tc := range choice.Delta.ToolCalls {
 			toolCall := model.ToolCall{
-				ID:           tc.Id,
+				ID:           tc.ID,
 				Name:         tc.Function.Name,
 				Parameters:   map[string]interface{}{},
 				RawParameter: strings.Builder{},
@@ -325,6 +408,10 @@ func (m *Model) streamResponseOnce(_ context.Context, request *model.Request, ev
 			last := toolCalls[len(toolCalls)-1]
 			events <- model.StreamEvent{Type: model.StreamEventTypeToolCall, ToolCall: &last}
 		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("mistral: error reading stream: %w", err)
 	}
 
 	handoffCall, handoffIdx := detectHandoffFromToolCalls(toolCalls)
