@@ -77,7 +77,10 @@ func NewFileTracer(agentName string) (*FileTracer, error) {
 	// Use filepath.Rel to correctly enforce directory boundaries, avoiding prefix-overlap
 	// attacks (e.g. /tmp/dir matching /tmp/directory) regardless of trailing separators.
 	relPath, relErr := filepath.Rel(currentDir, filePath)
-	if relErr != nil || strings.HasPrefix(relPath, "..") {
+	if relErr != nil {
+		return nil, fmt.Errorf("failed to compute relative file path: %w", relErr)
+	}
+	if strings.HasPrefix(relPath, "..") {
 		return nil, fmt.Errorf("invalid file path: path escapes the intended directory")
 	}
 
