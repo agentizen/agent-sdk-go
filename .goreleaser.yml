@@ -60,7 +60,7 @@ changelog:
 
 release:
   github:
-    owner: adraynrion
+    owner: citizenofai
     name: agent-sdk-go
   draft: false
   prerelease: auto
@@ -71,4 +71,4 @@ release:
     Commit: {{ .Commit }}
     Date: {{ .Date }}
 
-    For more information, visit [adraynrion/agent-sdk-go](https://github.com/citizenofai/agent-sdk-go) 
+    For more information, visit [citizenofai/agent-sdk-go](https://github.com/citizenofai/agent-sdk-go) 

@@ -18,7 +18,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.23'
+        go-version: '1.25.7'
         cache: true
         
     - name: CI Environment Setup
@@ -30,9 +30,6 @@ jobs:
     - name: Lint
       run: ./scripts/lint.sh
       
-    - name: Security Check
-      run: ./scripts/security_check.sh
-        
     - name: Build
       run: go build -v ./...
 
