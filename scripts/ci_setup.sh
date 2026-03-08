@@ -24,9 +24,9 @@ echo "Installing required tools..."
 GOBIN=$(go env GOPATH)/bin
 export PATH=$GOBIN:$PATH
 
-echo "Installing golangci-lint v1.54.2..."
+echo "Installing golangci-lint v1.64.8..."
 # Install golangci-lint
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
 
 echo "Installing gosec latest..."
 # Install gosec
