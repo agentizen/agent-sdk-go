@@ -925,7 +925,7 @@ func (r *Runner) updateInputWithToolResults(currentInput interface{}, response *
 	// If we have tool calls, we need to do special handling for OpenAI
 	if len(response.ToolCalls) > 0 {
 		// Create properly formatted tool calls for OpenAI
-		toolCalls := make([]map[string]interface{}, len(response.ToolCalls))
+		toolCalls := make([]interface{}, len(response.ToolCalls))
 		for i, tc := range response.ToolCalls {
 			// Ensure we have a valid ID
 			toolCallID := tc.ID

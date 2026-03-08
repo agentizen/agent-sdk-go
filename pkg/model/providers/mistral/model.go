@@ -53,6 +53,7 @@ type chatCompletionMessage struct {
 }
 
 type chatCompletionToolCall struct {
+	Index    int                            `json:"index"`
 	ID       string                         `json:"id"`
 	Type     string                         `json:"type"`
 	Function chatCompletionToolCallFunction `json:"function"`
@@ -74,10 +75,10 @@ type chatCompletionUsageInfo struct {
 // Since we build the HTTP request payload manually (as map[string]interface{}),
 // we can use this local type freely without touching the vendor.
 type chatMessage struct {
-	Role       string                 `json:"role"`
-	Content    string                 `json:"content,omitempty"`
-	ToolCalls  []mistralsdk.ToolCall  `json:"tool_calls,omitempty"`
-	ToolCallID string                 `json:"tool_call_id,omitempty"`
+	Role       string                `json:"role"`
+	Content    string                `json:"content,omitempty"`
+	ToolCalls  []mistralsdk.ToolCall `json:"tool_calls,omitempty"`
+	ToolCallID string                `json:"tool_call_id,omitempty"`
 }
 
 // GetResponse gets a single response from the model with retry logic.
@@ -362,9 +363,15 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 		return fmt.Errorf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
 	}
 
+	type toolCallAccumulator struct {
+		id        string
+		name      string
+		arguments strings.Builder
+	}
+
 	var (
 		contentBuilder strings.Builder
-		toolCalls      []model.ToolCall
+		toolCallAcc    []toolCallAccumulator // indexed by tool call index from delta
 		usage          *model.Usage
 		scanner        = bufio.NewScanner(resp.Body)
 	)
@@ -403,30 +410,52 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 			events <- model.StreamEvent{Type: model.StreamEventTypeContent, Content: content}
 		}
 
+		// Accumulate tool call deltas by their position in the delta slice.
+		// Mistral streams one tool call across multiple chunks; each chunk carries
+		// a delta.tool_calls entry with an index field. We grow toolCallAcc as
+		// needed and merge fragments into the correct slot.
 		for _, tc := range choice.Delta.ToolCalls {
-			toolCall := model.ToolCall{
-				ID:           tc.ID,
-				Name:         tc.Function.Name,
-				Parameters:   map[string]interface{}{},
-				RawParameter: strings.Builder{},
+			idx := tc.Index
+			for len(toolCallAcc) <= idx {
+				toolCallAcc = append(toolCallAcc, toolCallAccumulator{})
 			}
-			if tc.Function.Arguments != "" {
-				toolCall.RawParameter.WriteString(tc.Function.Arguments)
-				var args map[string]interface{}
-				if err := json.Unmarshal([]byte(tc.Function.Arguments), &args); err == nil {
-					for k, v := range args {
-						toolCall.Parameters[k] = v
-					}
-				}
+			if tc.ID != "" {
+				toolCallAcc[idx].id = tc.ID
 			}
-			toolCalls = append(toolCalls, toolCall)
-			last := toolCalls[len(toolCalls)-1]
-			events <- model.StreamEvent{Type: model.StreamEventTypeToolCall, ToolCall: &last}
+			if tc.Function.Name != "" {
+				toolCallAcc[idx].name = tc.Function.Name
+			}
+			toolCallAcc[idx].arguments.WriteString(tc.Function.Arguments)
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("mistral: error reading stream: %w", err)
+	}
+
+	// Convert accumulated deltas into complete ToolCall entries and emit events.
+	var toolCalls []model.ToolCall
+	for _, acc := range toolCallAcc {
+		argsStr := acc.arguments.String()
+		toolCall := model.ToolCall{
+			ID:           acc.id,
+			Name:         acc.name,
+			Parameters:   map[string]interface{}{},
+			RawParameter: strings.Builder{},
+		}
+		if argsStr != "" {
+			toolCall.RawParameter.WriteString(argsStr)
+			var args map[string]interface{}
+			if err := json.Unmarshal([]byte(argsStr), &args); err == nil {
+				for k, v := range args {
+					toolCall.Parameters[k] = v
+				}
+			}
+		}
+		toolCalls = append(toolCalls, toolCall)
+	}
+	for i := range toolCalls {
+		events <- model.StreamEvent{Type: model.StreamEventTypeToolCall, ToolCall: &toolCalls[i]}
 	}
 
 	handoffCall, handoffIdx := detectHandoffFromToolCalls(toolCalls)
