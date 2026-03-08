@@ -65,7 +65,7 @@ This repository is a maintained fork of an unmaintained project, actively rework
 - ✅ **Function Calling / Tools** — Call any Go function directly from your LLM
 - ✅ **Agent Handoffs** — Build complex multi-agent pipelines with specialized agents
 - ✅ **Bidirectional Flow** — Agents can delegate tasks and return results back to the caller
-- ✅ **Structured Output** — Parse LLM responses into Go structs automatically
+- ✅ **Structured Output Ready** — Design agents to produce structured/JSON responses; automatic Go struct parsing is planned
 - ✅ **Streaming** — Real-time token streaming with event-based API
 - ✅ **Tracing & Monitoring** — Built-in tracing for debugging agent flows
 - ✅ **OpenAI Compatibility** — Compatible with OpenAI tool definitions and API format
