@@ -8,7 +8,7 @@ require (
 	github.com/gage-technologies/mistral-go v1.1.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.34.0
-	google.golang.org/genai v1.36.0
+	google.golang.org/genai v1.49.0
 )
 
 require (
