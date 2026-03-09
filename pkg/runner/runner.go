@@ -1469,6 +1469,9 @@ func (r *Runner) processModelStream(
 				response.Usage = event.Response.Usage
 			}
 
+			// Record model response event (mirrors callModel tracing for streaming path)
+			tracing.ModelResponse(ctx, currentAgent.Name, fmt.Sprintf("%v", currentAgent.Model), response, nil)
+
 			// Call agent hooks if provided
 			if currentAgent.Hooks != nil {
 				if err := currentAgent.Hooks.OnAfterModelCall(ctx, currentAgent, response); err != nil {
