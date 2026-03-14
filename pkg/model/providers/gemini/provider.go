@@ -78,7 +78,7 @@ func (p *Provider) WithRateLimit(rpm, tpm int) *Provider {
 	return p
 }
 
-// WithRetryConfig configures retry behaviour for the provider.
+// WithRetryConfig configures retry behavior for the provider.
 func (p *Provider) WithRetryConfig(maxRetries int, retryAfter time.Duration) *Provider {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -117,7 +117,7 @@ func (p *Provider) GetModel(name string) (model.Model, error) {
 	}, nil
 }
 
-// getClient returns a lazily initialised genai.Client.
+// getClient returns a lazily initialized genai.Client.
 func (p *Provider) getClient(ctx context.Context) (*genai.Client, error) {
 	if p.client != nil {
 		return p.client, nil

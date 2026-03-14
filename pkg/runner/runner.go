@@ -194,6 +194,10 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 				Handoffs:           r.prepareHandoffs(currentAgent.Handoffs),
 				Settings:           modelSettings,
 			}
+			// Attach multimodal parts on the first turn only.
+			if turn == 1 && len(opts.InputParts) > 0 {
+				request.InputParts = opts.InputParts
+			}
 
 			// Call agent hooks if provided
 			if currentAgent.Hooks != nil {
@@ -241,7 +245,7 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 			if err == nil && streamedResult.CurrentAgent != currentAgent {
 				currentAgent = streamedResult.CurrentAgent
 				// If there was a handoff, find the corresponding item to get its input
-				if handoffItem := findHandoffItem(streamedResult.RunResult.NewItems); handoffItem != nil {
+				if handoffItem := findHandoffItem(streamedResult.NewItems); handoffItem != nil {
 					currentInput = handoffItem.Input
 				}
 				continue
@@ -544,6 +548,10 @@ func (r *Runner) executeModelRequest(ctx context.Context, agent AgentType, input
 		Handoffs:           r.prepareHandoffs(agent.Handoffs),
 		Settings:           modelSettings,
 	}
+	// Attach multimodal parts on the first turn only.
+	if turn == 1 && len(opts.InputParts) > 0 {
+		request.InputParts = opts.InputParts
+	}
 
 	// Call agent hooks if provided
 	if agent.Hooks != nil {
@@ -589,12 +597,6 @@ func (r *Runner) processHandoff(ctx context.Context, currentAgent AgentType, cur
 	} else {
 		// Default to empty string if no input provided
 		handoffInput = ""
-	}
-
-	// Generate a task ID if one doesn't exist
-	taskID := handoffCall.TaskID
-	if taskID == "" {
-		taskID = generateTaskID()
 	}
 
 	// Record the current task's context
@@ -1531,8 +1533,8 @@ func (r *Runner) processModelStream(
 			}
 
 			// If we reached max turns without a final output, use the last response content
-			if turn == opts.MaxTurns && streamedResult.RunResult.FinalOutput == nil {
-				streamedResult.RunResult.FinalOutput = response.Content
+			if turn == opts.MaxTurns && streamedResult.FinalOutput == nil {
+				streamedResult.FinalOutput = response.Content
 				streamedResult.IsComplete = true
 				return nil
 			}
@@ -1554,14 +1556,14 @@ func (r *Runner) handleFinalOutput(
 ) error {
 	// If the agent has an output type defined, treat this as structured output
 	// TODO: Implement structured output parsing
-	streamedResult.RunResult.FinalOutput = response.Content
+	streamedResult.FinalOutput = response.Content
 
 	// Call hooks if provided
 	if opts.Hooks != nil {
 		turnResult := &SingleTurnResult{
 			Agent:    currentAgent,
 			Response: response,
-			Output:   streamedResult.RunResult.FinalOutput,
+			Output:   streamedResult.FinalOutput,
 		}
 		if err := opts.Hooks.OnTurnEnd(ctx, currentAgent, turn, turnResult); err != nil {
 			eventCh <- model.StreamEvent{
@@ -1580,11 +1582,11 @@ func (r *Runner) handleFinalOutput(
 
 	// Mark as complete
 	streamedResult.IsComplete = true
-	streamedResult.RunResult.LastAgent = currentAgent
+	streamedResult.LastAgent = currentAgent
 
 	// Call agent hooks if provided
 	if currentAgent.Hooks != nil {
-		if err := currentAgent.Hooks.OnAgentEnd(ctx, currentAgent, streamedResult.RunResult.FinalOutput); err != nil {
+		if err := currentAgent.Hooks.OnAgentEnd(ctx, currentAgent, streamedResult.FinalOutput); err != nil {
 			eventCh <- model.StreamEvent{
 				Type:  model.StreamEventTypeError,
 				Error: fmt.Errorf("agent end hook error: %w", err),
@@ -1618,14 +1620,14 @@ func (r *Runner) handleTextResponse(
 	eventCh chan model.StreamEvent,
 ) error {
 	// Use the response content as the final output
-	streamedResult.RunResult.FinalOutput = response.Content
+	streamedResult.FinalOutput = response.Content
 
 	// Call hooks if provided
 	if opts.Hooks != nil {
 		turnResult := &SingleTurnResult{
 			Agent:    currentAgent,
 			Response: response,
-			Output:   streamedResult.RunResult.FinalOutput,
+			Output:   streamedResult.FinalOutput,
 		}
 		if err := opts.Hooks.OnTurnEnd(ctx, currentAgent, turn, turnResult); err != nil {
 			eventCh <- model.StreamEvent{
@@ -1638,11 +1640,11 @@ func (r *Runner) handleTextResponse(
 
 	// Mark as complete
 	streamedResult.IsComplete = true
-	streamedResult.RunResult.LastAgent = currentAgent
+	streamedResult.LastAgent = currentAgent
 
 	// Call agent hooks if provided
 	if currentAgent.Hooks != nil {
-		if err := currentAgent.Hooks.OnAgentEnd(ctx, currentAgent, streamedResult.RunResult.FinalOutput); err != nil {
+		if err := currentAgent.Hooks.OnAgentEnd(ctx, currentAgent, streamedResult.FinalOutput); err != nil {
 			eventCh <- model.StreamEvent{
 				Type:  model.StreamEventTypeError,
 				Error: fmt.Errorf("agent end hook error: %w", err),
@@ -1990,12 +1992,6 @@ func (r *Runner) handleHandoff(
 		handoffInput = ""
 	}
 
-	// Generate a task ID if one doesn't exist
-	taskID := handoffCall.TaskID
-	if taskID == "" {
-		taskID = generateTaskID()
-	}
-
 	// Record the current task's context
 	// Just comment out the response variables since they are undefined
 	/*
@@ -2110,7 +2106,7 @@ func (r *Runner) handleHandoff(
 			AgentName: parentAgent.Name,
 			Input:     enhancedInput,
 		}
-		streamedResult.RunResult.NewItems = append(streamedResult.RunResult.NewItems, handoffItem)
+		streamedResult.NewItems = append(streamedResult.NewItems, handoffItem)
 
 		// Update the streamed result with the handoff event
 		// Similarly, comment out the eventCh references
@@ -2213,7 +2209,7 @@ func (r *Runner) handleHandoff(
 			AgentName: handoffAgent.Name,
 			Input:     enhancedInput,
 		}
-		streamedResult.RunResult.NewItems = append(streamedResult.RunResult.NewItems, handoffItem)
+		streamedResult.NewItems = append(streamedResult.NewItems, handoffItem)
 
 		// Update the streamed result with the handoff event
 		// Similarly, comment out the eventCh references
@@ -2293,11 +2289,6 @@ func (r *Runner) generateHandoffTools(handoffs []AgentType) []interface{} {
 func (r *Runner) addHandoffTools(request *model.Request, handoffs []AgentType) {
 	if len(handoffs) > 0 {
 		handoffTools := r.generateHandoffTools(handoffs)
-		if len(handoffTools) > 0 && request.Tools == nil {
-			request.Tools = make([]interface{}, 0)
-		}
-		for _, tool := range handoffTools {
-			request.Tools = append(request.Tools, tool)
-		}
+		request.Tools = append(request.Tools, handoffTools...)
 	}
 }

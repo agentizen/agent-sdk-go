@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -29,10 +30,12 @@ type Model struct {
 	IncludeToolMessages bool // Whether to include tool result messages in the history limit
 }
 
-// AnthropicMessage represents a message in a conversation
+// AnthropicMessage represents a message in a conversation.
+// Content is interface{} to support both plain strings and content-block arrays
+// required by Anthropic's multimodal API.
 type AnthropicMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    string      `json:"role"`
+	Content interface{} `json:"content"`
 }
 
 // AnthropicTool represents a tool in Anthropic's API
@@ -137,7 +140,7 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 			backoffDuration := calculateBackoff(attempt, m.Provider.RetryAfter)
 			select {
 			case <-ctx.Done():
-				return nil, fmt.Errorf("context cancelled during backoff: %w", ctx.Err())
+				return nil, fmt.Errorf("context canceled during backoff: %w", ctx.Err())
 			case <-time.After(backoffDuration):
 				// Continue after backoff
 			}
@@ -268,7 +271,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				case <-ctx.Done():
 					eventChan <- model.StreamEvent{
 						Type:  model.StreamEventTypeError,
-						Error: fmt.Errorf("context cancelled during backoff: %w", ctx.Err()),
+						Error: fmt.Errorf("context canceled during backoff: %w", ctx.Err()),
 					}
 					return
 				case <-time.After(backoffDuration):
@@ -279,7 +282,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 			// Try to stream a response
 			err := m.streamResponseOnce(ctx, request, eventChan)
 
-			// If successful or context cancelled, return
+			// If successful or context canceled, return
 			if err == nil || ctx.Err() != nil {
 				return
 			}
@@ -381,7 +384,7 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 	)
 
 	for {
-		// Check if the context is cancelled
+		// Check if the context is canceled
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -546,8 +549,14 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 
 // constructRequest constructs an Anthropic API request from a model.Request
 func (m *Model) constructRequest(request *model.Request) (*AnthropicMessageRequest, error) {
-	// Convert input to messages
-	messages, err := m.createMessages(request.Input)
+	// Convert input to messages — use InputParts when set for multimodal content.
+	var messages []AnthropicMessage
+	var err error
+	if len(request.InputParts) > 0 {
+		messages, err = m.createMessagesFromParts(request.InputParts, request.Input)
+	} else {
+		messages, err = m.createMessages(request.Input)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to create messages: %w", err)
 	}
@@ -709,6 +718,61 @@ func (m *Model) addHandoffToolsToRequest(request *model.Request, tools *[]Anthro
 	}
 
 	return nil
+}
+
+// createMessagesFromParts builds an Anthropic user message from []model.ContentPart.
+// If a plain-text Input is also present, it becomes the first text block.
+// Content is set to a []interface{} of content blocks so that json.Marshal
+// produces the array format required by the Anthropic multimodal API.
+func (m *Model) createMessagesFromParts(parts []model.ContentPart, input interface{}) ([]AnthropicMessage, error) {
+	var blocks []interface{}
+
+	// Prepend a text block from Input when the caller still provides a text message.
+	if inputStr, ok := input.(string); ok && strings.TrimSpace(inputStr) != "" {
+		blocks = append(blocks, map[string]interface{}{
+			"type": "text",
+			"text": inputStr,
+		})
+	}
+
+	for _, p := range parts {
+		switch p.Type {
+		case model.ContentPartTypeText:
+			if strings.TrimSpace(p.Text) != "" {
+				blocks = append(blocks, map[string]interface{}{
+					"type": "text",
+					"text": p.Text,
+				})
+			}
+		case model.ContentPartTypeDocument:
+			blocks = append(blocks, map[string]interface{}{
+				"type": "document",
+				"source": map[string]interface{}{
+					"type":       "base64",
+					"media_type": p.MimeType,
+					"data":       base64.StdEncoding.EncodeToString(p.Data),
+				},
+			})
+		case model.ContentPartTypeImage:
+			blocks = append(blocks, map[string]interface{}{
+				"type": "image",
+				"source": map[string]interface{}{
+					"type":       "base64",
+					"media_type": p.MimeType,
+					"data":       base64.StdEncoding.EncodeToString(p.Data),
+				},
+			})
+		}
+	}
+
+	if len(blocks) == 0 {
+		return nil, fmt.Errorf("anthropic: no content blocks generated from InputParts")
+	}
+
+	// Use []interface{} directly so json.Marshal produces an array, not a quoted string.
+	return []AnthropicMessage{
+		{Role: "user", Content: blocks},
+	}, nil
 }
 
 // createMessages creates AnthropicMessages from a model.Request.Input

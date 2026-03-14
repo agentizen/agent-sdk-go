@@ -84,7 +84,7 @@ func (p *Provider) WithRateLimit(rpm, tpm int) *Provider {
 	return p
 }
 
-// WithRetryConfig configures retry behaviour for the provider.
+// WithRetryConfig configures retry behavior for the provider.
 func (p *Provider) WithRetryConfig(maxRetries int, retryAfter time.Duration) *Provider {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -106,7 +106,7 @@ func (p *Provider) SetEndpoint(endpoint string) *Provider {
 	return p
 }
 
-// getHTTPClient returns a lazily initialised HTTP client for direct Mistral API calls.
+// getHTTPClient returns a lazily initialized HTTP client for direct Mistral API calls.
 func (p *Provider) getHTTPClient() *http.Client {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -122,7 +122,7 @@ func (p *Provider) getHTTPClient() *http.Client {
 	return p.httpClient
 }
 
-// getClient returns a lazily initialised mistral-go client.
+// getClient returns a lazily initialized mistral-go client.
 func (p *Provider) getClient() *mistralsdk.MistralClient {
 	p.mu.Lock()
 	defer p.mu.Unlock()
