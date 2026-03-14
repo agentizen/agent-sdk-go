@@ -1,0 +1,55 @@
+#!/bin/bash
+# Git pre-commit hook for agent-sdk-go
+# Installed via: ./scripts/install-hooks.sh
+#
+# Runs fast, local checks only. Heavy checks (gosec, full tests) run in CI.
+
+set -e
+
+# Resolve repo root regardless of where git calls this hook from
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+echo "→ pre-commit: running quality checks..."
+
+# ── 1. gofmt ──────────────────────────────────────────────────────────────────
+UNFORMATTED=$(gofmt -l . 2>/dev/null | grep -v "^vendor/" || true)
+if [ -n "$UNFORMATTED" ]; then
+  echo ""
+  echo "✗ gofmt: the following files need formatting (run: gofmt -w .):"
+  echo "$UNFORMATTED" | sed 's/^/    /'
+  exit 1
+fi
+echo "  ✓ gofmt"
+
+# ── 2. go vet ─────────────────────────────────────────────────────────────────
+if ! go vet -buildvcs=false ./... 2>/dev/null; then
+  echo ""
+  echo "✗ go vet: issues found (see above)"
+  exit 1
+fi
+echo "  ✓ go vet"
+
+# ── 3. go build ───────────────────────────────────────────────────────────────
+if ! go build -buildvcs=false ./... 2>/dev/null; then
+  echo ""
+  echo "✗ go build: compilation failed (see above)"
+  exit 1
+fi
+echo "  ✓ go build"
+
+# ── 4. golangci-lint (optional — skipped if not installed) ────────────────────
+GOLANGCI_LINT=$(which golangci-lint 2>/dev/null || echo "")
+if [ -n "$GOLANGCI_LINT" ]; then
+  if ! "$GOLANGCI_LINT" run --fast --timeout=2m ./... 2>/dev/null; then
+    echo ""
+    echo "✗ golangci-lint: issues found (see above)"
+    exit 1
+  fi
+  echo "  ✓ golangci-lint"
+else
+  echo "  ⚠ golangci-lint not found — skipped (install with: ./scripts/ci_setup.sh)"
+fi
+
+echo ""
+echo "✓ All pre-commit checks passed."

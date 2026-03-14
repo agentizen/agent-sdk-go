@@ -1,27 +1,40 @@
+version: "2"
+
 run:
-  # Timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 5m
-  # Set Go version to match CI environment
-  go: '1.25'
-  # Examine test files as well
+  go: "1.25"
   tests: true
-  # Skip all issues from typecheck linter
-  allow-parallel-runners: true
-  skip-files:
-    - ".*_test.go$"
-    - ".*/mocks/.*"
 
-# Linter settings
-linters-settings:
-  typecheck:
-    # Force disable typecheck linter completely
-    disabled: true
-
-# Available linters
 linters:
-  disable-all: true
+  default: none
   enable:
-    - gofmt
-    - govet
-  disable:
-    - typecheck  # Explicitly disable typecheck to avoid issues with mocks and standard library 
+    - errcheck       # unchecked errors
+    - govet          # suspicious constructs
+    - staticcheck    # comprehensive static analysis (includes gosimple + unused checks)
+    - ineffassign    # ineffectual variable assignments
+    - misspell       # common spelling mistakes
+    - gocyclo        # cyclomatic complexity
+
+  settings:
+    gocyclo:
+      min-complexity: 60
+    misspell:
+      locale: US
+
+  exclusions:
+    paths:
+      - examples
+      - vendor
+    rules:
+      - path: "_test\\.go"
+        linters:
+          - errcheck  # unchecked errors in test files are acceptable
+
+formatters:
+  enable:
+    - gofmt          # formatting compliance
+
+  exclusions:
+    paths:
+      - examples
+      - vendor

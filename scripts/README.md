@@ -2,65 +2,124 @@
 
 This directory contains utility scripts for the Agent SDK Go project.
 
-## Go Report Card Fixer
+## Quick Reference
 
-The `fix_goreportcard.sh` script identifies and fixes common issues reported by [Go Report Card](https://goreportcard.com/report/github.com/citizenofai/agent-sdk-go).
+| Script | Purpose |
+|--------|---------|
+| `./scripts/check_all.sh` | Run all checks (version, lint, security, tests) |
+| `./scripts/lint.sh` | Formatting + imports + vet + build |
+| `./scripts/security_check.sh` | Security scan (gosec) |
+| `./scripts/build.sh` | Build with consistent flags |
+| `./scripts/version.sh bump` | Interactive version tag bump |
+| `./scripts/ci_setup.sh` | Install required tools (CI / first-time setup) |
+| `./scripts/install-hooks.sh` | Install native Git pre-commit hook |
+| `./scripts/check_go_version.sh` | Verify Go version meets requirements |
+| `go run ./scripts/sync_capabilities_from_official_docs.go` | Sync model capabilities from provider docs |
 
-### Usage
+---
+
+## Scripts
+
+### `check_all.sh`
+
+Runs the full quality pipeline in sequence: Go version check → lint → security → tests.
 
 ```bash
-# Make the script executable (if not already)
-chmod +x scripts/fix_goreportcard.sh
-
-# Run the script
-./scripts/fix_goreportcard.sh
+./scripts/check_all.sh
 ```
 
-### What it Does
+### `lint.sh`
 
-The script:
+Checks code formatting (`gofmt`), import organization (`goimports`), runs `go vet`, and verifies the project builds.
 
-1. Installs necessary Go linting tools
-2. Formats code with `gofmt`
-3. Fixes common misspellings
-4. Identifies ineffectual assignments
-5. Finds unchecked errors
-6. Runs standard `go vet` checks
-7. Applies Go linting rules
-8. Checks cyclomatic complexity
-9. Runs static analysis
-10. Finds unconverted types
+```bash
+./scripts/lint.sh
+```
 
-### Troubleshooting
+### `security_check.sh`
 
-If you encounter path-related errors when running the tools:
+Runs a security scan using `gosec`, excluding the `examples/` directory.
 
-1. Make sure your `GOPATH/bin` directory is in your PATH:
-   ```bash
-   export PATH="$(go env GOPATH)/bin:$PATH"
-   ```
+```bash
+./scripts/security_check.sh
+```
 
-2. Or run the tools with their full path:
-   ```bash
-   $(go env GOPATH)/bin/misspell -w your_file.go
-   ```
+Requires `gosec` to be installed (`go install github.com/securego/gosec/v2/cmd/gosec@latest`).
 
-## Pre-commit Setup
+### `build.sh`
 
-We recommend setting up pre-commit hooks to automatically check code quality before committing:
+Builds all packages with consistent flags. Supports `--race` and `--verbose` options.
 
-1. Install pre-commit:
-   ```bash
-   pip install pre-commit
-   ```
+```bash
+./scripts/build.sh
+./scripts/build.sh --race
+./scripts/build.sh --verbose ./pkg/...
+```
 
-2. Install the hooks:
-   ```bash
-   pre-commit install
-   ```
+### `version.sh`
 
-3. Now pre-commit will run automatically on `git commit`
+Interactive script to bump the semantic version and create a signed git tag. Prompts for major/minor/patch bump and pushes the tag.
 
-## Other Scripts
+```bash
+./scripts/version.sh bump
+```
 
-(Other script documentation will be added here as more scripts are developed) 
+### `ci_setup.sh`
+
+Installs all required tooling for CI or first-time local setup: `golangci-lint`, `gosec`, `goimports`.
+
+```bash
+./scripts/ci_setup.sh
+```
+
+### `check_go_version.sh`
+
+Verifies the installed Go version meets the minimum requirement (1.25+). Called automatically by `check_all.sh` and `ci_setup.sh`.
+
+```bash
+./scripts/check_go_version.sh
+```
+
+### `sync_capabilities_from_official_docs.go`
+
+A Go script that fetches model capability data from official provider documentation (OpenAI, Anthropic, Gemini, Mistral) and updates `pkg/model/capabilities.go`. Run automatically by the `model-capabilities-sync` GitHub Actions workflow.
+
+```bash
+# Dry-run (print diff only)
+go run ./scripts/sync_capabilities_from_official_docs.go \
+  -capabilities pkg/model/capabilities.go
+
+# Write changes
+go run ./scripts/sync_capabilities_from_official_docs.go \
+  -write \
+  -capabilities pkg/model/capabilities.go
+gofmt -w pkg/model/capabilities.go
+```
+
+---
+
+### `install-hooks.sh`
+
+Installs the native Git pre-commit hook from `scripts/hooks/pre-commit`. No external dependencies required.
+
+```bash
+./scripts/install-hooks.sh
+```
+
+The hook runs automatically on every `git commit` and checks:
+- `gofmt` — code formatting
+- `go vet` — suspicious constructs
+- `go build` — compilation
+- `golangci-lint` — lint rules (skipped silently if not installed)
+
+Run manually at any time:
+```bash
+.git/hooks/pre-commit
+```
+
+Uninstall:
+```bash
+rm .git/hooks/pre-commit
+```
+
+> The hook is stored at `scripts/hooks/pre-commit` (versioned) and symlinked into `.git/hooks/` by the install script.

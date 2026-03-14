@@ -2,8 +2,6 @@ module github.com/citizenofai/agent-sdk-go
 
 go 1.25.7
 
-replace github.com/citizenofai/agent-sdk-go => ./
-
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/gage-technologies/mistral-go v1.1.0

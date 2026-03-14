@@ -10,19 +10,44 @@ Please be respectful and considerate of others when contributing to this project
 
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/agent-sdk-go.git`
-3. Set up the development environment by running `./scripts/ci_setup.sh`
+3. Set up the development environment:
+   ```bash
+   ./scripts/ci_setup.sh       # installs golangci-lint, gosec, goimports
+   ./scripts/install-hooks.sh  # installs Git pre-commit hook
+   ```
 4. Create a new branch for your changes: `git checkout -b feature/your-feature-name`
 
 ## Development Workflow
 
 1. Make your changes
-2. Run the checks to ensure your changes meet the project standards:
+2. Run the full quality pipeline before submitting:
    ```bash
    ./scripts/check_all.sh
    ```
-3. Commit your changes with a descriptive commit message
+3. Commit your changes — the pre-commit hook will run `gofmt`, `go vet`, `go build`, and `golangci-lint` automatically
 4. Push your changes to your fork
 5. Submit a pull request
+
+## Git Hooks
+
+The repository provides a native Git pre-commit hook (no Python required).
+
+**Install once per clone:**
+```bash
+./scripts/install-hooks.sh
+```
+
+**Run manually:**
+```bash
+.git/hooks/pre-commit
+```
+
+**Uninstall:**
+```bash
+rm .git/hooks/pre-commit
+```
+
+The hook runs fast local checks only: `gofmt`, `go vet`, `go build`, and `golangci-lint` (if installed). Heavier checks (security scan, full test suite) run in CI.
 
 ## Pull Request Process
 
