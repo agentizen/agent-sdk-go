@@ -132,7 +132,13 @@ func (t *FileTracer) Close() error {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	return t.file.Close()
+	if t.file == nil {
+		return nil
+	}
+
+	err := t.file.Close()
+	t.file = nil
+	return err
 }
 
 // NoopTracer is a tracer that does nothing
