@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -74,9 +75,12 @@ type chatCompletionUsageInfo struct {
 // which the gage-technologies/mistral-go SDK's ChatMessage does not expose.
 // Since we build the HTTP request payload manually (as map[string]interface{}),
 // we can use this local type freely without touching the vendor.
+//
+// Content is declared as any to support both plain strings (text-only models) and
+// arrays of content-part objects (vision models like Pixtral).
 type chatMessage struct {
 	Role       string                `json:"role"`
-	Content    string                `json:"content,omitempty"`
+	Content    any                   `json:"content,omitempty"`
 	ToolCalls  []mistralsdk.ToolCall `json:"tool_calls,omitempty"`
 	ToolCallID string                `json:"tool_call_id,omitempty"`
 }
@@ -95,7 +99,7 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 			backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
 			select {
 			case <-ctx.Done():
-				return nil, fmt.Errorf("mistral: context cancelled during backoff: %w", ctx.Err())
+				return nil, fmt.Errorf("mistral: context canceled during backoff: %w", ctx.Err())
 			case <-time.After(backoff):
 			}
 		}
@@ -114,7 +118,11 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 
 // getResponseOnce sends a single Chat call via mistral-go.
 func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*model.Response, error) {
-	messages := buildChatMessagesFromRequest(request)
+	if err := m.validateInputParts(request); err != nil {
+		return nil, err
+	}
+	supportsVision := model.ProviderSupports("mistral", m.ModelName, model.CapabilityVision)
+	messages := buildChatMessagesFromRequest(request, supportsVision)
 	if len(messages) == 0 {
 		return nil, fmt.Errorf("mistral: empty request input")
 	}
@@ -247,7 +255,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
 				select {
 				case <-ctx.Done():
-					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: fmt.Errorf("mistral: context cancelled during backoff: %w", ctx.Err())}
+					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: fmt.Errorf("mistral: context canceled during backoff: %w", ctx.Err())}
 					return
 				case <-time.After(backoff):
 				}
@@ -257,7 +265,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				lastErr = err
 				if !isRateLimitError(err) || ctx.Err() != nil {
 					if ctx.Err() != nil {
-						err = fmt.Errorf("mistral: context cancelled: %w", ctx.Err())
+						err = fmt.Errorf("mistral: context canceled: %w", ctx.Err())
 					}
 					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: err}
 					return
@@ -299,11 +307,36 @@ type streamChunk struct {
 	Usage   chatCompletionUsageInfo `json:"usage,omitempty"`
 }
 
+// validateInputParts returns an error if the request contains content parts that
+// the model does not support. Pixtral models support image inputs; all other
+// Mistral models only accept text parts.
+func (mdl *Model) validateInputParts(request *model.Request) error {
+	supportsVision := model.ProviderSupports("mistral", mdl.ModelName, model.CapabilityVision)
+	supportsDocuments := model.ProviderSupports("mistral", mdl.ModelName, model.CapabilityDocuments)
+	for _, p := range request.InputParts {
+		if p.Type == model.ContentPartTypeText {
+			continue
+		}
+		if p.Type == model.ContentPartTypeImage && supportsVision {
+			continue
+		}
+		if p.Type == model.ContentPartTypeDocument && supportsDocuments {
+			continue
+		}
+		return fmt.Errorf("mistral: model %q does not support %q content parts", mdl.ModelName, p.Type)
+	}
+	return nil
+}
+
 // streamResponseOnce performs a single streaming call and emits events.
 // It issues its own HTTP request and deserializes delta.content as json.RawMessage
 // to handle both string and array-of-parts formats that Mistral may return.
 func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, events chan<- model.StreamEvent) error {
-	messages := buildChatMessagesFromRequest(request)
+	if err := m.validateInputParts(request); err != nil {
+		return err
+	}
+	supportsVision := model.ProviderSupports("mistral", m.ModelName, model.CapabilityVision)
+	messages := buildChatMessagesFromRequest(request, supportsVision)
 	if len(messages) == 0 {
 		return fmt.Errorf("mistral: empty request input")
 	}
@@ -481,7 +514,9 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 }
 
 // buildChatMessagesFromRequest flattens a model.Request into Mistral chat messages.
-func buildChatMessagesFromRequest(req *model.Request) []chatMessage {
+// When supportsVision is true and InputParts contain images, a multimodal user
+// message is built using Mistral's image_url content-part format.
+func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []chatMessage {
 	if req == nil {
 		return nil
 	}
@@ -493,6 +528,15 @@ func buildChatMessagesFromRequest(req *model.Request) []chatMessage {
 			Role:    mistralsdk.RoleSystem,
 			Content: req.SystemInstructions,
 		})
+	}
+
+	// InputParts takes precedence over Input for multimodal messages.
+	if len(req.InputParts) > 0 {
+		messages = append(messages, chatMessage{
+			Role:    mistralsdk.RoleUser,
+			Content: buildMistralMultimodalContent(req.InputParts, req.Input, supportsVision),
+		})
+		return messages
 	}
 
 	switch v := req.Input.(type) {
@@ -572,6 +616,70 @@ func buildChatMessagesFromRequest(req *model.Request) []chatMessage {
 	}
 
 	return messages
+}
+
+// buildMistralMultimodalContent assembles a Mistral-compatible content value from
+// InputParts and an optional string Input.
+//
+// When supportsVision is true and the parts include images, the content is returned
+// as a slice of content-part objects (text + image_url) matching the Mistral vision
+// API format. Documents are always sent as plain text because Mistral has no native
+// PDF API; the provider falls back to inline text extraction.
+//
+// When no image parts are present the result is always a plain string so that
+// text-only payloads remain as compact as possible.
+func buildMistralMultimodalContent(parts []model.ContentPart, input interface{}, supportsVision bool) interface{} {
+	var contentParts []map[string]interface{}
+	hasImage := false
+
+	if inputStr, ok := input.(string); ok && strings.TrimSpace(inputStr) != "" {
+		contentParts = append(contentParts, map[string]interface{}{
+			"type": "text",
+			"text": inputStr,
+		})
+	}
+
+	for _, p := range parts {
+		switch p.Type {
+		case model.ContentPartTypeText:
+			if strings.TrimSpace(p.Text) != "" {
+				contentParts = append(contentParts, map[string]interface{}{
+					"type": "text",
+					"text": p.Text,
+				})
+			}
+		case model.ContentPartTypeImage:
+			if supportsVision {
+				hasImage = true
+				contentParts = append(contentParts, map[string]interface{}{
+					"type": "image_url",
+					"image_url": map[string]interface{}{
+						"url": fmt.Sprintf("data:%s;base64,%s", p.MimeType, base64.StdEncoding.EncodeToString(p.Data)),
+					},
+				})
+			}
+		case model.ContentPartTypeDocument:
+			// Mistral has no native document API; send decoded content as text.
+			contentParts = append(contentParts, map[string]interface{}{
+				"type": "text",
+				"text": fmt.Sprintf("[Document: %s]\n%s", p.Name, string(p.Data)),
+			})
+		}
+	}
+
+	if len(contentParts) == 0 {
+		return ""
+	}
+
+	// Return a plain string when only a single text part is present and there
+	// are no image parts, to avoid unnecessary array wrapping.
+	if !hasImage && len(contentParts) == 1 {
+		if txt, ok := contentParts[0]["text"].(string); ok {
+			return txt
+		}
+	}
+
+	return contentParts
 }
 
 // convertToMistralToolCalls converts a slice of raw tool call maps to mistralsdk.ToolCall slice.
@@ -742,7 +850,7 @@ func sanitizeFunctionName(name string) string {
 			r = '_'
 		}
 		if i == 0 {
-			if !(unicode.IsLetter(r) || r == '_') {
+			if !unicode.IsLetter(r) && r != '_' {
 				b.WriteRune('f')
 				b.WriteRune('_')
 			}

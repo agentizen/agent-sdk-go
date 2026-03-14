@@ -101,7 +101,7 @@ func (wr *WorkflowRunner) RunWorkflow(ctx context.Context, agent AgentType, opts
 // runWorkflowWithRecovery executes the workflow with recovery capabilities
 func (wr *WorkflowRunner) runWorkflowWithRecovery(ctx context.Context, agent AgentType, opts *RunOptions) (*result.RunResult, error) {
 	if wr.workflowConfig.RecoveryConfig == nil {
-		return wr.Runner.Run(ctx, agent, opts)
+		return wr.Run(ctx, agent, opts)
 	}
 
 	var panicErr interface{}
@@ -114,7 +114,7 @@ func (wr *WorkflowRunner) runWorkflowWithRecovery(ctx context.Context, agent Age
 				panicErr = r
 			}
 		}()
-		runResult, runErr = wr.Runner.Run(ctx, agent, opts)
+		runResult, runErr = wr.Run(ctx, agent, opts)
 	}()
 
 	if panicErr != nil {

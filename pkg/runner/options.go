@@ -11,6 +11,10 @@ type RunOptions struct {
 	// Input is the input to the run
 	Input interface{}
 
+	// InputParts carries multimodal content parts (text + documents/images) for the first turn.
+	// When set, providers use InputParts instead of Input to build the user message.
+	InputParts []model.ContentPart
+
 	// Context is a user-provided context object
 	Context interface{}
 

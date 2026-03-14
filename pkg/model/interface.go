@@ -9,6 +9,7 @@ import (
 type Request struct {
 	SystemInstructions string
 	Input              interface{}
+	InputParts         []ContentPart // when set, used instead of Input for multimodal messages
 	Tools              []interface{}
 	OutputSchema       interface{}
 	Handoffs           []interface{}
@@ -76,6 +77,25 @@ const (
 	// HandoffTypeReturn indicates a return handoff to a delegator
 	HandoffTypeReturn = "return"
 )
+
+// ContentPartType identifies the kind of content in a multimodal message part.
+type ContentPartType string
+
+const (
+	ContentPartTypeText     ContentPartType = "text"
+	ContentPartTypeDocument ContentPartType = "document" // PDF, text files
+	ContentPartTypeImage    ContentPartType = "image"    // PNG, JPEG, GIF, WEBP
+)
+
+// ContentPart represents one part of a multimodal message input.
+// For text parts only Text is set. For document/image parts MimeType and Data are set.
+type ContentPart struct {
+	Type     ContentPartType
+	Text     string // only for ContentPartTypeText
+	MimeType string // only for ContentPartTypeDocument / ContentPartTypeImage
+	Data     []byte // raw bytes — providers encode to base64 when building API request
+	Name     string // original file name (informational, not sent to API)
+}
 
 // Settings configures model-specific parameters
 type Settings struct {

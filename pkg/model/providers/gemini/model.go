@@ -45,7 +45,7 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 			backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
 			select {
 			case <-ctx.Done():
-				return nil, fmt.Errorf("gemini: context cancelled during backoff: %w", ctx.Err())
+				return nil, fmt.Errorf("gemini: context canceled during backoff: %w", ctx.Err())
 			case <-time.After(backoff):
 			}
 		}
@@ -62,6 +62,38 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 	return nil, lastErr
 }
 
+// buildContentsFromParts converts []model.ContentPart into a Gemini []*genai.Content.
+// Text from the plain-text Input is prepended when present.
+// Images and PDFs are sent as inline data (raw bytes; the SDK handles base64 encoding internally).
+func buildContentsFromParts(parts []model.ContentPart, input interface{}) []*genai.Content {
+	var gparts []*genai.Part
+
+	if inputStr, ok := input.(string); ok && strings.TrimSpace(inputStr) != "" {
+		gparts = append(gparts, &genai.Part{Text: inputStr})
+	}
+
+	for _, p := range parts {
+		switch p.Type {
+		case model.ContentPartTypeText:
+			if strings.TrimSpace(p.Text) != "" {
+				gparts = append(gparts, &genai.Part{Text: p.Text})
+			}
+		case model.ContentPartTypeImage, model.ContentPartTypeDocument:
+			gparts = append(gparts, &genai.Part{
+				InlineData: &genai.Blob{
+					MIMEType: p.MimeType,
+					Data:     p.Data,
+				},
+			})
+		}
+	}
+
+	if len(gparts) == 0 {
+		return nil
+	}
+	return []*genai.Content{{Parts: gparts}}
+}
+
 // getResponseOnce sends a single GenerateContent call via go-genai.
 func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*model.Response, error) {
 	client, err := m.Provider.getClient(ctx)
@@ -69,14 +101,21 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 		return nil, err
 	}
 
-	text := buildInputText(request)
-	if strings.TrimSpace(text) == "" {
-		return nil, fmt.Errorf("gemini: empty request input")
+	var contents []*genai.Content
+	if len(request.InputParts) > 0 {
+		contents = buildContentsFromParts(request.InputParts, request.Input)
+		if len(contents) == 0 {
+			return nil, fmt.Errorf("gemini: empty content from InputParts")
+		}
+	} else {
+		text := buildInputText(request)
+		if strings.TrimSpace(text) == "" {
+			return nil, fmt.Errorf("gemini: empty request input")
+		}
+		contents = []*genai.Content{{
+			Parts: []*genai.Part{{Text: text}},
+		}}
 	}
-
-	contents := []*genai.Content{{
-		Parts: []*genai.Part{{Text: text}},
-	}}
 	config := buildGenerateContentConfig(request)
 
 	apiResp, err := client.Models.GenerateContent(ctx, m.ModelName, contents, config)
@@ -167,7 +206,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
 				select {
 				case <-ctx.Done():
-					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: fmt.Errorf("gemini: context cancelled during backoff: %w", ctx.Err())}
+					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: fmt.Errorf("gemini: context canceled during backoff: %w", ctx.Err())}
 					return
 				case <-time.After(backoff):
 				}
@@ -177,7 +216,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				lastErr = err
 				if !isRateLimitError(err) || ctx.Err() != nil {
 					if ctx.Err() != nil {
-						err = fmt.Errorf("gemini: context cancelled: %w", ctx.Err())
+						err = fmt.Errorf("gemini: context canceled: %w", ctx.Err())
 					}
 					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: err}
 					return
@@ -202,14 +241,21 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 		return err
 	}
 
-	text := buildInputText(request)
-	if strings.TrimSpace(text) == "" {
-		return fmt.Errorf("gemini: empty request input")
+	var contents []*genai.Content
+	if len(request.InputParts) > 0 {
+		contents = buildContentsFromParts(request.InputParts, request.Input)
+		if len(contents) == 0 {
+			return fmt.Errorf("gemini: empty content from InputParts")
+		}
+	} else {
+		text := buildInputText(request)
+		if strings.TrimSpace(text) == "" {
+			return fmt.Errorf("gemini: empty request input")
+		}
+		contents = []*genai.Content{{
+			Parts: []*genai.Part{{Text: text}},
+		}}
 	}
-
-	contents := []*genai.Content{{
-		Parts: []*genai.Part{{Text: text}},
-	}}
 	config := buildGenerateContentConfig(request)
 
 	var (
@@ -315,7 +361,7 @@ func buildInputText(req *model.Request) string {
 			}
 		}
 	default:
-		sb.WriteString(fmt.Sprintf("%v", v))
+		fmt.Fprintf(&sb, "%v", v)
 	}
 	return sb.String()
 }
@@ -517,7 +563,7 @@ func sanitizeFunctionName(name string) string {
 		}
 		if i == 0 {
 			// First char must be letter or underscore
-			if !(unicode.IsLetter(r) || r == '_') {
+			if !unicode.IsLetter(r) && r != '_' {
 				b.WriteRune('f')
 				b.WriteRune('_')
 			}

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,10 +29,11 @@ type Model struct {
 	Provider  *Provider
 }
 
-// ChatMessage represents a message in a chat
+// ChatMessage represents a message in a chat.
+// Content is interface{} to support both plain strings and multimodal content arrays.
 type ChatMessage struct {
 	Role       string                `json:"role"`
-	Content    string                `json:"content"`
+	Content    interface{}           `json:"content"`
 	Name       string                `json:"name,omitempty"`
 	ToolCalls  []ChatMessageToolCall `json:"tool_calls,omitempty"`
 	ToolCallID string                `json:"tool_call_id,omitempty"`
@@ -126,7 +128,7 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 			backoffDuration := calculateBackoff(attempt, m.Provider.RetryAfter)
 			select {
 			case <-ctx.Done():
-				return nil, fmt.Errorf("context cancelled during backoff: %w", ctx.Err())
+				return nil, fmt.Errorf("context canceled during backoff: %w", ctx.Err())
 			case <-time.After(backoffDuration):
 				// Continue after backoff
 			}
@@ -245,7 +247,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 				case <-ctx.Done():
 					eventChan <- model.StreamEvent{
 						Type:  model.StreamEventTypeError,
-						Error: fmt.Errorf("context cancelled during backoff: %w", ctx.Err()),
+						Error: fmt.Errorf("context canceled during backoff: %w", ctx.Err()),
 					}
 					return
 				case <-time.After(backoffDuration):
@@ -263,7 +265,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 
 			lastErr = err
 
-			// If it's not a rate limit error or context is cancelled, don't retry
+			// If it's not a rate limit error or context is canceled, don't retry
 			if !isRateLimitError(err) || ctx.Err() != nil {
 				eventChan <- model.StreamEvent{
 					Type:  model.StreamEventTypeError,
@@ -536,7 +538,7 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 							handoffCallIndex = idx
 						} else if strings.Contains(strings.ToLower(toolCall.Name), "agent") {
 							// It might be trying to call an agent directly
-							possibleAgentName := strings.Replace(strings.ToLower(toolCall.Name), "_agent", " agent", -1)
+							possibleAgentName := strings.ReplaceAll(strings.ToLower(toolCall.Name), "_agent", " agent")
 							possibleAgentName = cases.Title(language.Und, cases.NoLower).String(possibleAgentName)
 
 							// Only use this heuristic if the name ends with "Agent"
@@ -615,8 +617,12 @@ func (m *Model) constructRequest(request *model.Request) (*ChatCompletionRequest
 	// Add system message if provided
 	addSystemMessage(chatRequest, request.SystemInstructions)
 
-	// Add input messages
-	addUserInputMessages(chatRequest, request.Input)
+	// Add input messages — use InputParts when set for multimodal content.
+	if len(request.InputParts) > 0 {
+		addUserInputPartsMessages(chatRequest, request.InputParts, request.Input)
+	} else {
+		addUserInputMessages(chatRequest, request.Input)
+	}
 
 	// Add tools if provided
 	if len(request.Tools) > 0 || len(request.Handoffs) > 0 {
@@ -677,6 +683,57 @@ func addUserInputMessages(chatRequest *ChatCompletionRequest, input interface{})
 		// If input is a list, process each item
 		processInputList(chatRequest, inputList)
 	}
+}
+
+// addUserInputPartsMessages builds a multimodal user message from []model.ContentPart.
+// Images are sent as data URIs via the "image_url" content part type.
+// PDFs and plain-text documents are decoded and sent as text parts because
+// the OpenAI vision API only supports image URLs, not raw document bytes.
+func addUserInputPartsMessages(chatRequest *ChatCompletionRequest, parts []model.ContentPart, input interface{}) {
+	var contentParts []interface{}
+
+	// Prepend a text block from Input when the caller provides a string message.
+	if inputStr, ok := input.(string); ok && strings.TrimSpace(inputStr) != "" {
+		contentParts = append(contentParts, map[string]interface{}{
+			"type": "text",
+			"text": inputStr,
+		})
+	}
+
+	for _, p := range parts {
+		switch p.Type {
+		case model.ContentPartTypeText:
+			if strings.TrimSpace(p.Text) != "" {
+				contentParts = append(contentParts, map[string]interface{}{
+					"type": "text",
+					"text": p.Text,
+				})
+			}
+		case model.ContentPartTypeImage:
+			dataURI := fmt.Sprintf("data:%s;base64,%s", p.MimeType, base64.StdEncoding.EncodeToString(p.Data))
+			contentParts = append(contentParts, map[string]interface{}{
+				"type": "image_url",
+				"image_url": map[string]interface{}{
+					"url": dataURI,
+				},
+			})
+		case model.ContentPartTypeDocument:
+			// OpenAI vision does not support raw document bytes; send decoded text.
+			contentParts = append(contentParts, map[string]interface{}{
+				"type": "text",
+				"text": fmt.Sprintf("[Document: %s]\n%s", p.Name, string(p.Data)),
+			})
+		}
+	}
+
+	if len(contentParts) == 0 {
+		return
+	}
+
+	chatRequest.Messages = append(chatRequest.Messages, ChatMessage{
+		Role:    "user",
+		Content: contentParts,
+	})
 }
 
 // processInputList processes a list of input items and adds them as messages
@@ -970,9 +1027,15 @@ func (m *Model) parseResponse(chatResponse *ChatCompletionResponse) (*model.Resp
 	// Get the first choice
 	choice := chatResponse.Choices[0]
 
+	// Extract content as string (responses are always plain text from the model).
+	var choiceContent string
+	if s, ok := choice.Message.Content.(string); ok {
+		choiceContent = s
+	}
+
 	// Create the model response
 	response := &model.Response{
-		Content:     choice.Message.Content,
+		Content:     choiceContent,
 		ToolCalls:   make([]model.ToolCall, 0),
 		HandoffCall: nil,
 		Usage: &model.Usage{
@@ -1068,7 +1131,7 @@ func (m *Model) parseResponse(chatResponse *ChatCompletionResponse) (*model.Resp
 				}
 			} else if strings.Contains(strings.ToLower(toolCall.Function.Name), "agent") {
 				// It might be trying to call an agent directly
-				possibleAgentName := strings.Replace(strings.ToLower(toolCall.Function.Name), "_agent", " agent", -1)
+				possibleAgentName := strings.ReplaceAll(strings.ToLower(toolCall.Function.Name), "_agent", " agent")
 				possibleAgentName = cases.Title(language.Und, cases.NoLower).String(possibleAgentName)
 
 				// Only use this heuristic if the name ends with "Agent"

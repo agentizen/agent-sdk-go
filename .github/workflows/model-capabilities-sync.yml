@@ -1,0 +1,56 @@
+name: Sync Model Capabilities
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *' # Every day at 6:00 AM UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-capabilities:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout agent-sdk-go
+        uses: actions/checkout@v4
+        with:
+          path: agent-sdk-go
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: agent-sdk-go/go.mod
+
+      - name: Sync capabilities from official provider docs
+        working-directory: agent-sdk-go
+        run: |
+          go run ./scripts/sync_capabilities_from_official_docs.go \
+            -write \
+            -capabilities pkg/model/capabilities.go
+          gofmt -w pkg/model/capabilities.go
+
+      - name: Run capability tests
+        working-directory: agent-sdk-go
+        run: |
+          go test ./test/model/... -run TestProviderSupports -count=1
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: agent-sdk-go
+          commit-message: "chore: sync model capabilities from official docs"
+          branch: "chore/sync-model-capabilities"
+          title: "chore: sync model capabilities from official docs"
+          body: |
+            Automated sync of `pkg/model/capabilities.go` from official provider documentation pages:
+            - OpenAI: https://developers.openai.com/api/docs/models
+            - Anthropic: https://platform.claude.com/docs/en/docs/about-claude/models
+            - Gemini: https://ai.google.dev/gemini-api/docs/models
+            - Mistral: https://docs.mistral.ai/getting-started/models/
+
+            This workflow updates model capability mappings used by provider checks.
+          labels: |
+            dependencies
+            automated

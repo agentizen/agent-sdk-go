@@ -208,12 +208,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer func() {
-		if closeErr := httpResponse.Body.Close(); closeErr != nil {
-			// Log the error or handle it appropriately within the goroutine
-			// log.Printf("Warning: error closing response body in goroutine: %v", closeErr)
-		}
-	}()
+	defer func() { _ = httpResponse.Body.Close() }()
 
 	// Check for errors
 	if httpResponse.StatusCode != http.StatusOK {
@@ -226,12 +221,7 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 
 	// Start a goroutine to process the stream
 	go func() {
-		defer func() {
-			if closeErr := httpResponse.Body.Close(); closeErr != nil {
-				// Log the error or handle it appropriately within the goroutine
-				// log.Printf("Warning: error closing response body in goroutine: %v", closeErr)
-			}
-		}()
+		defer func() { _ = httpResponse.Body.Close() }()
 		defer close(eventChan)
 
 		// Create a scanner to read the response line by line
@@ -398,13 +388,11 @@ func addUserInputMessages(chatRequest *ChatCompletionRequest, input interface{})
 func processInputList(chatRequest *ChatCompletionRequest, inputList []interface{}) {
 	for _, item := range inputList {
 		if message, ok := item.(map[string]interface{}); ok {
-			// Handle different message types
-			if message["type"] == "message" {
-				// Add a regular message
+			switch message["type"] {
+			case "message":
 				chatMessage := createChatMessageFromMap(message)
 				chatRequest.Messages = append(chatRequest.Messages, chatMessage)
-			} else if message["type"] == "tool_result" {
-				// Add a tool result message
+			case "tool_result":
 				toolResultMessage := createToolResultMessage(message)
 				if toolResultMessage != nil {
 					chatRequest.Messages = append(chatRequest.Messages, *toolResultMessage)
@@ -732,7 +720,7 @@ func (m *Model) parseResponse(chatResponse *ChatCompletionResponse) (*model.Resp
 				}
 			} else if strings.Contains(strings.ToLower(toolCall.Function.Name), "agent") {
 				// It might be trying to call an agent directly
-				possibleAgentName := strings.Replace(strings.ToLower(toolCall.Function.Name), "_agent", " agent", -1)
+				possibleAgentName := strings.ReplaceAll(strings.ToLower(toolCall.Function.Name), "_agent", " agent")
 				possibleAgentName = cases.Title(language.Und, cases.NoLower).String(possibleAgentName)
 
 				// Only use this heuristic if the name ends with "Agent"

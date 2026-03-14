@@ -133,5 +133,5 @@ Make your responses helpful and to the point.`)
 	}
 
 	fmt.Println("\nFinal output:")
-	fmt.Println(streamResult.RunResult.FinalOutput)
+	fmt.Println(streamResult.FinalOutput)
 }
