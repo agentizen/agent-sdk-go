@@ -31,7 +31,34 @@ type Event struct {
 	AgentName string                 `json:"agent_name,omitempty"`
 	Timestamp time.Time              `json:"timestamp"`
 	Details   map[string]interface{} `json:"details,omitempty"`
-	Error     error                  `json:"error,omitempty"`
+	// Error holds the underlying error value and is not marshaled directly to JSON.
+	// The JSON representation is provided by MarshalJSON, which serializes the
+	// error message as a string field named "error".
+	Error error `json:"-"`
+}
+
+// MarshalJSON implements custom JSON marshaling for Event to serialize the
+// error field as a string message under the "error" key.
+func (e Event) MarshalJSON() ([]byte, error) {
+	type eventAlias struct {
+		Type      string                 `json:"type"`
+		AgentName string                 `json:"agent_name,omitempty"`
+		Timestamp time.Time              `json:"timestamp"`
+		Details   map[string]interface{} `json:"details,omitempty"`
+		Error     string                 `json:"error,omitempty"`
+	}
+
+	alias := eventAlias{
+		Type:      e.Type,
+		AgentName: e.AgentName,
+		Timestamp: e.Timestamp,
+		Details:   e.Details,
+	}
+	if e.Error != nil {
+		alias.Error = e.Error.Error()
+	}
+
+	return json.Marshal(alias)
 }
 
 // Tracer is the interface for tracing
