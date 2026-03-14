@@ -96,7 +96,7 @@ Make your responses helpful and to the point.`)
 
 	// Run the agent with a specific format request
 	fmt.Println("\nRunning agent with a specific format request...")
-	result, err = runner.Run(context.Background(), agent, &RunOptions{
+	result, err = runner.Run(context.Background(), agent, &runner.RunOptions{
 		Input: "What time is it in kitchen format?",
 	})
 	if err != nil {
@@ -109,7 +109,7 @@ Make your responses helpful and to the point.`)
 
 	// Run the agent streaming
 	fmt.Println("\nRunning agent with streaming...")
-	streamResult, err := runner.RunStreaming(context.Background(), agent, &RunOptions{
+	streamResult, err := runner.RunStreaming(context.Background(), agent, &runner.RunOptions{
 		Input: "What time is it right now?",
 	})
 	if err != nil {
