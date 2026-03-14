@@ -149,7 +149,7 @@ func (t *NoopTracer) Close() error { return nil }
 
 // Global tracer
 var globalTracer Tracer = &NoopTracer{}
-var globalTracerMu sync.Mutex
+var globalTracerMu sync.RWMutex
 
 // SetGlobalTracer sets the global tracer
 func SetGlobalTracer(tracer Tracer) {
@@ -161,8 +161,8 @@ func SetGlobalTracer(tracer Tracer) {
 
 // GetGlobalTracer gets the global tracer
 func GetGlobalTracer() Tracer {
-	globalTracerMu.Lock()
-	defer globalTracerMu.Unlock()
+	globalTracerMu.RLock()
+	defer globalTracerMu.RUnlock()
 
 	return globalTracer
 }
