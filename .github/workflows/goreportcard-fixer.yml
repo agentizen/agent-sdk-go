@@ -53,10 +53,10 @@ jobs:
         run: |
           # Run gofmt
           echo "Running gofmt..."
-          find . -type f -name "*.go" | xargs gofmt -s -w
+          find . -type f -name "*.go" -not -path './.git/*' | xargs gofmt -s -w
           # Fix misspellings
           echo "Fixing misspellings..."
-          ${{ env.GOBIN }}/misspell -w $(find . -type f -name "*.go" -o -name "*.md")
+          ${{ env.GOBIN }}/misspell -w $(find . -type f \( -name "*.go" -o -name "*.md" \) -not -path './.git/*')
           echo "Formatting completed"
 
       - name: Run linters
