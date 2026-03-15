@@ -37,7 +37,7 @@ jobs:
           go test ./test/model/... -run TestProviderSupports -count=1
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           path: agent-sdk-go
           commit-message: "chore: sync model capabilities from official docs"
