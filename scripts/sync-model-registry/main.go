@@ -25,9 +25,23 @@ type capabilitySet struct {
 }
 
 type pricingSet struct {
-	inputCost  float64
-	outputCost float64
-	found      bool
+	inputCost               float64
+	cachedInputCost         *float64
+	outputCost              float64
+	batchInputCost          *float64
+	batchCachedInputCost    *float64
+	batchOutputCost         *float64
+	priorityInputCost       *float64
+	priorityCachedInputCost *float64
+	priorityOutputCost      *float64
+	longContextTrigger      *int
+	longInputCost           *float64
+	longCachedInputCost     *float64
+	longOutputCost          *float64
+	trainingCostPerHour     *float64
+	estimatedCostPerMinute  *float64
+	estimatedCostPerSecond  *float64
+	found                   bool
 }
 
 type capabilityModelUpdate struct {
@@ -65,12 +79,6 @@ type capabilityProviderSource struct {
 	infer      func(string) capabilitySet
 }
 
-type pricingProviderSource struct {
-	providerID string
-	prefixes   []string
-	allow      func(string) bool
-}
-
 type normalizeRules struct {
 	allowNoDigitAliases map[string]struct{}
 	rejectNoiseTokens   bool
@@ -102,7 +110,6 @@ var (
 	}
 
 	capabilityEntryRegexp = regexp.MustCompile(`\{prefix: "([^"]+)", caps: map\[Capability\]bool\{([^}]*)\}\},`)
-	pricingEntryRegexp    = regexp.MustCompile(`"([^"]+)":\s*\{InputCostPerMillion:\s*([0-9.]+),\s*OutputCostPerMillion:\s*([0-9.]+)\}`)
 )
 
 var capabilitySources = []capabilityProviderSource{
@@ -144,47 +151,6 @@ var capabilitySources = []capabilityProviderSource{
 		},
 		allow: allowGeminiCapabilityID,
 		infer: inferCapabilitiesGemini,
-	},
-}
-
-var pricingSources = []pricingProviderSource{
-	{
-		providerID: "anthropic",
-		prefixes: []string{
-			"claude-",
-		},
-		allow: allowAnthropicPricingID,
-	},
-	{
-		providerID: "gemini",
-		prefixes: []string{
-			"gemini-",
-		},
-		allow: allowGeminiPricingID,
-	},
-	{
-		providerID: "mistral",
-		prefixes: []string{
-			"mistral-large-",
-			"mistral-medium-",
-			"mistral-small-",
-			"magistral-small-",
-			"magistral-medium-",
-			"ministral-3b-",
-			"ministral-8b-",
-			"ministral-14b-",
-		},
-		allow: allowMistralPricingID,
-	},
-	{
-		providerID: "openai",
-		prefixes: []string{
-			"gpt-",
-			"o1",
-			"o3",
-			"o4",
-		},
-		allow: allowOpenAIPricingID,
 	},
 }
 
@@ -352,19 +318,6 @@ func hasNewPricingUpdates(updates pricingUpdates) bool {
 	return false
 }
 
-func fetchProviderPricingCorpus(client *http.Client, providerID, primaryURL string) (string, error) {
-	urls := pricingURLCandidates(providerID, primaryURL)
-	var errs []string
-	for _, url := range urls {
-		content, err := fetchDocumentCorpus(client, url, "agent-sdk-go-model-registry-sync/1.0", corpusOptions{})
-		if err == nil {
-			return content, nil
-		}
-		errs = append(errs, fmt.Sprintf("%s (%v)", url, err))
-	}
-	return "", fmt.Errorf("all pricing URL candidates failed: %s", strings.Join(errs, "; "))
-}
-
 func fetchProviderModelsCorpus(client *http.Client, providerID, primaryURL string) (string, error) {
 	urls := modelURLCandidates(providerID, primaryURL)
 	var errs []string
@@ -450,29 +403,6 @@ func filterOpenAIModelLinks(baseURL string, hrefs []string) []string {
 		out = append(out, canonical)
 	}
 	sort.Strings(out)
-	return out
-}
-
-func pricingURLCandidates(providerID, primaryURL string) []string {
-	urls := []string{primaryURL}
-	if providerID == "openai" {
-		urls = append(urls,
-			"https://developers.openai.com/api/docs/pricing",
-		)
-	}
-	seen := map[string]struct{}{}
-	out := make([]string, 0, len(urls))
-	for _, url := range urls {
-		trimmed := strings.TrimSpace(url)
-		if trimmed == "" {
-			continue
-		}
-		if _, ok := seen[trimmed]; ok {
-			continue
-		}
-		seen[trimmed] = struct{}{}
-		out = append(out, trimmed)
-	}
 	return out
 }
 
@@ -871,7 +801,6 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 	}
 
 	out := map[string]pricingSet{}
-	priorityByModel := map[string]int{}
 	doc.Find("table").Each(func(_ int, tbl *goquery.Selection) {
 		// Find the row that actually defines columns (the first row can be grouped colspans).
 		var headers []string
@@ -893,37 +822,50 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 		}
 
 		// Must have Model, Input, Output columns; must NOT have Training column.
-		modelCol, inputCol, outputCol := -1, -1, -1
+		modelCol := -1
+		inputCols := make([]int, 0, 2)
+		cachedInputCols := make([]int, 0, 2)
+		outputCols := make([]int, 0, 2)
 		hasTraining := false
 		for i, h := range headers {
 			switch {
 			case h == "model":
 				modelCol = i
+			case strings.Contains(h, "cached") && strings.Contains(h, "input"):
+				cachedInputCols = append(cachedInputCols, i)
 			case strings.Contains(h, "input") && !strings.Contains(h, "cached"):
-				if inputCol < 0 {
-					inputCol = i
-				}
+				inputCols = append(inputCols, i)
 			case h == "output":
-				if outputCol < 0 {
-					outputCol = i
-				}
+				outputCols = append(outputCols, i)
 			case strings.Contains(h, "training"):
 				hasTraining = true
 			}
 		}
-		if hasTraining || modelCol < 0 || inputCol < 0 || outputCol < 0 {
+		if hasTraining || modelCol < 0 || len(inputCols) == 0 || len(outputCols) == 0 {
 			return
 		}
 
-		tablePriority := 0
-		if pane := tbl.Closest("[data-content-switcher-pane]"); pane.Length() > 0 {
-			switch strings.ToLower(strings.TrimSpace(pane.AttrOr("data-value", ""))) {
-			case "standard":
-				tablePriority = 2
-			case "batch":
-				tablePriority = 1
-			}
+		shortInputCol := inputCols[0]
+		shortOutputCol := outputCols[0]
+		shortCachedCol := -1
+		if len(cachedInputCols) > 0 {
+			shortCachedCol = cachedInputCols[0]
 		}
+
+		longInputCol := -1
+		if len(inputCols) > 1 {
+			longInputCol = inputCols[1]
+		}
+		longOutputCol := -1
+		if len(outputCols) > 1 {
+			longOutputCol = outputCols[1]
+		}
+		longCachedCol := -1
+		if len(cachedInputCols) > 1 {
+			longCachedCol = cachedInputCols[1]
+		}
+
+		variant := detectTableVariant(tbl)
 
 		tbl.Find("tr").Each(func(r int, row *goquery.Selection) {
 			_ = r
@@ -931,13 +873,13 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 				return
 			}
 			cells := row.Find("td")
-			if cells.Length() <= outputCol {
+			if cells.Length() <= shortOutputCol || cells.Length() <= shortInputCol || cells.Length() <= modelCol {
 				return
 			}
 			rawModel := strings.ToLower(strings.Join(strings.Fields(cells.Eq(modelCol).Text()), " "))
 			modelID := strings.TrimSpace(strings.Split(rawModel, " ")[0])
-			inputText := strings.TrimSpace(cells.Eq(inputCol).Text())
-			outputText := strings.TrimSpace(cells.Eq(outputCol).Text())
+			inputText := strings.TrimSpace(cells.Eq(shortInputCol).Text())
+			outputText := strings.TrimSpace(cells.Eq(shortOutputCol).Text())
 
 			// Skip non-token-priced rows (e.g. "/ hour", "/ minute").
 			if strings.Contains(inputText, "/") || strings.Contains(outputText, "/") {
@@ -952,9 +894,116 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 			if !allowOpenAIPricingID(modelID) {
 				return
 			}
-			if prevPriority, exists := priorityByModel[modelID]; !exists || tablePriority > prevPriority {
-				out[modelID] = pricingSet{inputCost: inCost, outputCost: outCost, found: true}
-				priorityByModel[modelID] = tablePriority
+
+			var cachedCost *float64
+			if shortCachedCol >= 0 && cells.Length() > shortCachedCol {
+				v := parseDollarAmount(strings.TrimSpace(cells.Eq(shortCachedCol).Text()))
+				if v > 0 {
+					cachedCost = floatPtr(v)
+				}
+			}
+
+			var longInputCost *float64
+			if longInputCol >= 0 && cells.Length() > longInputCol {
+				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longInputCol).Text()))
+				if v > 0 {
+					longInputCost = floatPtr(v)
+				}
+			}
+
+			var longOutputCost *float64
+			if longOutputCol >= 0 && cells.Length() > longOutputCol {
+				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longOutputCol).Text()))
+				if v > 0 {
+					longOutputCost = floatPtr(v)
+				}
+			}
+
+			var longCachedCost *float64
+			if longCachedCol >= 0 && cells.Length() > longCachedCol {
+				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longCachedCol).Text()))
+				if v > 0 {
+					longCachedCost = floatPtr(v)
+				}
+			}
+
+			ps := out[modelID]
+			switch variant {
+			case "batch":
+				if inCost > 0 {
+					ps.batchInputCost = floatPtr(inCost)
+				}
+				if cachedCost != nil {
+					ps.batchCachedInputCost = cachedCost
+				}
+				if outCost > 0 {
+					ps.batchOutputCost = floatPtr(outCost)
+				}
+			case "priority":
+				if inCost > 0 {
+					ps.priorityInputCost = floatPtr(inCost)
+				}
+				if cachedCost != nil {
+					ps.priorityCachedInputCost = cachedCost
+				}
+				if outCost > 0 {
+					ps.priorityOutputCost = floatPtr(outCost)
+				}
+			default:
+				// Do not downgrade an already valid standard price with partial rows.
+				if outCost == 0 && ps.outputCost > 0 {
+					break
+				}
+				if inCost > 0 {
+					ps.inputCost = inCost
+				}
+				ps.cachedInputCost = cachedCost
+				if outCost > 0 {
+					ps.outputCost = outCost
+				}
+				ps.longInputCost = longInputCost
+				ps.longCachedInputCost = longCachedCost
+				ps.longOutputCost = longOutputCost
+			}
+			ps.found = true
+			out[modelID] = ps
+		})
+
+		// Collect non-token metrics from table variants that are modeled with
+		// explicit units (/hour, /minute, /second).
+		tbl.Find("tr").Each(func(_ int, row *goquery.Selection) {
+			if row.Find("th").Length() > 0 {
+				return
+			}
+			cells := row.Find("td")
+			if cells.Length() == 0 || modelCol < 0 || cells.Length() <= modelCol {
+				return
+			}
+			rawModel := strings.ToLower(strings.Join(strings.Fields(cells.Eq(modelCol).Text()), " "))
+			modelID := strings.TrimSpace(strings.Split(rawModel, " ")[0])
+			if !allowOpenAIPricingID(modelID) {
+				return
+			}
+
+			ps := out[modelID]
+			rowText := strings.ToLower(strings.Join(strings.Fields(row.Text()), " "))
+			if strings.Contains(rowText, "/ hour") {
+				if v := parseDollarAmount(row.Text()); v > 0 {
+					ps.trainingCostPerHour = floatPtr(v)
+				}
+			}
+			if strings.Contains(rowText, "/ minute") {
+				if v := parseDollarAmount(row.Text()); v > 0 {
+					ps.estimatedCostPerMinute = floatPtr(v)
+				}
+			}
+			if strings.Contains(rowText, "/ second") {
+				if v := parseDollarAmount(row.Text()); v > 0 {
+					ps.estimatedCostPerSecond = floatPtr(v)
+				}
+			}
+			if ps.found || ps.trainingCostPerHour != nil || ps.estimatedCostPerMinute != nil || ps.estimatedCostPerSecond != nil {
+				out[modelID] = ps
 			}
 		})
 	})
@@ -1060,9 +1109,12 @@ func extractGeminiPricing(client *http.Client, pageURL string) (map[string]prici
 
 		// Find the first <table> after this h2 that contains "Input price" rows.
 		// We search siblings and descendants until the next h2.
-		var ps pricingSet
+		ps := out[modelID]
 		h2.NextUntil("h2").Find("table").EachWithBreak(func(_ int, tbl *goquery.Selection) bool {
 			var inCost, outCost float64
+			var longInCost, longOutCost *float64
+			var threshold *int
+			variant := detectTableVariant(tbl)
 			tbl.Find("tr").Each(func(_ int, row *goquery.Selection) {
 				cells := row.Find("th,td")
 				label := strings.ToLower(strings.Join(strings.Fields(cells.First().Text()), " "))
@@ -1070,25 +1122,57 @@ func extractGeminiPricing(client *http.Client, pageURL string) (map[string]prici
 				paidCell := strings.TrimSpace(cells.Eq(2).Text())
 				switch {
 				case strings.HasPrefix(label, "input price"):
-					inCost = parseDollarAmount(paidCell)
+					base, longVal, trigger := parseTieredDollarValues(paidCell)
+					inCost = base
+					if longVal != nil {
+						longInCost = longVal
+					}
+					if trigger != nil {
+						threshold = trigger
+					}
 				case strings.HasPrefix(label, "output price"):
-					outCost = parseDollarAmount(paidCell)
+					base, longVal, trigger := parseTieredDollarValues(paidCell)
+					outCost = base
+					if longVal != nil {
+						longOutCost = longVal
+					}
+					if threshold == nil && trigger != nil {
+						threshold = trigger
+					}
 				}
 			})
 			if inCost > 0 || outCost > 0 {
-				ps = pricingSet{inputCost: inCost, outputCost: outCost, found: true}
-				return false // stop at first valid table (Standard, not Batch)
+				switch variant {
+				case "batch":
+					ps.batchInputCost = floatPtr(inCost)
+					ps.batchOutputCost = floatPtr(outCost)
+				default:
+					ps.inputCost = inCost
+					ps.outputCost = outCost
+					ps.longContextTrigger = threshold
+					ps.longInputCost = longInCost
+					ps.longOutputCost = longOutCost
+				}
+				ps.found = true
 			}
 			return true
 		})
 
 		if ps.found && allowGeminiPricingID(modelID) {
-			if _, exists := out[modelID]; !exists {
-				out[modelID] = ps
-			}
+			out[modelID] = ps
 		}
 	})
 	return out, nil
+}
+
+func detectTableVariant(tbl *goquery.Selection) string {
+	if pane := tbl.Closest("[data-content-switcher-pane]"); pane.Length() > 0 {
+		variant := strings.ToLower(strings.TrimSpace(pane.AttrOr("data-value", "")))
+		if variant != "" {
+			return variant
+		}
+	}
+	return "standard"
 }
 
 // extractMistralPricing parses https://mistral.ai/pricing.
@@ -1178,6 +1262,46 @@ func parseDollarAmount(s string) float64 {
 		return 0
 	}
 	return v
+}
+
+// parseTieredDollarValues extracts a base price and an optional long-context
+// price from strings such as "$1.25, prompts <= 200k tokens$2.50...".
+func parseTieredDollarValues(s string) (base float64, long *float64, trigger *int) {
+	matches := pricePattern.FindAllStringSubmatch(s, -1)
+	if len(matches) >= 1 {
+		base, _ = strconv.ParseFloat(matches[0][1], 64)
+	}
+	if len(matches) >= 2 {
+		v, err := strconv.ParseFloat(matches[1][1], 64)
+		if err == nil {
+			long = floatPtr(v)
+		}
+	}
+	if t := parseTokenThreshold(s); t > 0 {
+		trigger = intPtr(t)
+	}
+	return
+}
+
+func parseTokenThreshold(s string) int {
+	re := regexp.MustCompile(`(?i)(\d[\d,]*)\s*k\s*tokens`)
+	m := re.FindStringSubmatch(s)
+	if len(m) < 2 {
+		return 0
+	}
+	v, err := strconv.Atoi(strings.ReplaceAll(m[1], ",", ""))
+	if err != nil {
+		return 0
+	}
+	return v * 1000
+}
+
+func floatPtr(v float64) *float64 {
+	return &v
+}
+
+func intPtr(v int) *int {
+	return &v
 }
 
 func min(a, b int) int {
@@ -1279,29 +1403,16 @@ func applyPricingUpdates(content string, updates pricingUpdates) (string, error)
 			return "", fmt.Errorf("provider section not found in pricing.go: %s", providerID)
 		}
 
-		existing := parsePricingEntries(match[2])
-		if scraped, ok := scrapedByProvider[providerID]; ok && len(scraped) > 0 {
-			existing = scraped
+		scraped, ok := scrapedByProvider[providerID]
+		if !ok || len(scraped) == 0 {
+			continue
 		}
 
-		rewrittenBody := renderSortedPricingEntries(providerID, existing)
+		rewrittenBody := renderSortedPricingEntries(providerID, scraped)
 		replacement := match[1] + rewrittenBody + match[3]
 		updated = strings.Replace(updated, match[0], replacement, 1)
 	}
 	return updated, nil
-}
-
-func parsePricingEntries(sectionBody string) map[string]pricingSet {
-	entries := map[string]pricingSet{}
-	matches := pricingEntryRegexp.FindAllStringSubmatch(sectionBody, -1)
-	for _, m := range matches {
-		if len(m) == 4 {
-			in, _ := strconv.ParseFloat(m[2], 64)
-			out, _ := strconv.ParseFloat(m[3], 64)
-			entries[m[1]] = pricingSet{inputCost: in, outputCost: out, found: in != 0 || out != 0}
-		}
-	}
-	return entries
 }
 
 func renderSortedPricingEntries(providerID string, entries map[string]pricingSet) string {
@@ -1314,15 +1425,54 @@ func renderSortedPricingEntries(providerID string, entries map[string]pricingSet
 	var b strings.Builder
 	for _, modelID := range modelIDs {
 		ps := entries[modelID]
-		if ps.inputCost == 0 && ps.outputCost == 0 {
+		if ps.inputCost == 0 && ps.outputCost == 0 && ps.batchInputCost == nil && ps.batchOutputCost == nil && ps.priorityInputCost == nil && ps.priorityOutputCost == nil && ps.trainingCostPerHour == nil && ps.estimatedCostPerMinute == nil && ps.estimatedCostPerSecond == nil {
 			continue
 		}
-		b.WriteString(fmt.Sprintf(
-			"\t\t%q: {InputCostPerMillion: %s, OutputCostPerMillion: %s},\n",
-			modelID,
-			formatFloat(ps.inputCost),
-			formatFloat(ps.outputCost),
-		))
+		b.WriteString(fmt.Sprintf("\t\t%q: {InputCostPerMillion: %s", modelID, formatFloat(ps.inputCost)))
+		if ps.cachedInputCost != nil {
+			b.WriteString(fmt.Sprintf(", CachedInputCostPerMillion: %s", formatFloat(*ps.cachedInputCost)))
+		}
+		b.WriteString(fmt.Sprintf(", OutputCostPerMillion: %s", formatFloat(ps.outputCost)))
+		if ps.batchInputCost != nil {
+			b.WriteString(fmt.Sprintf(", BatchInputCostPerMillion: %s", formatFloat(*ps.batchInputCost)))
+		}
+		if ps.batchCachedInputCost != nil {
+			b.WriteString(fmt.Sprintf(", BatchCachedInputCostPerMillion: %s", formatFloat(*ps.batchCachedInputCost)))
+		}
+		if ps.batchOutputCost != nil {
+			b.WriteString(fmt.Sprintf(", BatchOutputCostPerMillion: %s", formatFloat(*ps.batchOutputCost)))
+		}
+		if ps.priorityInputCost != nil {
+			b.WriteString(fmt.Sprintf(", PriorityInputCostPerMillion: %s", formatFloat(*ps.priorityInputCost)))
+		}
+		if ps.priorityCachedInputCost != nil {
+			b.WriteString(fmt.Sprintf(", PriorityCachedInputCostPerMillion: %s", formatFloat(*ps.priorityCachedInputCost)))
+		}
+		if ps.priorityOutputCost != nil {
+			b.WriteString(fmt.Sprintf(", PriorityOutputCostPerMillion: %s", formatFloat(*ps.priorityOutputCost)))
+		}
+		if ps.longContextTrigger != nil {
+			b.WriteString(fmt.Sprintf(", LongContextTriggerAtTokens: %d", *ps.longContextTrigger))
+		}
+		if ps.longInputCost != nil {
+			b.WriteString(fmt.Sprintf(", LongContextInputCostPerMillion: %s", formatFloat(*ps.longInputCost)))
+		}
+		if ps.longCachedInputCost != nil {
+			b.WriteString(fmt.Sprintf(", LongContextCachedInputCostPerMillion: %s", formatFloat(*ps.longCachedInputCost)))
+		}
+		if ps.longOutputCost != nil {
+			b.WriteString(fmt.Sprintf(", LongContextOutputCostPerMillion: %s", formatFloat(*ps.longOutputCost)))
+		}
+		if ps.trainingCostPerHour != nil {
+			b.WriteString(fmt.Sprintf(", TrainingCostPerHour: %s", formatFloat(*ps.trainingCostPerHour)))
+		}
+		if ps.estimatedCostPerMinute != nil {
+			b.WriteString(fmt.Sprintf(", EstimatedCostPerMinute: %s", formatFloat(*ps.estimatedCostPerMinute)))
+		}
+		if ps.estimatedCostPerSecond != nil {
+			b.WriteString(fmt.Sprintf(", EstimatedCostPerSecond: %s", formatFloat(*ps.estimatedCostPerSecond)))
+		}
+		b.WriteString("},\n")
 	}
 	return b.String()
 }

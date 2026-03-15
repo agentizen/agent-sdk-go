@@ -10,8 +10,68 @@ type ModelPricingSpec struct {
 	// InputCostPerMillion is the cost charged per million input (prompt) tokens.
 	InputCostPerMillion float64
 
+	// CachedInputCostPerMillion is the cost charged per million cached input
+	// tokens when the provider exposes this pricing dimension.
+	// Zero means unavailable/unknown for this model.
+	CachedInputCostPerMillion float64
+
 	// OutputCostPerMillion is the cost charged per million output (completion) tokens.
 	OutputCostPerMillion float64
+
+	// BatchInputCostPerMillion is the batch-mode input cost per million tokens
+	// when exposed by the provider. Zero means unavailable/unknown.
+	BatchInputCostPerMillion float64
+
+	// BatchCachedInputCostPerMillion is the batch-mode cached input cost per
+	// million tokens when exposed by the provider. Zero means unavailable/unknown.
+	BatchCachedInputCostPerMillion float64
+
+	// BatchOutputCostPerMillion is the batch-mode output cost per million tokens
+	// when exposed by the provider. Zero means unavailable/unknown.
+	BatchOutputCostPerMillion float64
+
+	// PriorityInputCostPerMillion is the priority-mode input cost per million
+	// tokens when exposed by the provider. Zero means unavailable/unknown.
+	PriorityInputCostPerMillion float64
+
+	// PriorityCachedInputCostPerMillion is the priority-mode cached input cost
+	// per million tokens when exposed by the provider. Zero means unavailable/unknown.
+	PriorityCachedInputCostPerMillion float64
+
+	// PriorityOutputCostPerMillion is the priority-mode output cost per million
+	// tokens when exposed by the provider. Zero means unavailable/unknown.
+	PriorityOutputCostPerMillion float64
+
+	// LongContextTriggerAtTokens is the input token threshold where long-context
+	// pricing starts applying. Zero means unavailable/unknown.
+	LongContextTriggerAtTokens int
+
+	// LongContextInputCostPerMillion is the long-context input cost per million
+	// tokens when a provider exposes two-tier context pricing.
+	// Zero means unavailable/unknown.
+	LongContextInputCostPerMillion float64
+
+	// LongContextCachedInputCostPerMillion is the long-context cached input cost
+	// per million tokens when exposed by the provider.
+	// Zero means unavailable/unknown.
+	LongContextCachedInputCostPerMillion float64
+
+	// LongContextOutputCostPerMillion is the long-context output cost per million
+	// tokens when a provider exposes two-tier context pricing.
+	// Zero means unavailable/unknown.
+	LongContextOutputCostPerMillion float64
+
+	// TrainingCostPerHour is the training-time charge per hour when exposed by
+	// the provider (e.g. fine-tuning). Zero means unavailable/unknown.
+	TrainingCostPerHour float64
+
+	// EstimatedCostPerMinute captures non-token estimated minute-based cost when
+	// exposed by a provider. Zero means unavailable/unknown.
+	EstimatedCostPerMinute float64
+
+	// EstimatedCostPerSecond captures non-token second-based cost when exposed by
+	// a provider. Zero means unavailable/unknown.
+	EstimatedCostPerSecond float64
 }
 
 // modelPricing maps provider → exact modelID → ModelPricingSpec.
@@ -53,31 +113,31 @@ var modelPricing = map[string]map[string]ModelPricingSpec{
 		"mistral-small-2506":    {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
 	},
 	"openai": {
-		"gpt-3.5-0301":              {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0},
+		"gpt-3.5-0301":              {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
 		"gpt-3.5-turbo":             {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
-		"gpt-3.5-turbo-0125":        {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
-		"gpt-3.5-turbo-0613":        {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0},
-		"gpt-3.5-turbo-1106":        {InputCostPerMillion: 1.0, OutputCostPerMillion: 2.0},
-		"gpt-3.5-turbo-16k-0613":    {InputCostPerMillion: 3.0, OutputCostPerMillion: 4.0},
+		"gpt-3.5-turbo-0125":        {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5, BatchInputCostPerMillion: 0.25, BatchOutputCostPerMillion: 0.75},
+		"gpt-3.5-turbo-0613":        {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
+		"gpt-3.5-turbo-1106":        {InputCostPerMillion: 1.0, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.0, BatchOutputCostPerMillion: 2.0},
+		"gpt-3.5-turbo-16k-0613":    {InputCostPerMillion: 3.0, OutputCostPerMillion: 4.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
 		"gpt-3.5-turbo-instruct":    {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0},
-		"gpt-4-0125-preview":        {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0},
-		"gpt-4-0314":                {InputCostPerMillion: 30.0, OutputCostPerMillion: 60.0},
-		"gpt-4-0613":                {InputCostPerMillion: 30.0, OutputCostPerMillion: 60.0},
-		"gpt-4-1106-preview":        {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0},
-		"gpt-4-1106-vision-preview": {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0},
-		"gpt-4-32k":                 {InputCostPerMillion: 60.0, OutputCostPerMillion: 120.0},
-		"gpt-4-turbo-2024-04-09":    {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0},
-		"gpt-4o-mini-transcribe":    {InputCostPerMillion: 1.25, OutputCostPerMillion: 5.0},
-		"gpt-4o-mini-tts":           {InputCostPerMillion: 0.6, OutputCostPerMillion: 0.0},
-		"gpt-4o-transcribe":         {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0},
-		"gpt-4o-transcribe-diarize": {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0},
-		"gpt-5.4":                   {InputCostPerMillion: 2.5, OutputCostPerMillion: 15.0},
-		"gpt-5.4-pro":               {InputCostPerMillion: 30.0, OutputCostPerMillion: 180.0},
+		"gpt-4-0125-preview":        {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
+		"gpt-4-0314":                {InputCostPerMillion: 30.0, OutputCostPerMillion: 60.0, BatchInputCostPerMillion: 15.0, BatchOutputCostPerMillion: 30.0},
+		"gpt-4-0613":                {InputCostPerMillion: 30.0, OutputCostPerMillion: 60.0, BatchInputCostPerMillion: 15.0, BatchOutputCostPerMillion: 30.0},
+		"gpt-4-1106-preview":        {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
+		"gpt-4-1106-vision-preview": {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
+		"gpt-4-32k":                 {InputCostPerMillion: 60.0, OutputCostPerMillion: 120.0, BatchInputCostPerMillion: 30.0, BatchOutputCostPerMillion: 60.0},
+		"gpt-4-turbo-2024-04-09":    {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
+		"gpt-4o-mini-transcribe":    {InputCostPerMillion: 1.25, OutputCostPerMillion: 5.0, EstimatedCostPerMinute: 3.0},
+		"gpt-4o-mini-tts":           {InputCostPerMillion: 0.6, OutputCostPerMillion: 12.0, EstimatedCostPerMinute: 12.0},
+		"gpt-4o-transcribe":         {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0, EstimatedCostPerMinute: 6.0},
+		"gpt-4o-transcribe-diarize": {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0, EstimatedCostPerMinute: 6.0},
+		"gpt-5.4":                   {InputCostPerMillion: 2.5, CachedInputCostPerMillion: 0.25, OutputCostPerMillion: 15.0, BatchInputCostPerMillion: 1.25, BatchCachedInputCostPerMillion: 0.13, BatchOutputCostPerMillion: 7.5, PriorityInputCostPerMillion: 5.0, PriorityCachedInputCostPerMillion: 0.5, PriorityOutputCostPerMillion: 30.0, LongContextInputCostPerMillion: 5.0, LongContextCachedInputCostPerMillion: 0.5, LongContextOutputCostPerMillion: 22.5},
+		"gpt-5.4-pro":               {InputCostPerMillion: 30.0, OutputCostPerMillion: 180.0, BatchInputCostPerMillion: 15.0, BatchOutputCostPerMillion: 90.0, LongContextInputCostPerMillion: 60.0, LongContextOutputCostPerMillion: 270.0},
 		"gpt-audio-1.5":             {InputCostPerMillion: 32.0, OutputCostPerMillion: 64.0},
-		"gpt-image-1-mini":          {InputCostPerMillion: 2.5, OutputCostPerMillion: 8.0},
-		"gpt-image-1.5":             {InputCostPerMillion: 8.0, OutputCostPerMillion: 32.0},
-		"gpt-realtime-1.5":          {InputCostPerMillion: 32.0, OutputCostPerMillion: 64.0},
-		"gpt-realtime-mini":         {InputCostPerMillion: 10.0, OutputCostPerMillion: 20.0},
+		"gpt-image-1-mini":          {InputCostPerMillion: 2.5, CachedInputCostPerMillion: 0.25, OutputCostPerMillion: 8.0, BatchInputCostPerMillion: 1.25, BatchCachedInputCostPerMillion: 0.13, BatchOutputCostPerMillion: 4.0},
+		"gpt-image-1.5":             {InputCostPerMillion: 8.0, CachedInputCostPerMillion: 2.0, OutputCostPerMillion: 32.0, BatchInputCostPerMillion: 4.0, BatchCachedInputCostPerMillion: 1.0, BatchOutputCostPerMillion: 16.0},
+		"gpt-realtime-1.5":          {InputCostPerMillion: 32.0, CachedInputCostPerMillion: 0.4, OutputCostPerMillion: 64.0},
+		"gpt-realtime-mini":         {InputCostPerMillion: 10.0, CachedInputCostPerMillion: 0.3, OutputCostPerMillion: 20.0},
 	},
 }
 
