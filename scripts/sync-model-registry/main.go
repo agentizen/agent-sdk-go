@@ -786,6 +786,219 @@ func inferCapabilitiesGemini(modelID string) capabilitySet {
 	return capabilitySet{}
 }
 
+type openAITableColumns struct {
+	modelCol       int
+	shortInputCol  int
+	shortCachedCol int
+	shortOutputCol int
+	longInputCol   int
+	longCachedCol  int
+	longOutputCol  int
+}
+
+type openAITokenRow struct {
+	modelID        string
+	inCost         float64
+	outCost        float64
+	cachedCost     *float64
+	longInputCost  *float64
+	longCachedCost *float64
+	longOutputCost *float64
+}
+
+func findOpenAITableHeaders(tbl *goquery.Selection) []string {
+	var headers []string
+	tbl.Find("tr").EachWithBreak(func(_ int, tr *goquery.Selection) bool {
+		candidate := make([]string, 0)
+		tr.Find("th,td").Each(func(_ int, c *goquery.Selection) {
+			candidate = append(candidate, strings.ToLower(strings.TrimSpace(c.Text())))
+		})
+		for _, h := range candidate {
+			if h == "model" {
+				headers = candidate
+				return false
+			}
+		}
+		return true
+	})
+	return headers
+}
+
+func parseOpenAITableColumns(headers []string) (openAITableColumns, bool) {
+	modelCol := -1
+	inputCols := make([]int, 0, 2)
+	cachedInputCols := make([]int, 0, 2)
+	outputCols := make([]int, 0, 2)
+	hasTraining := false
+	for i, h := range headers {
+		switch {
+		case h == "model":
+			modelCol = i
+		case strings.Contains(h, "cached") && strings.Contains(h, "input"):
+			cachedInputCols = append(cachedInputCols, i)
+		case strings.Contains(h, "input") && !strings.Contains(h, "cached"):
+			inputCols = append(inputCols, i)
+		case h == "output":
+			outputCols = append(outputCols, i)
+		case strings.Contains(h, "training"):
+			hasTraining = true
+		}
+	}
+	if hasTraining || modelCol < 0 || len(inputCols) == 0 || len(outputCols) == 0 {
+		return openAITableColumns{}, false
+	}
+
+	cols := openAITableColumns{
+		modelCol:       modelCol,
+		shortInputCol:  inputCols[0],
+		shortOutputCol: outputCols[0],
+		shortCachedCol: -1,
+		longInputCol:   -1,
+		longOutputCol:  -1,
+		longCachedCol:  -1,
+	}
+	if len(cachedInputCols) > 0 {
+		cols.shortCachedCol = cachedInputCols[0]
+	}
+	if len(inputCols) > 1 {
+		cols.longInputCol = inputCols[1]
+	}
+	if len(outputCols) > 1 {
+		cols.longOutputCol = outputCols[1]
+	}
+	if len(cachedInputCols) > 1 {
+		cols.longCachedCol = cachedInputCols[1]
+	}
+
+	return cols, true
+}
+
+func parseModelIDFromCell(cells *goquery.Selection, modelCol int) string {
+	rawModel := strings.ToLower(strings.Join(strings.Fields(cells.Eq(modelCol).Text()), " "))
+	return strings.TrimSpace(strings.Split(rawModel, " ")[0])
+}
+
+func parseOptionalCellPrice(cells *goquery.Selection, col int) *float64 {
+	if col < 0 || cells.Length() <= col {
+		return nil
+	}
+	v := parseDollarAmount(strings.TrimSpace(cells.Eq(col).Text()))
+	if v <= 0 {
+		return nil
+	}
+	return floatPtr(v)
+}
+
+func parseOpenAITokenRow(cells *goquery.Selection, cols openAITableColumns) (openAITokenRow, bool) {
+	if cells.Length() <= cols.shortOutputCol || cells.Length() <= cols.shortInputCol || cells.Length() <= cols.modelCol {
+		return openAITokenRow{}, false
+	}
+
+	modelID := parseModelIDFromCell(cells, cols.modelCol)
+	if !allowOpenAIPricingID(modelID) {
+		return openAITokenRow{}, false
+	}
+
+	inputText := strings.TrimSpace(cells.Eq(cols.shortInputCol).Text())
+	outputText := strings.TrimSpace(cells.Eq(cols.shortOutputCol).Text())
+	if strings.Contains(inputText, "/") || strings.Contains(outputText, "/") {
+		return openAITokenRow{}, false
+	}
+
+	inCost := parseDollarAmount(inputText)
+	outCost := parseDollarAmount(outputText)
+	if inCost <= 0 && outCost <= 0 {
+		return openAITokenRow{}, false
+	}
+
+	return openAITokenRow{
+		modelID:        modelID,
+		inCost:         inCost,
+		outCost:        outCost,
+		cachedCost:     parseOptionalCellPrice(cells, cols.shortCachedCol),
+		longInputCost:  parseOptionalCellPrice(cells, cols.longInputCol),
+		longCachedCost: parseOptionalCellPrice(cells, cols.longCachedCol),
+		longOutputCost: parseOptionalCellPrice(cells, cols.longOutputCol),
+	}, true
+}
+
+func applyOpenAIVariantPricing(ps pricingSet, variant string, row openAITokenRow) pricingSet {
+	switch variant {
+	case "batch":
+		if row.inCost > 0 {
+			ps.batchInputCost = floatPtr(row.inCost)
+		}
+		if row.cachedCost != nil {
+			ps.batchCachedInputCost = row.cachedCost
+		}
+		if row.outCost > 0 {
+			ps.batchOutputCost = floatPtr(row.outCost)
+		}
+	case "priority":
+		if row.inCost > 0 {
+			ps.priorityInputCost = floatPtr(row.inCost)
+		}
+		if row.cachedCost != nil {
+			ps.priorityCachedInputCost = row.cachedCost
+		}
+		if row.outCost > 0 {
+			ps.priorityOutputCost = floatPtr(row.outCost)
+		}
+	default:
+		// Do not downgrade an already valid standard price with partial rows.
+		if row.outCost == 0 && ps.outputCost > 0 {
+			return ps
+		}
+		if row.inCost > 0 {
+			ps.inputCost = row.inCost
+		}
+		ps.cachedInputCost = row.cachedCost
+		if row.outCost > 0 {
+			ps.outputCost = row.outCost
+		}
+		ps.longInputCost = row.longInputCost
+		ps.longCachedInputCost = row.longCachedCost
+		ps.longOutputCost = row.longOutputCost
+	}
+
+	ps.found = true
+	return ps
+}
+
+func collectOpenAINonTokenMetrics(row *goquery.Selection, cells *goquery.Selection, modelCol int, ps pricingSet) (pricingSet, bool) {
+	if cells.Length() == 0 || modelCol < 0 || cells.Length() <= modelCol {
+		return ps, false
+	}
+
+	modelID := parseModelIDFromCell(cells, modelCol)
+	if !allowOpenAIPricingID(modelID) {
+		return ps, false
+	}
+
+	updated := false
+	rowText := strings.ToLower(strings.Join(strings.Fields(row.Text()), " "))
+	if strings.Contains(rowText, "/ hour") {
+		if v := parseDollarAmount(row.Text()); v > 0 {
+			ps.trainingCostPerHour = floatPtr(v)
+			updated = true
+		}
+	}
+	if strings.Contains(rowText, "/ minute") {
+		if v := parseDollarAmount(row.Text()); v > 0 {
+			ps.estimatedCostPerMinute = floatPtr(v)
+			updated = true
+		}
+	}
+	if strings.Contains(rowText, "/ second") {
+		if v := parseDollarAmount(row.Text()); v > 0 {
+			ps.estimatedCostPerSecond = floatPtr(v)
+			updated = true
+		}
+	}
+
+	return ps, updated
+}
+
 // extractOpenAIPricing parses https://developers.openai.com/api/docs/pricing.
 // The page has multiple HTML tables; we target tables whose header row contains
 // Model, Input, and Output columns, skipping fine-tuning tables (have Training
@@ -802,67 +1015,14 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 
 	out := map[string]pricingSet{}
 	doc.Find("table").Each(func(_ int, tbl *goquery.Selection) {
-		// Find the row that actually defines columns (the first row can be grouped colspans).
-		var headers []string
-		tbl.Find("tr").EachWithBreak(func(_ int, tr *goquery.Selection) bool {
-			candidate := make([]string, 0)
-			tr.Find("th,td").Each(func(_ int, c *goquery.Selection) {
-				candidate = append(candidate, strings.ToLower(strings.TrimSpace(c.Text())))
-			})
-			for _, h := range candidate {
-				if h == "model" {
-					headers = candidate
-					return false
-				}
-			}
-			return true
-		})
+		headers := findOpenAITableHeaders(tbl)
 		if len(headers) == 0 {
 			return
 		}
 
-		// Must have Model, Input, Output columns; must NOT have Training column.
-		modelCol := -1
-		inputCols := make([]int, 0, 2)
-		cachedInputCols := make([]int, 0, 2)
-		outputCols := make([]int, 0, 2)
-		hasTraining := false
-		for i, h := range headers {
-			switch {
-			case h == "model":
-				modelCol = i
-			case strings.Contains(h, "cached") && strings.Contains(h, "input"):
-				cachedInputCols = append(cachedInputCols, i)
-			case strings.Contains(h, "input") && !strings.Contains(h, "cached"):
-				inputCols = append(inputCols, i)
-			case h == "output":
-				outputCols = append(outputCols, i)
-			case strings.Contains(h, "training"):
-				hasTraining = true
-			}
-		}
-		if hasTraining || modelCol < 0 || len(inputCols) == 0 || len(outputCols) == 0 {
+		cols, ok := parseOpenAITableColumns(headers)
+		if !ok {
 			return
-		}
-
-		shortInputCol := inputCols[0]
-		shortOutputCol := outputCols[0]
-		shortCachedCol := -1
-		if len(cachedInputCols) > 0 {
-			shortCachedCol = cachedInputCols[0]
-		}
-
-		longInputCol := -1
-		if len(inputCols) > 1 {
-			longInputCol = inputCols[1]
-		}
-		longOutputCol := -1
-		if len(outputCols) > 1 {
-			longOutputCol = outputCols[1]
-		}
-		longCachedCol := -1
-		if len(cachedInputCols) > 1 {
-			longCachedCol = cachedInputCols[1]
 		}
 
 		variant := detectTableVariant(tbl)
@@ -873,100 +1033,13 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 				return
 			}
 			cells := row.Find("td")
-			if cells.Length() <= shortOutputCol || cells.Length() <= shortInputCol || cells.Length() <= modelCol {
-				return
-			}
-			rawModel := strings.ToLower(strings.Join(strings.Fields(cells.Eq(modelCol).Text()), " "))
-			modelID := strings.TrimSpace(strings.Split(rawModel, " ")[0])
-			inputText := strings.TrimSpace(cells.Eq(shortInputCol).Text())
-			outputText := strings.TrimSpace(cells.Eq(shortOutputCol).Text())
-
-			// Skip non-token-priced rows (e.g. "/ hour", "/ minute").
-			if strings.Contains(inputText, "/") || strings.Contains(outputText, "/") {
+			rowPrices, ok := parseOpenAITokenRow(cells, cols)
+			if !ok {
 				return
 			}
 
-			inCost := parseDollarAmount(inputText)
-			outCost := parseDollarAmount(outputText)
-			if inCost <= 0 && outCost <= 0 {
-				return
-			}
-			if !allowOpenAIPricingID(modelID) {
-				return
-			}
-
-			var cachedCost *float64
-			if shortCachedCol >= 0 && cells.Length() > shortCachedCol {
-				v := parseDollarAmount(strings.TrimSpace(cells.Eq(shortCachedCol).Text()))
-				if v > 0 {
-					cachedCost = floatPtr(v)
-				}
-			}
-
-			var longInputCost *float64
-			if longInputCol >= 0 && cells.Length() > longInputCol {
-				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longInputCol).Text()))
-				if v > 0 {
-					longInputCost = floatPtr(v)
-				}
-			}
-
-			var longOutputCost *float64
-			if longOutputCol >= 0 && cells.Length() > longOutputCol {
-				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longOutputCol).Text()))
-				if v > 0 {
-					longOutputCost = floatPtr(v)
-				}
-			}
-
-			var longCachedCost *float64
-			if longCachedCol >= 0 && cells.Length() > longCachedCol {
-				v := parseDollarAmount(strings.TrimSpace(cells.Eq(longCachedCol).Text()))
-				if v > 0 {
-					longCachedCost = floatPtr(v)
-				}
-			}
-
-			ps := out[modelID]
-			switch variant {
-			case "batch":
-				if inCost > 0 {
-					ps.batchInputCost = floatPtr(inCost)
-				}
-				if cachedCost != nil {
-					ps.batchCachedInputCost = cachedCost
-				}
-				if outCost > 0 {
-					ps.batchOutputCost = floatPtr(outCost)
-				}
-			case "priority":
-				if inCost > 0 {
-					ps.priorityInputCost = floatPtr(inCost)
-				}
-				if cachedCost != nil {
-					ps.priorityCachedInputCost = cachedCost
-				}
-				if outCost > 0 {
-					ps.priorityOutputCost = floatPtr(outCost)
-				}
-			default:
-				// Do not downgrade an already valid standard price with partial rows.
-				if outCost == 0 && ps.outputCost > 0 {
-					break
-				}
-				if inCost > 0 {
-					ps.inputCost = inCost
-				}
-				ps.cachedInputCost = cachedCost
-				if outCost > 0 {
-					ps.outputCost = outCost
-				}
-				ps.longInputCost = longInputCost
-				ps.longCachedInputCost = longCachedCost
-				ps.longOutputCost = longOutputCost
-			}
-			ps.found = true
-			out[modelID] = ps
+			ps := out[rowPrices.modelID]
+			out[rowPrices.modelID] = applyOpenAIVariantPricing(ps, variant, rowPrices)
 		})
 
 		// Collect non-token metrics from table variants that are modeled with
@@ -976,34 +1049,15 @@ func extractOpenAIPricing(client *http.Client, pageURL string) (map[string]prici
 				return
 			}
 			cells := row.Find("td")
-			if cells.Length() == 0 || modelCol < 0 || cells.Length() <= modelCol {
-				return
-			}
-			rawModel := strings.ToLower(strings.Join(strings.Fields(cells.Eq(modelCol).Text()), " "))
-			modelID := strings.TrimSpace(strings.Split(rawModel, " ")[0])
-			if !allowOpenAIPricingID(modelID) {
+			if cells.Length() == 0 || cols.modelCol < 0 || cells.Length() <= cols.modelCol {
 				return
 			}
 
+			modelID := parseModelIDFromCell(cells, cols.modelCol)
 			ps := out[modelID]
-			rowText := strings.ToLower(strings.Join(strings.Fields(row.Text()), " "))
-			if strings.Contains(rowText, "/ hour") {
-				if v := parseDollarAmount(row.Text()); v > 0 {
-					ps.trainingCostPerHour = floatPtr(v)
-				}
-			}
-			if strings.Contains(rowText, "/ minute") {
-				if v := parseDollarAmount(row.Text()); v > 0 {
-					ps.estimatedCostPerMinute = floatPtr(v)
-				}
-			}
-			if strings.Contains(rowText, "/ second") {
-				if v := parseDollarAmount(row.Text()); v > 0 {
-					ps.estimatedCostPerSecond = floatPtr(v)
-				}
-			}
-			if ps.found || ps.trainingCostPerHour != nil || ps.estimatedCostPerMinute != nil || ps.estimatedCostPerSecond != nil {
-				out[modelID] = ps
+			updatedPS, updated := collectOpenAINonTokenMetrics(row, cells, cols.modelCol, ps)
+			if updatedPS.found || updated {
+				out[modelID] = updatedPS
 			}
 		})
 	})
@@ -1428,49 +1482,49 @@ func renderSortedPricingEntries(providerID string, entries map[string]pricingSet
 		if ps.inputCost == 0 && ps.outputCost == 0 && ps.batchInputCost == nil && ps.batchOutputCost == nil && ps.priorityInputCost == nil && ps.priorityOutputCost == nil && ps.trainingCostPerHour == nil && ps.estimatedCostPerMinute == nil && ps.estimatedCostPerSecond == nil {
 			continue
 		}
-		b.WriteString(fmt.Sprintf("\t\t%q: {InputCostPerMillion: %s", modelID, formatFloat(ps.inputCost)))
+		fmt.Fprintf(&b, "\t\t%q: {InputCostPerMillion: %s", modelID, formatFloat(ps.inputCost))
 		if ps.cachedInputCost != nil {
-			b.WriteString(fmt.Sprintf(", CachedInputCostPerMillion: %s", formatFloat(*ps.cachedInputCost)))
+			fmt.Fprintf(&b, ", CachedInputCostPerMillion: %s", formatFloat(*ps.cachedInputCost))
 		}
-		b.WriteString(fmt.Sprintf(", OutputCostPerMillion: %s", formatFloat(ps.outputCost)))
+		fmt.Fprintf(&b, ", OutputCostPerMillion: %s", formatFloat(ps.outputCost))
 		if ps.batchInputCost != nil {
-			b.WriteString(fmt.Sprintf(", BatchInputCostPerMillion: %s", formatFloat(*ps.batchInputCost)))
+			fmt.Fprintf(&b, ", BatchInputCostPerMillion: %s", formatFloat(*ps.batchInputCost))
 		}
 		if ps.batchCachedInputCost != nil {
-			b.WriteString(fmt.Sprintf(", BatchCachedInputCostPerMillion: %s", formatFloat(*ps.batchCachedInputCost)))
+			fmt.Fprintf(&b, ", BatchCachedInputCostPerMillion: %s", formatFloat(*ps.batchCachedInputCost))
 		}
 		if ps.batchOutputCost != nil {
-			b.WriteString(fmt.Sprintf(", BatchOutputCostPerMillion: %s", formatFloat(*ps.batchOutputCost)))
+			fmt.Fprintf(&b, ", BatchOutputCostPerMillion: %s", formatFloat(*ps.batchOutputCost))
 		}
 		if ps.priorityInputCost != nil {
-			b.WriteString(fmt.Sprintf(", PriorityInputCostPerMillion: %s", formatFloat(*ps.priorityInputCost)))
+			fmt.Fprintf(&b, ", PriorityInputCostPerMillion: %s", formatFloat(*ps.priorityInputCost))
 		}
 		if ps.priorityCachedInputCost != nil {
-			b.WriteString(fmt.Sprintf(", PriorityCachedInputCostPerMillion: %s", formatFloat(*ps.priorityCachedInputCost)))
+			fmt.Fprintf(&b, ", PriorityCachedInputCostPerMillion: %s", formatFloat(*ps.priorityCachedInputCost))
 		}
 		if ps.priorityOutputCost != nil {
-			b.WriteString(fmt.Sprintf(", PriorityOutputCostPerMillion: %s", formatFloat(*ps.priorityOutputCost)))
+			fmt.Fprintf(&b, ", PriorityOutputCostPerMillion: %s", formatFloat(*ps.priorityOutputCost))
 		}
 		if ps.longContextTrigger != nil {
-			b.WriteString(fmt.Sprintf(", LongContextTriggerAtTokens: %d", *ps.longContextTrigger))
+			fmt.Fprintf(&b, ", LongContextTriggerAtTokens: %d", *ps.longContextTrigger)
 		}
 		if ps.longInputCost != nil {
-			b.WriteString(fmt.Sprintf(", LongContextInputCostPerMillion: %s", formatFloat(*ps.longInputCost)))
+			fmt.Fprintf(&b, ", LongContextInputCostPerMillion: %s", formatFloat(*ps.longInputCost))
 		}
 		if ps.longCachedInputCost != nil {
-			b.WriteString(fmt.Sprintf(", LongContextCachedInputCostPerMillion: %s", formatFloat(*ps.longCachedInputCost)))
+			fmt.Fprintf(&b, ", LongContextCachedInputCostPerMillion: %s", formatFloat(*ps.longCachedInputCost))
 		}
 		if ps.longOutputCost != nil {
-			b.WriteString(fmt.Sprintf(", LongContextOutputCostPerMillion: %s", formatFloat(*ps.longOutputCost)))
+			fmt.Fprintf(&b, ", LongContextOutputCostPerMillion: %s", formatFloat(*ps.longOutputCost))
 		}
 		if ps.trainingCostPerHour != nil {
-			b.WriteString(fmt.Sprintf(", TrainingCostPerHour: %s", formatFloat(*ps.trainingCostPerHour)))
+			fmt.Fprintf(&b, ", TrainingCostPerHour: %s", formatFloat(*ps.trainingCostPerHour))
 		}
 		if ps.estimatedCostPerMinute != nil {
-			b.WriteString(fmt.Sprintf(", EstimatedCostPerMinute: %s", formatFloat(*ps.estimatedCostPerMinute)))
+			fmt.Fprintf(&b, ", EstimatedCostPerMinute: %s", formatFloat(*ps.estimatedCostPerMinute))
 		}
 		if ps.estimatedCostPerSecond != nil {
-			b.WriteString(fmt.Sprintf(", EstimatedCostPerSecond: %s", formatFloat(*ps.estimatedCostPerSecond)))
+			fmt.Fprintf(&b, ", EstimatedCostPerSecond: %s", formatFloat(*ps.estimatedCostPerSecond))
 		}
 		b.WriteString("},\n")
 	}
