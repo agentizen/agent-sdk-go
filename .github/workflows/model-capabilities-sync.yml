@@ -19,7 +19,7 @@ jobs:
           path: agent-sdk-go
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: agent-sdk-go/go.mod
 
