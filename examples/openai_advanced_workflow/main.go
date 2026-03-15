@@ -130,7 +130,8 @@ func main() {
 	})
 
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
+		fmt.Fprintf(os.Stderr, "Error running agent: %v\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("\nWorkflow complete! Final report:")

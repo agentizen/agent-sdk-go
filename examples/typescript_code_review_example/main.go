@@ -243,7 +243,8 @@ TASK CONTEXT:
 	result, err := r.RunSync(orchestratorAgent, runOpts)
 
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
+		fmt.Fprintf(os.Stderr, "Error running agent: %v\n", err)
+		os.Exit(1)
 	}
 
 	// Print a summary of what happened

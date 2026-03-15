@@ -118,7 +118,8 @@ Always use the handoff_to_[Agent] tools to delegate tasks to the specialized age
 	})
 
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
+		fmt.Fprintf(os.Stderr, "Error running agent: %v\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("\nWorkflow complete! Final result:")
