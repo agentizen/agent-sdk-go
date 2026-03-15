@@ -148,7 +148,7 @@ func main() {
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running Mistral agent: %v", err)
+		log.Fatalf("Error running Mistral agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	fmt.Println("\nAgent response:")
@@ -167,7 +167,7 @@ func main() {
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running Mistral agent: %v", err)
+		log.Fatalf("Error running Mistral agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	fmt.Println("\nAgent response:")

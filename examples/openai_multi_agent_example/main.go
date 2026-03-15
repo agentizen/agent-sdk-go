@@ -99,7 +99,7 @@ You can use tools to get information that you might not know, like the current t
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	// Print the result

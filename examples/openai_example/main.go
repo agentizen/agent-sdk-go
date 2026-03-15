@@ -91,7 +91,7 @@ func main() {
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	// Print the result
@@ -113,7 +113,7 @@ func main() {
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	// Print the result

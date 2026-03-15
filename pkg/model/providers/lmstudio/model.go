@@ -433,7 +433,7 @@ func createToolResultMessage(message map[string]interface{}) *ChatMessage {
 	}
 
 	// Create a tool result message
-	content := fmt.Sprintf("Tool '%s' returned: %v",
+	content := fmt.Sprintf("Tool %q returned: %v",
 		toolCall["name"].(string),
 		toolResult["content"])
 

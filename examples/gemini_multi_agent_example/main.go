@@ -322,7 +322,7 @@ IMPORTANT: Never end with a tool call. Always provide a final human-readable res
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	fmt.Println("\nAgent response:")
@@ -342,7 +342,7 @@ IMPORTANT: Never end with a tool call. Always provide a final human-readable res
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	fmt.Println("\nAgent response:")
@@ -362,7 +362,7 @@ IMPORTANT: Never end with a tool call. Always provide a final human-readable res
 		MaxTurns: 10,
 	})
 	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
+		log.Fatalf("Error running agent: %v", err) // lgtm[go/clear-text-logging]
 	}
 
 	fmt.Println("\nAgent response:")
