@@ -14,7 +14,7 @@ This directory contains utility scripts for the Agent SDK Go project.
 | `./scripts/ci_setup.sh` | Install required tools (CI / first-time setup) |
 | `./scripts/install-hooks.sh` | Install native Git pre-commit hook |
 | `./scripts/check_go_version.sh` | Verify Go version meets requirements |
-| `go run ./scripts/sync_capabilities_from_official_docs.go` | Sync model capabilities from provider docs |
+| `go run ./scripts/sync-model-registry/` | Sync model registry (capabilities + pricing) from provider docs |
 
 ---
 
@@ -80,20 +80,22 @@ Verifies the installed Go version meets the minimum requirement (1.25+). Called 
 ./scripts/check_go_version.sh
 ```
 
-### `sync_capabilities_from_official_docs.go`
+### `sync-model-registry/`
 
-A Go script that fetches model capability data from official provider documentation (OpenAI, Anthropic, Gemini, Mistral) and updates `pkg/model/capabilities.go`. Run automatically by the `model-capabilities-sync` GitHub Actions workflow.
+A unified Go sync package that fetches official provider documentation and pricing pages (OpenAI, Anthropic, Gemini, Mistral), then updates both `pkg/model/capabilities.go` and `pkg/model/pricing.go` in one run. This is the single entrypoint used by the `model-capabilities-sync` GitHub Actions workflow.
 
 ```bash
-# Dry-run (print diff only)
-go run ./scripts/sync_capabilities_from_official_docs.go \
-  -capabilities pkg/model/capabilities.go
+# Dry-run (report mode)
+go run ./scripts/sync-model-registry/ \
+  -capabilities pkg/model/capabilities.go \
+  -pricing pkg/model/pricing.go
 
 # Write changes
-go run ./scripts/sync_capabilities_from_official_docs.go \
+go run ./scripts/sync-model-registry/ \
   -write \
-  -capabilities pkg/model/capabilities.go
-gofmt -w pkg/model/capabilities.go
+  -capabilities pkg/model/capabilities.go \
+  -pricing pkg/model/pricing.go
+gofmt -w pkg/model/capabilities.go pkg/model/pricing.go
 ```
 
 ---
