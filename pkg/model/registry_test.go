@@ -61,8 +61,8 @@ func TestGetModelSpecKnownModels(t *testing.T) {
 		{"gemini", "gemini-2.5-pro", true},
 		{"mistral", "mistral-large-2512", true},
 		{"mistral", "magistral-medium-2509", true},
-		{"openai", "gpt-5-nano-2025-08-07", true},
-		{"openai", "gpt-5.2-2025-12-11", true},
+		{"openai", "gpt-5.4", true},
+		{"openai", "gpt-5.4-pro", true},
 	}
 	for _, tc := range cases {
 		spec, ok := GetModelSpec(tc.provider, tc.modelID)
