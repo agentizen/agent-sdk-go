@@ -1,0 +1,2329 @@
+{
+  "version": 1,
+  "providers": [
+    {
+      "id": "anthropic",
+      "display_name": "Anthropic Claude",
+      "base_url": "https://api.anthropic.com",
+      "docs_url": "https://docs.anthropic.com/en/docs/about-claude/models",
+      "pricing_url": "https://docs.anthropic.com/en/docs/about-claude/models",
+      "models": [
+        {
+          "id": "claude-haiku-4-5",
+          "display_name": "Claude Haiku 4.5",
+          "description": "Anthropic Claude model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 64000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 1,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "claude-opus-4-6",
+          "display_name": "Claude Opus 4.6",
+          "description": "Anthropic Claude model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 64000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 25,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "claude-sonnet-4-6",
+          "display_name": "Claude Sonnet 4.6",
+          "description": "Anthropic Claude model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 64000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 3,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 15,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "display_name": "Google Gemini",
+      "base_url": "https://generativelanguage.googleapis.com",
+      "docs_url": "https://ai.google.dev/gemini-api/docs/models",
+      "pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "models": [
+        {
+          "id": "gemini-2.0-flash",
+          "display_name": "Gemini 2.0 Flash",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.1,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.7,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.0-flash-lite",
+          "display_name": "Gemini 2.0 Flash Lite",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.075,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.3,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-computer-use-preview-10-2025",
+          "display_name": "Gemini 2.5 Computer Use Preview 10 2025",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "2025-10",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 1.25,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2.5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash",
+          "display_name": "Gemini 2.5 Flash",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.3,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2.5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-image",
+          "display_name": "Gemini 2.5 Flash Image",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.3,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.03,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-lite",
+          "display_name": "Gemini 2.5 Flash Lite",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.1,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.4,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-native-audio-preview-12-2025",
+          "display_name": "Gemini 2.5 Flash Native Audio Preview 12 2025",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "2025-12",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 3,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-preview-09-2025",
+          "display_name": "Gemini 2.5 Flash Preview 09 2025",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-09",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-flash-preview-tts",
+          "display_name": "Gemini 2.5 Flash Preview TTS",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 10,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-pro",
+          "display_name": "Gemini 2.5 Pro",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 15,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-2.5-pro-preview-tts",
+          "display_name": "Gemini 2.5 Pro Preview TTS",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 1,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 20,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3",
+          "display_name": "Gemini 3",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3-flash-preview",
+          "display_name": "Gemini 3 Flash Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 1,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3-pro-image-preview",
+          "display_name": "Gemini 3 Pro Image Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.0011,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3-pro-preview",
+          "display_name": "Gemini 3 Pro Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3.1-flash-image-preview",
+          "display_name": "Gemini 3.1 Flash Image Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 3,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3.1-flash-lite-preview",
+          "display_name": "Gemini 3.1 Flash Lite Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.25,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0.5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-3.1-pro-preview",
+          "display_name": "Gemini 3.1 Pro Preview",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 4,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gemini-flash-latest",
+          "display_name": "Gemini Flash Latest",
+          "description": "Google Gemini model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 200000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "lmstudio",
+      "display_name": "LM Studio",
+      "base_url": "http://localhost:1234/v1",
+      "docs_url": "https://lmstudio.ai/docs",
+      "pricing_url": "",
+      "models": []
+    },
+    {
+      "id": "mistral",
+      "display_name": "Mistral AI",
+      "base_url": "https://api.mistral.ai",
+      "docs_url": "https://docs.mistral.ai/getting-started/models/models_overview/",
+      "pricing_url": "https://mistral.ai/pricing",
+      "models": [
+        {
+          "id": "magistral-medium-2506",
+          "display_name": "Magistral Medium 2506",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-06",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "magistral-medium-2507",
+          "display_name": "Magistral Medium 2507",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-07",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "magistral-medium-2509",
+          "display_name": "Magistral Medium 2509",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-09",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "magistral-small-2506",
+          "display_name": "Magistral Small 2506",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-06",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "magistral-small-2507",
+          "display_name": "Magistral Small 2507",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-07",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "magistral-small-2509",
+          "display_name": "Magistral Small 2509",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-09",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "ministral-3b-2410",
+          "display_name": "Ministral 3B 2410",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-10",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "ministral-8b-2410",
+          "display_name": "Ministral 8B 2410",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-10",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "ministral-8b-2512",
+          "display_name": "Ministral 8B 2512",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-12",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-large-2402",
+          "display_name": "Mistral Large 2402",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-02",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-large-2407",
+          "display_name": "Mistral Large 2407",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-07",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-large-2512",
+          "display_name": "Mistral Large 2512",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-12",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-medium-2312",
+          "display_name": "Mistral Medium 2312",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2023-12",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-medium-2508",
+          "display_name": "Mistral Medium 2508",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-08",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-ocr-2503",
+          "display_name": "Mistral OCR 2503",
+          "description": "Mistral model entry maintained by the SDK registry. Supports document inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-03",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": false,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-small-2402",
+          "display_name": "Mistral Small 2402",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-02",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-small-2409",
+          "display_name": "Mistral Small 2409",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-09",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-small-2501",
+          "display_name": "Mistral Small 2501",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-01",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-small-2503",
+          "display_name": "Mistral Small 2503",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-03",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "mistral-small-2506",
+          "display_name": "Mistral Small 2506",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2025-06",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "pixtral",
+          "display_name": "Pixtral",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "pixtral-12b-2409",
+          "display_name": "Pixtral 12B 2409",
+          "description": "Mistral model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "2024-09",
+          "context_window": 128000,
+          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "openai",
+      "display_name": "OpenAI",
+      "base_url": "https://api.openai.com",
+      "docs_url": "https://developers.openai.com/api/docs/models",
+      "pricing_url": "https://developers.openai.com/api/docs/pricing",
+      "models": [
+        {
+          "id": "gpt-3.5-0301",
+          "display_name": "GPT-3.5 0301",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 1.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2,
+            "BatchInputCostPerMillion": 1.5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 2,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo",
+          "display_name": "GPT-3.5 Turbo",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 1.5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo-0125",
+          "display_name": "GPT-3.5 Turbo 0125",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 1.5,
+            "BatchInputCostPerMillion": 0.25,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0.75,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo-0613",
+          "display_name": "GPT-3.5 Turbo 0613",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 1.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2,
+            "BatchInputCostPerMillion": 1.5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 2,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo-1106",
+          "display_name": "GPT-3.5 Turbo 1106",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 1,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2,
+            "BatchInputCostPerMillion": 1,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 2,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo-16k-0613",
+          "display_name": "GPT-3.5 Turbo 16K 0613",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 3,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 4,
+            "BatchInputCostPerMillion": 1.5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 2,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-3.5-turbo-instruct",
+          "display_name": "GPT-3.5 Turbo Instruct",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 1.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 2,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-0125-preview",
+          "display_name": "GPT-4 0125 Preview",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 10,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 30,
+            "BatchInputCostPerMillion": 5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 15,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-0314",
+          "display_name": "GPT-4 0314",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 30,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 60,
+            "BatchInputCostPerMillion": 15,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 30,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-0613",
+          "display_name": "GPT-4 0613",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 30,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 60,
+            "BatchInputCostPerMillion": 15,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 30,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-1106-preview",
+          "display_name": "GPT-4 1106 Preview",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 10,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 30,
+            "BatchInputCostPerMillion": 5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 15,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-1106-vision-preview",
+          "display_name": "GPT-4 1106 Vision Preview",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 10,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 30,
+            "BatchInputCostPerMillion": 5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 15,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-32k",
+          "display_name": "GPT-4 32K",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 60,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 120,
+            "BatchInputCostPerMillion": 30,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 60,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4-turbo-2024-04-09",
+          "display_name": "GPT-4 Turbo 2024 04 09",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "2024-04",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 10,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 30,
+            "BatchInputCostPerMillion": 5,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 15,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4o",
+          "display_name": "GPT-4o",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4o-mini-transcribe",
+          "display_name": "GPT-4o Mini Transcribe",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 1.25,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 5,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 3,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4o-mini-tts",
+          "display_name": "GPT-4o Mini TTS",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.6,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 12,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 12,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4o-transcribe",
+          "display_name": "GPT-4o Transcribe",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 10,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 6,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-4o-transcribe-diarize",
+          "display_name": "GPT-4o Transcribe Diarize",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.5,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 10,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 6,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5",
+          "display_name": "GPT-5",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5-mini",
+          "display_name": "GPT-5 Mini",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 128000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5.1",
+          "display_name": "GPT-5.1",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5.1-codex",
+          "display_name": "GPT-5.1 Codex",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5.4",
+          "display_name": "GPT-5.4",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.5,
+            "CachedInputCostPerMillion": 0.25,
+            "OutputCostPerMillion": 15,
+            "BatchInputCostPerMillion": 1.25,
+            "BatchCachedInputCostPerMillion": 0.13,
+            "BatchOutputCostPerMillion": 7.5,
+            "PriorityInputCostPerMillion": 5,
+            "PriorityCachedInputCostPerMillion": 0.5,
+            "PriorityOutputCostPerMillion": 30,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 5,
+            "LongContextCachedInputCostPerMillion": 0.5,
+            "LongContextOutputCostPerMillion": 22.5,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-5.4-pro",
+          "display_name": "GPT-5.4 Pro",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision and document inputs.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 30,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 180,
+            "BatchInputCostPerMillion": 15,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 90,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 60,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 270,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-audio-1.5",
+          "display_name": "GPT-audio 1.5",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 32,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 64,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-image-1-mini",
+          "display_name": "GPT-image 1 Mini",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.5,
+            "CachedInputCostPerMillion": 0.25,
+            "OutputCostPerMillion": 8,
+            "BatchInputCostPerMillion": 1.25,
+            "BatchCachedInputCostPerMillion": 0.13,
+            "BatchOutputCostPerMillion": 4,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-image-1.5",
+          "display_name": "GPT-image 1.5",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 1000000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 8,
+            "CachedInputCostPerMillion": 2,
+            "OutputCostPerMillion": 32,
+            "BatchInputCostPerMillion": 4,
+            "BatchCachedInputCostPerMillion": 1,
+            "BatchOutputCostPerMillion": 16,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-realtime-1.5",
+          "display_name": "GPT-realtime 1.5",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 32,
+            "CachedInputCostPerMillion": 0.4,
+            "OutputCostPerMillion": 64,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "gpt-realtime-mini",
+          "display_name": "GPT-realtime Mini",
+          "description": "OpenAI model entry maintained by the SDK registry. Text input/output only.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": false,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 10,
+            "CachedInputCostPerMillion": 0.3,
+            "OutputCostPerMillion": 20,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "o1",
+          "display_name": "O1",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        },
+        {
+          "id": "o3",
+          "display_name": "O3",
+          "description": "OpenAI model entry maintained by the SDK registry. Supports vision inputs. Pricing is currently marked as unknown.",
+          "release_date": "",
+          "context_window": 1000000,
+          "max_output_tokens": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0,
+            "CachedInputCostPerMillion": 0,
+            "OutputCostPerMillion": 0,
+            "BatchInputCostPerMillion": 0,
+            "BatchCachedInputCostPerMillion": 0,
+            "BatchOutputCostPerMillion": 0,
+            "PriorityInputCostPerMillion": 0,
+            "PriorityCachedInputCostPerMillion": 0,
+            "PriorityOutputCostPerMillion": 0,
+            "LongContextTriggerAtTokens": 0,
+            "LongContextInputCostPerMillion": 0,
+            "LongContextCachedInputCostPerMillion": 0,
+            "LongContextOutputCostPerMillion": 0,
+            "TrainingCostPerHour": 0,
+            "EstimatedCostPerMinute": 0,
+            "EstimatedCostPerSecond": 0
+          }
+        }
+      ]
+    }
+  ]
+}

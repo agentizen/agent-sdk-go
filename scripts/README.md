@@ -14,7 +14,7 @@ This directory contains utility scripts for the Agent SDK Go project.
 | `./scripts/ci_setup.sh` | Install required tools (CI / first-time setup) |
 | `./scripts/install-hooks.sh` | Install native Git pre-commit hook |
 | `./scripts/check_go_version.sh` | Verify Go version meets requirements |
-| `go run ./scripts/sync-model-registry/` | Sync model registry (capabilities + pricing) from provider docs |
+| `go run ./scripts/sync-model-registry/` | Validate source registry JSON and generate model registry code |
 
 ---
 
@@ -82,20 +82,31 @@ Verifies the installed Go version meets the minimum requirement (1.25+). Called 
 
 ### `sync-model-registry/`
 
-A unified Go sync package that fetches official provider documentation and pricing pages (OpenAI, Anthropic, Gemini, Mistral), then updates both `pkg/model/capabilities.go` and `pkg/model/pricing.go` in one run. This is the single entrypoint used by the `model-capabilities-sync` GitHub Actions workflow.
+A unified Go generation package with a one-way flow:
+
+1. Read source JSON: `scripts/sources/model_registry.json`
+2. Validate schema metadata from: `scripts/sources/model_registry.schema.json`
+3. Enforce strict JSON decoding (unknown fields fail)
+4. Generate code files under `pkg/model/`
+
+There is no runtime scraping in this command.
+
+The command generates:
+
+- `pkg/model/capabilities.go`
+- `pkg/model/pricing.go`
+- `pkg/model/metadata.go`
+- `pkg/model/provider.go`
+
+Schema is defined in `scripts/sources/model_registry.schema.json`.
 
 ```bash
 # Dry-run (report mode)
-go run ./scripts/sync-model-registry/ \
-  -capabilities pkg/model/capabilities.go \
-  -pricing pkg/model/pricing.go
+go run ./scripts/sync-model-registry/
 
 # Write changes
-go run ./scripts/sync-model-registry/ \
-  -write \
-  -capabilities pkg/model/capabilities.go \
-  -pricing pkg/model/pricing.go
-gofmt -w pkg/model/capabilities.go pkg/model/pricing.go
+go run ./scripts/sync-model-registry/ -write
+gofmt -w pkg/model/capabilities.go pkg/model/pricing.go pkg/model/metadata.go pkg/model/provider.go
 ```
 
 ---

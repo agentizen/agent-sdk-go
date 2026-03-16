@@ -1,7 +1,20 @@
-name: Sync Model Registry
+name: Refresh Model Registry
 
 on:
   workflow_dispatch:
+    inputs:
+      ai_refresh:
+        description: Enable AI-assisted source JSON refresh before generation
+        required: false
+        default: 'true'
+      target_branch:
+        description: Target branch for pull request
+        required: false
+        default: main
+      refresh_notes:
+        description: Notes about provider pages or scope reviewed by AI
+        required: false
+        default: ''
   schedule:
     - cron: '0 6 * * *' # Every day at 6:00 AM UTC
 
@@ -10,8 +23,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  sync-model-registry:
+  refresh-model-registry:
     runs-on: ubuntu-latest
+    env:
+      MODEL_REGISTRY_AI_API_KEY: ${{ secrets.MODEL_REGISTRY_AI_API_KEY }}
+      MODEL_REGISTRY_AI_BASE_URL: ${{ vars.MODEL_REGISTRY_AI_BASE_URL }}
+      MODEL_REGISTRY_AI_MODEL: ${{ vars.MODEL_REGISTRY_AI_MODEL }}
     steps:
       - name: Checkout agent-sdk-go
         uses: actions/checkout@v6
@@ -23,14 +40,235 @@ jobs:
         with:
           go-version-file: agent-sdk-go/go.mod
 
-      - name: Sync model registry from official provider docs
+      - name: Determine refresh mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "ai_refresh=true" >> "$GITHUB_OUTPUT"
+          else
+            requested="${{ github.event.inputs.ai_refresh || 'true' }}"
+            if [ "$requested" = "false" ]; then
+              echo "ai_refresh=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "ai_refresh=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Install schema validator dependency
+        run: |
+          python3 -m pip install --quiet --disable-pip-version-check jsonschema
+
+      - name: Validate source JSON against schema (before refresh)
+        working-directory: agent-sdk-go
+        run: |
+          python3 - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+
+          with open('scripts/sources/model_registry.schema.json', 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+          with open('scripts/sources/model_registry.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+          errors = sorted(Draft202012Validator(schema).iter_errors(data), key=lambda e: e.path)
+          if errors:
+            for err in errors[:20]:
+              path = '/'.join(str(p) for p in err.absolute_path)
+              print(f'SCHEMA ERROR at {path or "<root>"}: {err.message}')
+            raise SystemExit(1)
+
+          print('Schema validation passed before refresh')
+          PY
+
+      - name: Ensure AI credentials are configured
+        if: ${{ steps.mode.outputs.ai_refresh == 'true' }}
+        run: |
+          if [ -z "${MODEL_REGISTRY_AI_API_KEY:-}" ]; then
+            echo "Missing required secret: MODEL_REGISTRY_AI_API_KEY"
+            echo "Configure this secret to enable AI-assisted refresh."
+            exit 1
+          fi
+          echo "MODEL_REGISTRY_AI_API_KEY is configured."
+
+      - name: AI refresh of source JSON
+        if: ${{ steps.mode.outputs.ai_refresh == 'true' }}
+        working-directory: agent-sdk-go
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+
+          const sourcePath = 'scripts/sources/model_registry.json';
+          const source = fs.readFileSync(sourcePath, 'utf8');
+          const sourceObj = JSON.parse(source);
+
+          const apiKey = process.env.MODEL_REGISTRY_AI_API_KEY;
+          const baseURL = (process.env.MODEL_REGISTRY_AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
+          const model = process.env.MODEL_REGISTRY_AI_MODEL || 'gpt-5';
+
+          const system = [
+            'You are a strict data-maintenance assistant for a production model registry.',
+            'Return only valid JSON matching the input schema and structure.',
+            'Do not add markdown, code fences, or commentary.',
+            'Never invent provider/model IDs.',
+            'Never invent pricing; keep unknown pricing fields at 0.',
+            'If release_date is uncertain, keep it empty.',
+            'Keep provider and model ordering stable when possible.',
+          ].join(' ');
+
+          function stripHtml(raw) {
+            return raw
+              .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+              .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+              .replace(/<[^>]+>/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim();
+          }
+
+          async function fetchEvidence(url) {
+            if (!url) {
+              return '';
+            }
+            try {
+              const res = await fetch(url, {
+                headers: {
+                  'User-Agent': 'agent-sdk-go-model-registry-refresh/1.0',
+                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                },
+              });
+              if (!res.ok) {
+                return `URL: ${url}\nERROR: HTTP ${res.status}`;
+              }
+              const html = await res.text();
+              const txt = stripHtml(html).slice(0, 12000);
+              return `URL: ${url}\nCONTENT_SNIPPET: ${txt}`;
+            } catch (err) {
+              return `URL: ${url}\nERROR: ${String(err)}`;
+            }
+          }
+
+          async function buildEvidenceBlock() {
+            const urls = [];
+            for (const provider of sourceObj.providers || []) {
+              if (provider.docs_url) {
+                urls.push(provider.docs_url);
+              }
+              if (provider.pricing_url) {
+                urls.push(provider.pricing_url);
+              }
+            }
+            const uniqueUrls = [...new Set(urls.filter(Boolean))];
+            const chunks = [];
+            for (const url of uniqueUrls) {
+              const chunk = await fetchEvidence(url);
+              chunks.push(chunk);
+            }
+            return chunks.join('\n\n---\n\n');
+          }
+
+          async function main() {
+            const evidence = await buildEvidenceBlock();
+
+            const user = [
+              'Refresh this model registry source JSON for data quality.',
+              'Apply conservative improvements only:',
+              '- improve display_name capitalization/acronyms when obvious;',
+              '- improve description clarity while preserving factual certainty;',
+              '- set release_date only when unambiguous, otherwise keep empty;',
+              '- preserve all existing required fields and numeric pricing keys.',
+              '- use the evidence snippets from official docs/pricing pages below.',
+              '',
+              'Return only the full updated JSON object.',
+              '',
+              'EVIDENCE_SNIPPETS_START',
+              evidence,
+              'EVIDENCE_SNIPPETS_END',
+              '',
+              source,
+            ].join('\n');
+
+            const response = await fetch(`${baseURL}/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model,
+                temperature: 0,
+                messages: [
+                  {role: 'system', content: system},
+                  {role: 'user', content: user},
+                ],
+              }),
+            });
+
+            if (!response.ok) {
+              const errText = await response.text();
+              throw new Error(`AI API error (${response.status}): ${errText}`);
+            }
+
+            const payload = await response.json();
+            let content = payload?.choices?.[0]?.message?.content;
+            if (Array.isArray(content)) {
+              content = content.map((x) => x?.text || '').join('');
+            }
+            if (typeof content !== 'string' || content.trim() === '') {
+              throw new Error('AI response did not contain text content');
+            }
+
+            content = content.trim();
+            content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '');
+
+            let parsed;
+            try {
+              parsed = JSON.parse(content);
+            } catch (e) {
+              throw new Error(`AI response is not valid JSON: ${e.message}`);
+            }
+
+            if (!parsed || !Array.isArray(parsed.providers)) {
+              throw new Error('AI response missing required providers array');
+            }
+
+            fs.writeFileSync(sourcePath, `${JSON.stringify(parsed, null, 2)}\n`, 'utf8');
+            console.log('Updated scripts/sources/model_registry.json from AI output');
+          }
+
+          main().catch((err) => {
+            console.error(err.message || err);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Validate source JSON against schema (after refresh)
+        working-directory: agent-sdk-go
+        run: |
+          python3 - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+
+          with open('scripts/sources/model_registry.schema.json', 'r', encoding='utf-8') as f:
+            schema = json.load(f)
+          with open('scripts/sources/model_registry.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+          errors = sorted(Draft202012Validator(schema).iter_errors(data), key=lambda e: e.path)
+          if errors:
+            for err in errors[:20]:
+              path = '/'.join(str(p) for p in err.absolute_path)
+              print(f'SCHEMA ERROR at {path or "<root>"}: {err.message}')
+            raise SystemExit(1)
+
+          print('Schema validation passed after refresh')
+          PY
+
+      - name: Generate model registry from source JSON
         working-directory: agent-sdk-go
         run: |
           go run ./scripts/sync-model-registry/ \
-            -write \
-            -capabilities pkg/model/capabilities.go \
-            -pricing pkg/model/pricing.go
-          gofmt -w pkg/model/capabilities.go pkg/model/pricing.go
+            -write
+          gofmt -w pkg/model/capabilities.go pkg/model/pricing.go pkg/model/metadata.go pkg/model/provider.go
 
       - name: Run capability tests
         working-directory: agent-sdk-go
@@ -46,25 +284,39 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           path: agent-sdk-go
-          commit-message: "chore: sync model registry from official docs"
-          branch: "chore/sync-model-registry"
-          title: "chore: sync model registry from official docs"
+          base: ${{ github.event.inputs.target_branch || 'main' }}
+          commit-message: "chore: refresh model registry source and generated maps"
+          branch: "chore/refresh-model-registry"
+          delete-branch: true
+          title: "chore: refresh model registry source and generated maps"
           body: |
-            Automated sync of `pkg/model/capabilities.go` and `pkg/model/pricing.go` from official provider documentation pages.
+            Unified model-registry refresh workflow.
 
-            **Capabilities** (`pkg/model/capabilities.go`):
-            - OpenAI: https://developers.openai.com/api/docs/models
-            - Anthropic: https://platform.claude.com/docs/en/docs/about-claude/models
-            - Gemini: https://ai.google.dev/gemini-api/docs/models
-            - Mistral: https://docs.mistral.ai/getting-started/models/
+            Refresh mode:
+            - AI-assisted source refresh enabled: `${{ steps.mode.outputs.ai_refresh }}`
+            - API base URL: `${{ vars.MODEL_REGISTRY_AI_BASE_URL || 'https://api.openai.com/v1' }}`
+            - Model: `${{ vars.MODEL_REGISTRY_AI_MODEL || 'gpt-5' }}`
 
-            **Pricing** (`pkg/model/pricing.go`):
-            - Anthropic: https://www.anthropic.com/pricing
-            - Gemini: https://ai.google.dev/gemini-api/docs/pricing
-            - Mistral: https://mistral.ai/technology/#pricing
-            - OpenAI: https://platform.openai.com/docs/pricing
+            Generated files:
+            - `pkg/model/capabilities.go`
+            - `pkg/model/pricing.go`
+            - `pkg/model/metadata.go`
+            - `pkg/model/provider.go`
 
-            New models added with extracted prices are marked for manual review when prices could not be parsed automatically.
+            Source and schema:
+            - `scripts/sources/model_registry.json`
+            - `scripts/sources/model_registry.schema.json`
+
+            Validation gates:
+            - schema validation before refresh
+            - schema validation after refresh
+            - `go run ./scripts/sync-model-registry/ -write`
+            - `go test ./test/model/... -run TestProviderSupports -count=1`
+            - `go test ./pkg/model/... -run TestPricing -count=1`
+
+            Refresh notes:
+            `${{ github.event.inputs.refresh_notes || '' }}`
           labels: |
             dependencies
             automated
+            ai-assisted
