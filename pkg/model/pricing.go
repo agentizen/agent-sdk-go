@@ -4,117 +4,92 @@ package model
 
 import "sort"
 
-// ModelPricingSpec holds the cost rates for a specific model.
-// All costs are expressed in USD per million tokens.
 type ModelPricingSpec struct {
-	// InputCostPerMillion is the cost charged per million input (prompt) tokens.
-	InputCostPerMillion float64
-
-	// CachedInputCostPerMillion is the cost charged per million cached input
-	// tokens when the provider exposes this pricing dimension.
-	// Zero means unavailable/unknown for this model.
-	CachedInputCostPerMillion float64
-
-	// OutputCostPerMillion is the cost charged per million output (completion) tokens.
-	OutputCostPerMillion float64
-
-	// BatchInputCostPerMillion is the batch-mode input cost per million tokens
-	// when exposed by the provider. Zero means unavailable/unknown.
-	BatchInputCostPerMillion float64
-
-	// BatchCachedInputCostPerMillion is the batch-mode cached input cost per
-	// million tokens when exposed by the provider. Zero means unavailable/unknown.
-	BatchCachedInputCostPerMillion float64
-
-	// BatchOutputCostPerMillion is the batch-mode output cost per million tokens
-	// when exposed by the provider. Zero means unavailable/unknown.
-	BatchOutputCostPerMillion float64
-
-	// PriorityInputCostPerMillion is the priority-mode input cost per million
-	// tokens when exposed by the provider. Zero means unavailable/unknown.
-	PriorityInputCostPerMillion float64
-
-	// PriorityCachedInputCostPerMillion is the priority-mode cached input cost
-	// per million tokens when exposed by the provider. Zero means unavailable/unknown.
-	PriorityCachedInputCostPerMillion float64
-
-	// PriorityOutputCostPerMillion is the priority-mode output cost per million
-	// tokens when exposed by the provider. Zero means unavailable/unknown.
-	PriorityOutputCostPerMillion float64
-
-	// LongContextTriggerAtTokens is the input token threshold where long-context
-	// pricing starts applying. Zero means unavailable/unknown.
-	LongContextTriggerAtTokens int
-
-	// LongContextInputCostPerMillion is the long-context input cost per million
-	// tokens when a provider exposes two-tier context pricing.
-	// Zero means unavailable/unknown.
-	LongContextInputCostPerMillion float64
-
-	// LongContextCachedInputCostPerMillion is the long-context cached input cost
-	// per million tokens when exposed by the provider.
-	// Zero means unavailable/unknown.
+	InputCostPerMillion                  float64
+	CachedInputCostPerMillion            float64
+	OutputCostPerMillion                 float64
+	BatchInputCostPerMillion             float64
+	BatchCachedInputCostPerMillion       float64
+	BatchOutputCostPerMillion            float64
+	PriorityInputCostPerMillion          float64
+	PriorityCachedInputCostPerMillion    float64
+	PriorityOutputCostPerMillion         float64
+	LongContextTriggerAtTokens           int
+	LongContextInputCostPerMillion       float64
 	LongContextCachedInputCostPerMillion float64
-
-	// LongContextOutputCostPerMillion is the long-context output cost per million
-	// tokens when a provider exposes two-tier context pricing.
-	// Zero means unavailable/unknown.
-	LongContextOutputCostPerMillion float64
-
-	// TrainingCostPerHour is the training-time charge per hour when exposed by
-	// the provider (e.g. fine-tuning). Zero means unavailable/unknown.
-	TrainingCostPerHour float64
-
-	// EstimatedCostPerMinute captures non-token estimated minute-based cost when
-	// exposed by a provider. Zero means unavailable/unknown.
-	EstimatedCostPerMinute float64
-
-	// EstimatedCostPerSecond captures non-token second-based cost when exposed by
-	// a provider. Zero means unavailable/unknown.
-	EstimatedCostPerSecond float64
+	LongContextOutputCostPerMillion      float64
+	TrainingCostPerHour                  float64
+	EstimatedCostPerMinute               float64
+	EstimatedCostPerSecond               float64
 }
 
-// modelPricing maps provider → exact modelID → ModelPricingSpec.
-// All costs are in USD per million tokens.
 var modelPricing = map[string]map[string]ModelPricingSpec{
 	"anthropic": {
-		"claude-haiku-4-5-20251001": {InputCostPerMillion: 1.0, OutputCostPerMillion: 5.0},
-		"claude-opus-4-6":           {InputCostPerMillion: 5.0, OutputCostPerMillion: 25.0},
-		"claude-sonnet-4-6":         {InputCostPerMillion: 3.0, OutputCostPerMillion: 15.0},
+		"claude-haiku-4-5":           {InputCostPerMillion: 1.0, OutputCostPerMillion: 5.0},
+		"claude-haiku-4-5-20251001":  {InputCostPerMillion: 1.0, OutputCostPerMillion: 5.0},
+		"claude-opus-4-1-20250805":   {InputCostPerMillion: 15.0, OutputCostPerMillion: 75.0},
+		"claude-opus-4-20250514":     {InputCostPerMillion: 15.0, OutputCostPerMillion: 75.0},
+		"claude-opus-4-5-20251101":   {InputCostPerMillion: 5.0, OutputCostPerMillion: 25.0},
+		"claude-opus-4-6":            {InputCostPerMillion: 5.0, OutputCostPerMillion: 25.0},
+		"claude-sonnet-4-20250514":   {InputCostPerMillion: 3.0, OutputCostPerMillion: 15.0},
+		"claude-sonnet-4-5-20250929": {InputCostPerMillion: 3.0, OutputCostPerMillion: 15.0},
+		"claude-sonnet-4-6":          {InputCostPerMillion: 3.0, OutputCostPerMillion: 15.0},
 	},
 	"gemini": {
-		"gemini-2.0-flash":                              {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.7},
-		"gemini-2.0-flash-lite":                         {InputCostPerMillion: 0.075, OutputCostPerMillion: 0.3},
-		"gemini-2.5-computer-use-preview-10-2025":       {InputCostPerMillion: 1.25, OutputCostPerMillion: 2.5},
-		"gemini-2.5-flash":                              {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5},
-		"gemini-2.5-flash-image":                        {InputCostPerMillion: 0.3, OutputCostPerMillion: 0.03},
-		"gemini-2.5-flash-lite":                         {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.4},
-		"gemini-2.5-flash-lite-preview-09-2025":         {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
-		"gemini-2.5-flash-native-audio-preview-12-2025": {InputCostPerMillion: 0.5, OutputCostPerMillion: 3.0},
-		"gemini-2.5-flash-preview-tts":                  {InputCostPerMillion: 0.5, OutputCostPerMillion: 10.0},
-		"gemini-2.5-pro":                                {InputCostPerMillion: 2.5, OutputCostPerMillion: 15.0},
-		"gemini-2.5-pro-preview-tts":                    {InputCostPerMillion: 1.0, OutputCostPerMillion: 20.0},
-		"gemini-3-flash-preview":                        {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.0},
-		"gemini-3-pro-image-preview":                    {InputCostPerMillion: 2.0, OutputCostPerMillion: 0.0011},
-		"gemini-3.1-flash-image-preview":                {InputCostPerMillion: 0.5, OutputCostPerMillion: 3.0},
-		"gemini-3.1-flash-lite-preview":                 {InputCostPerMillion: 0.25, OutputCostPerMillion: 0.5},
-		"gemini-3.1-pro-preview":                        {InputCostPerMillion: 2.0, OutputCostPerMillion: 4.0},
-		"gemini-3.1-pro-preview-customtools":            {InputCostPerMillion: 2.0, OutputCostPerMillion: 4.0},
-		"gemini-embedding-001":                          {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.075},
-		"gemini-embedding-2-preview":                    {InputCostPerMillion: 0.2, OutputCostPerMillion: 0.45},
-		"gemini-robotics-er-1.5-preview":                {InputCostPerMillion: 0.3, OutputCostPerMillion: 1.0},
+		"gemini-2.0-flash":                              {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.4, BatchInputCostPerMillion: 0.05, BatchOutputCostPerMillion: 0.2},
+		"gemini-2.0-flash-lite":                         {InputCostPerMillion: 0.075, OutputCostPerMillion: 0.3, BatchInputCostPerMillion: 0.0375, BatchOutputCostPerMillion: 0.15},
+		"gemini-2.5-computer-use-preview-10-2025":       {InputCostPerMillion: 1.25, OutputCostPerMillion: 10.0, LongContextTriggerAtTokens: 200000, LongContextInputCostPerMillion: 2.5, LongContextOutputCostPerMillion: 15.0},
+		"gemini-2.5-flash":                              {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5, BatchInputCostPerMillion: 0.15, BatchOutputCostPerMillion: 1.25},
+		"gemini-2.5-flash-image":                        {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5},
+		"gemini-2.5-flash-lite":                         {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.4, BatchInputCostPerMillion: 0.05, BatchOutputCostPerMillion: 0.2},
+		"gemini-2.5-flash-native-audio-preview-12-2025": {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5},
+		"gemini-2.5-flash-preview-09-2025":              {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5, BatchInputCostPerMillion: 0.15, BatchOutputCostPerMillion: 1.25},
+		"gemini-2.5-flash-preview-tts":                  {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5},
+		"gemini-2.5-pro":                                {InputCostPerMillion: 1.25, OutputCostPerMillion: 10.0, BatchInputCostPerMillion: 0.625, BatchCachedInputCostPerMillion: 1.25, BatchOutputCostPerMillion: 7.5, LongContextTriggerAtTokens: 200000, LongContextInputCostPerMillion: 2.5, LongContextCachedInputCostPerMillion: 1.25, LongContextOutputCostPerMillion: 15.0},
+		"gemini-2.5-pro-preview-tts":                    {InputCostPerMillion: 1.25, OutputCostPerMillion: 10.0, LongContextTriggerAtTokens: 200000, LongContextInputCostPerMillion: 2.5, LongContextOutputCostPerMillion: 15.0},
+		"gemini-3":                                      {InputCostPerMillion: 0.5, OutputCostPerMillion: 3.0},
+		"gemini-3-flash-preview":                        {InputCostPerMillion: 0.5, OutputCostPerMillion: 3.0, BatchInputCostPerMillion: 0.25, BatchOutputCostPerMillion: 1.5},
+		"gemini-3-pro-image-preview":                    {InputCostPerMillion: 2.0, OutputCostPerMillion: 12.0},
+		"gemini-3-pro-preview":                          {InputCostPerMillion: 2.0, OutputCostPerMillion: 12.0, LongContextTriggerAtTokens: 200000, LongContextInputCostPerMillion: 4.0, LongContextOutputCostPerMillion: 18.0},
+		"gemini-3.1-flash-image-preview":                {InputCostPerMillion: 0.25, OutputCostPerMillion: 1.5},
+		"gemini-3.1-flash-lite-preview":                 {InputCostPerMillion: 0.25, OutputCostPerMillion: 1.5, BatchInputCostPerMillion: 0.125, BatchOutputCostPerMillion: 0.75},
+		"gemini-3.1-pro-preview":                        {InputCostPerMillion: 2.0, OutputCostPerMillion: 12.0, BatchInputCostPerMillion: 1.0, BatchCachedInputCostPerMillion: 2.0, BatchOutputCostPerMillion: 6.0, LongContextTriggerAtTokens: 200000, LongContextInputCostPerMillion: 4.0, LongContextCachedInputCostPerMillion: 2.0, LongContextOutputCostPerMillion: 18.0},
+		"gemini-flash-latest":                           {InputCostPerMillion: 0.3, OutputCostPerMillion: 2.5},
 	},
+	"lmstudio": {},
 	"mistral": {
-		"magistral-medium-2509": {InputCostPerMillion: 2.0, OutputCostPerMillion: 5.0},
-		"magistral-small-2509":  {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
-		"ministral-8b-2512":     {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.15},
-		"mistral-large-2512":    {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
-		"mistral-medium-2508":   {InputCostPerMillion: 0.4, OutputCostPerMillion: 2.0},
-		"mistral-small-2506":    {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
+		"devstral-2-25-12":        {InputCostPerMillion: 0.27, OutputCostPerMillion: 1.1},
+		"magistral-medium-2506":   {InputCostPerMillion: 2.0, OutputCostPerMillion: 5.0},
+		"magistral-medium-2507":   {InputCostPerMillion: 2.0, OutputCostPerMillion: 5.0},
+		"magistral-medium-2509":   {InputCostPerMillion: 2.0, OutputCostPerMillion: 5.0},
+		"magistral-small-2506":    {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
+		"magistral-small-2507":    {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
+		"magistral-small-2509":    {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
+		"ministral-3-14b-25-12":   {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.15},
+		"ministral-3-3b-25-12":    {InputCostPerMillion: 0.04, OutputCostPerMillion: 0.04},
+		"ministral-3-8b-25-12":    {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.1},
+		"ministral-3b-2410":       {InputCostPerMillion: 0.04, OutputCostPerMillion: 0.04},
+		"ministral-8b-2410":       {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.1},
+		"ministral-8b-2512":       {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.1},
+		"mistral-large-2402":      {InputCostPerMillion: 4.0, OutputCostPerMillion: 12.0},
+		"mistral-large-2407":      {InputCostPerMillion: 2.0, OutputCostPerMillion: 6.0},
+		"mistral-large-2512":      {InputCostPerMillion: 2.0, OutputCostPerMillion: 6.0},
+		"mistral-large-3-25-12":   {InputCostPerMillion: 2.0, OutputCostPerMillion: 6.0},
+		"mistral-medium-2312":     {InputCostPerMillion: 2.7, OutputCostPerMillion: 8.1},
+		"mistral-medium-2508":     {InputCostPerMillion: 0.4, OutputCostPerMillion: 2.0},
+		"mistral-ocr-2503":        {InputCostPerMillion: 1.0, OutputCostPerMillion: 1.0},
+		"mistral-small-2402":      {InputCostPerMillion: 0.2, OutputCostPerMillion: 0.6},
+		"mistral-small-2409":      {InputCostPerMillion: 0.2, OutputCostPerMillion: 0.6},
+		"mistral-small-2501":      {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
+		"mistral-small-2503":      {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
+		"mistral-small-2506":      {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
+		"mistral-small-4-0-26-03": {InputCostPerMillion: 0.1, OutputCostPerMillion: 0.3},
+		"pixtral":                 {InputCostPerMillion: 2.0, OutputCostPerMillion: 6.0},
+		"pixtral-12b-2409":        {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.15},
 	},
 	"openai": {
-		"gpt-3.5-0301":              {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
-		"gpt-3.5-turbo":             {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
+		"gpt-3.5-0301":              {InputCostPerMillion: 2.0, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
+		"gpt-3.5-turbo":             {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5, BatchInputCostPerMillion: 0.25, BatchOutputCostPerMillion: 0.75},
 		"gpt-3.5-turbo-0125":        {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5, BatchInputCostPerMillion: 0.25, BatchOutputCostPerMillion: 0.75},
 		"gpt-3.5-turbo-0613":        {InputCostPerMillion: 1.5, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 2.0},
 		"gpt-3.5-turbo-1106":        {InputCostPerMillion: 1.0, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 1.0, BatchOutputCostPerMillion: 2.0},
@@ -127,21 +102,35 @@ var modelPricing = map[string]map[string]ModelPricingSpec{
 		"gpt-4-1106-vision-preview": {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
 		"gpt-4-32k":                 {InputCostPerMillion: 60.0, OutputCostPerMillion: 120.0, BatchInputCostPerMillion: 30.0, BatchOutputCostPerMillion: 60.0},
 		"gpt-4-turbo-2024-04-09":    {InputCostPerMillion: 10.0, OutputCostPerMillion: 30.0, BatchInputCostPerMillion: 5.0, BatchOutputCostPerMillion: 15.0},
-		"gpt-4o-mini-transcribe":    {InputCostPerMillion: 1.25, OutputCostPerMillion: 5.0, EstimatedCostPerMinute: 3.0},
-		"gpt-4o-mini-tts":           {InputCostPerMillion: 0.6, OutputCostPerMillion: 12.0, EstimatedCostPerMinute: 12.0},
+		"gpt-4.1":                   {InputCostPerMillion: 2.0, CachedInputCostPerMillion: 0.5, OutputCostPerMillion: 8.0, BatchInputCostPerMillion: 1.0, BatchCachedInputCostPerMillion: 0.5, BatchOutputCostPerMillion: 4.0, TrainingCostPerHour: 25.0},
+		"gpt-4.1-mini":              {InputCostPerMillion: 0.4, CachedInputCostPerMillion: 0.1, OutputCostPerMillion: 1.6, BatchInputCostPerMillion: 0.2, BatchCachedInputCostPerMillion: 0.1, BatchOutputCostPerMillion: 0.8, TrainingCostPerHour: 5.0},
+		"gpt-4o":                    {InputCostPerMillion: 2.5, CachedInputCostPerMillion: 1.25, OutputCostPerMillion: 10.0, BatchInputCostPerMillion: 1.25, BatchOutputCostPerMillion: 5.0},
+		"gpt-4o-mini":               {InputCostPerMillion: 0.15, CachedInputCostPerMillion: 0.075, OutputCostPerMillion: 0.6, BatchInputCostPerMillion: 0.075, BatchOutputCostPerMillion: 0.3},
+		"gpt-4o-mini-transcribe":    {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.6, EstimatedCostPerMinute: 3.0},
+		"gpt-4o-mini-tts":           {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.6, EstimatedCostPerMinute: 12.0},
 		"gpt-4o-transcribe":         {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0, EstimatedCostPerMinute: 6.0},
 		"gpt-4o-transcribe-diarize": {InputCostPerMillion: 2.5, OutputCostPerMillion: 10.0, EstimatedCostPerMinute: 6.0},
+		"gpt-5":                     {InputCostPerMillion: 1.25, CachedInputCostPerMillion: 0.125, OutputCostPerMillion: 10.0, BatchInputCostPerMillion: 0.625, BatchOutputCostPerMillion: 5.0},
+		"gpt-5-mini":                {InputCostPerMillion: 0.25, CachedInputCostPerMillion: 0.025, OutputCostPerMillion: 2.0, BatchInputCostPerMillion: 0.125, BatchOutputCostPerMillion: 1.0},
+		"gpt-5.1":                   {InputCostPerMillion: 1.25, CachedInputCostPerMillion: 0.125, OutputCostPerMillion: 10.0, BatchInputCostPerMillion: 0.625, BatchOutputCostPerMillion: 5.0},
+		"gpt-5.1-codex":             {InputCostPerMillion: 1.25, CachedInputCostPerMillion: 0.125, OutputCostPerMillion: 10.0},
 		"gpt-5.4":                   {InputCostPerMillion: 2.5, CachedInputCostPerMillion: 0.25, OutputCostPerMillion: 15.0, BatchInputCostPerMillion: 1.25, BatchCachedInputCostPerMillion: 0.13, BatchOutputCostPerMillion: 7.5, PriorityInputCostPerMillion: 5.0, PriorityCachedInputCostPerMillion: 0.5, PriorityOutputCostPerMillion: 30.0, LongContextInputCostPerMillion: 5.0, LongContextCachedInputCostPerMillion: 0.5, LongContextOutputCostPerMillion: 22.5},
+		"gpt-5.4-mini":              {InputCostPerMillion: 0.75, CachedInputCostPerMillion: 0.075, OutputCostPerMillion: 4.5, BatchInputCostPerMillion: 0.375, BatchCachedInputCostPerMillion: 0.0375, BatchOutputCostPerMillion: 2.25},
+		"gpt-5.4-nano":              {InputCostPerMillion: 0.2, CachedInputCostPerMillion: 0.02, OutputCostPerMillion: 1.25, BatchInputCostPerMillion: 0.1, BatchCachedInputCostPerMillion: 0.01, BatchOutputCostPerMillion: 0.625},
 		"gpt-5.4-pro":               {InputCostPerMillion: 30.0, OutputCostPerMillion: 180.0, BatchInputCostPerMillion: 15.0, BatchOutputCostPerMillion: 90.0, LongContextInputCostPerMillion: 60.0, LongContextOutputCostPerMillion: 270.0},
 		"gpt-audio-1.5":             {InputCostPerMillion: 32.0, OutputCostPerMillion: 64.0},
 		"gpt-image-1-mini":          {InputCostPerMillion: 2.5, CachedInputCostPerMillion: 0.25, OutputCostPerMillion: 8.0, BatchInputCostPerMillion: 1.25, BatchCachedInputCostPerMillion: 0.13, BatchOutputCostPerMillion: 4.0},
 		"gpt-image-1.5":             {InputCostPerMillion: 8.0, CachedInputCostPerMillion: 2.0, OutputCostPerMillion: 32.0, BatchInputCostPerMillion: 4.0, BatchCachedInputCostPerMillion: 1.0, BatchOutputCostPerMillion: 16.0},
 		"gpt-realtime-1.5":          {InputCostPerMillion: 32.0, CachedInputCostPerMillion: 0.4, OutputCostPerMillion: 64.0},
 		"gpt-realtime-mini":         {InputCostPerMillion: 10.0, CachedInputCostPerMillion: 0.3, OutputCostPerMillion: 20.0},
+		"o1":                        {InputCostPerMillion: 15.0, CachedInputCostPerMillion: 7.5, OutputCostPerMillion: 60.0, BatchInputCostPerMillion: 7.5, BatchOutputCostPerMillion: 30.0},
+		"o1-mini":                   {InputCostPerMillion: 3.0, CachedInputCostPerMillion: 1.5, OutputCostPerMillion: 12.0, BatchInputCostPerMillion: 1.5, BatchOutputCostPerMillion: 6.0},
+		"o1-preview":                {InputCostPerMillion: 15.0, CachedInputCostPerMillion: 7.5, OutputCostPerMillion: 60.0, BatchInputCostPerMillion: 7.5, BatchOutputCostPerMillion: 30.0},
+		"o3":                        {InputCostPerMillion: 2.0, CachedInputCostPerMillion: 0.5, OutputCostPerMillion: 8.0, BatchInputCostPerMillion: 1.0, BatchOutputCostPerMillion: 4.0},
+		"o4-mini":                   {InputCostPerMillion: 1.1, CachedInputCostPerMillion: 0.275, OutputCostPerMillion: 4.4, BatchInputCostPerMillion: 0.55, BatchCachedInputCostPerMillion: 0.138, BatchOutputCostPerMillion: 2.2, TrainingCostPerHour: 100.0},
 	},
 }
 
-// GetModelPricing returns the pricing spec for an exact provider/modelID combination.
 func GetModelPricing(provider, modelID string) (ModelPricingSpec, bool) {
 	models, ok := modelPricing[provider]
 	if !ok {
@@ -151,7 +140,6 @@ func GetModelPricing(provider, modelID string) (ModelPricingSpec, bool) {
 	return spec, ok
 }
 
-// KnownPricingProviders returns providers that have pricing entries, sorted alphabetically.
 func KnownPricingProviders() []string {
 	providers := make([]string, 0, len(modelPricing))
 	for p := range modelPricing {

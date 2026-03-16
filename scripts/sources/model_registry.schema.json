@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent SDK model registry source",
+  "type": "object",
+  "x-source-version": 1,
+  "required": [
+    "version",
+    "providers"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "base_url",
+          "docs_url",
+          "pricing_url",
+          "models"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]*$",
+            "minLength": 1
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "base_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "docs_url": {
+            "type": "string"
+          },
+          "pricing_url": {
+            "type": "string"
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "display_name",
+                "description",
+                "release_date",
+                "context_window",
+                "max_output_tokens",
+                "capabilities",
+                "pricing"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9.-]*$",
+                  "minLength": 1
+                },
+                "display_name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "release_date": {
+                  "type": "string"
+                },
+                "context_window": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_output_tokens": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "capabilities": {
+                  "type": "object",
+                  "required": [
+                    "vision",
+                    "documents"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "vision": {
+                      "type": "boolean"
+                    },
+                    "documents": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "pricing": {
+                  "type": "object",
+                  "required": [
+                    "InputCostPerMillion",
+                    "CachedInputCostPerMillion",
+                    "OutputCostPerMillion",
+                    "BatchInputCostPerMillion",
+                    "BatchCachedInputCostPerMillion",
+                    "BatchOutputCostPerMillion",
+                    "PriorityInputCostPerMillion",
+                    "PriorityCachedInputCostPerMillion",
+                    "PriorityOutputCostPerMillion",
+                    "LongContextTriggerAtTokens",
+                    "LongContextInputCostPerMillion",
+                    "LongContextCachedInputCostPerMillion",
+                    "LongContextOutputCostPerMillion",
+                    "TrainingCostPerHour",
+                    "EstimatedCostPerMinute",
+                    "EstimatedCostPerSecond"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

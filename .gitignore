@@ -1,7 +1,7 @@
 # Go related
-/vendor/
 /go.work
 /go.work.sum
+/sync-model-registry
 
 # Binaries for programs and plugins
 *.exe
@@ -21,7 +21,7 @@
 *.cov
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
 
 # Go workspace file
 go.work
