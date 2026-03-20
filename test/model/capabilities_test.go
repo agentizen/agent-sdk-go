@@ -16,35 +16,34 @@ func TestProviderSupports(t *testing.T) {
 		// Mistral
 		{"mistral", "mistral-large-2512", model.CapabilityVision, true},
 		{"mistral", "mistral-medium-2508", model.CapabilityVision, true},
-		{"mistral", "mistral-small-2506", model.CapabilityVision, true},
+		{"mistral", "mistral-small-2603", model.CapabilityVision, true},
 		{"mistral", "magistral-medium-2509", model.CapabilityVision, true},
 		{"mistral", "ministral-8b-2512", model.CapabilityVision, true},
-		{"mistral", "mistral-ocr-2503", model.CapabilityDocuments, true},
-		{"mistral", "mistral-ocr-2503", model.CapabilityVision, false},
+		{"mistral", "mistral-ocr-2512", model.CapabilityDocuments, true},
+		{"mistral", "mistral-ocr-2512", model.CapabilityVision, false},
 		{"mistral", "codestral-25-08", model.CapabilityVision, false},
 
 		// OpenAI
-		{"openai", "gpt-5.4", model.CapabilityVision, true},
-		{"openai", "gpt-5.4-pro", model.CapabilityVision, true},
-		{"openai", "gpt-5", model.CapabilityVision, true},
-		{"openai", "gpt-5", model.CapabilityDocuments, true},
-		{"openai", "gpt-4o", model.CapabilityVision, true},
-		{"openai", "o3-mini", model.CapabilityVision, true},
+		{"openai", "gpt-5.4-2026-03-05", model.CapabilityVision, true},
+		{"openai", "gpt-5.4-pro-2026-03-05", model.CapabilityVision, true},
+		{"openai", "gpt-5.4-mini-2026-03-17", model.CapabilityVision, true},
+		{"openai", "gpt-5.4-nano-2026-03-17", model.CapabilityVision, true},
+		{"openai", "gpt-5.4-2026-03-05", model.CapabilityDocuments, false},
 		{"openai", "gpt-3.5-turbo", model.CapabilityVision, false},
 
 		// Anthropic
 		{"anthropic", "claude-opus-4-6", model.CapabilityVision, true},
 		{"anthropic", "claude-sonnet-4-6", model.CapabilityVision, true},
-		{"anthropic", "claude-haiku-4-5", model.CapabilityVision, true},
+		{"anthropic", "claude-haiku-4-5-20251001", model.CapabilityVision, true},
 		{"anthropic", "claude-opus-4-6", model.CapabilityDocuments, true},
 		{"anthropic", "claude-2.1", model.CapabilityVision, false},
 
-		// Gemini
-		{"gemini", "gemini-3.1-pro-preview", model.CapabilityVision, true},
-		{"gemini", "gemini-3-flash-preview", model.CapabilityVision, true},
-		{"gemini", "gemini-2.5-pro", model.CapabilityVision, true},
-		{"gemini", "gemini-2.5-flash-lite", model.CapabilityDocuments, true},
-		{"gemini", "gemini-flash-latest", model.CapabilityVision, true},
+		// Gemini — vision/documents not in current registry; new capabilities apply
+		{"gemini", "gemini-2.5-pro", model.CapabilityThinking, true},
+		{"gemini", "gemini-2.5-flash", model.CapabilityCodeExecution, true},
+		{"gemini", "gemini-2.5-flash-lite", model.CapabilityThinking, true},
+		{"gemini", "gemini-2.5-pro", model.CapabilityVision, false},
+		{"gemini", "gemini-2.5-flash-lite", model.CapabilityDocuments, false},
 		{"gemini", "gemini-1.0-pro", model.CapabilityVision, false},
 
 		// Unknown provider/model
@@ -53,7 +52,7 @@ func TestProviderSupports(t *testing.T) {
 
 		// Case-insensitivity
 		{"Mistral", "MISTRAL-LARGE-2512", model.CapabilityVision, true},
-		{"OPENAI", "GPT-5.4", model.CapabilityVision, true},
+		{"OPENAI", "GPT-5.4-2026-03-05", model.CapabilityVision, true},
 	}
 
 	for _, tc := range tests {

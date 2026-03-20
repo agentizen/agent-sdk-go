@@ -13,17 +13,47 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("import \"strings\"\n\n")
 	b.WriteString("type Capability string\n\n")
 	b.WriteString("const (\n")
-	b.WriteString("\tCapabilityVision Capability = \"vision\"\n")
-	b.WriteString("\tCapabilityDocuments Capability = \"documents\"\n")
+	b.WriteString("\tCapabilityAudioGeneration  Capability = \"audioGeneration\"\n")
+	b.WriteString("\tCapabilityBatchAPI          Capability = \"batchAPI\"\n")
+	b.WriteString("\tCapabilityCaching           Capability = \"caching\"\n")
+	b.WriteString("\tCapabilityCodeExecution     Capability = \"codeExecution\"\n")
+	b.WriteString("\tCapabilityDocuments         Capability = \"documents\"\n")
+	b.WriteString("\tCapabilityFileSearch        Capability = \"fileSearch\"\n")
+	b.WriteString("\tCapabilityFunctionCalling   Capability = \"functionCalling\"\n")
+	b.WriteString("\tCapabilityImageGeneration   Capability = \"imageGeneration\"\n")
+	b.WriteString("\tCapabilityLiveAPI           Capability = \"liveAPI\"\n")
+	b.WriteString("\tCapabilityStructuredOutput  Capability = \"structuredOutput\"\n")
+	b.WriteString("\tCapabilityThinking          Capability = \"thinking\"\n")
+	b.WriteString("\tCapabilityVision            Capability = \"vision\"\n")
 	b.WriteString(")\n\n")
 	b.WriteString("type ModelCapabilitySet struct {\n")
-	b.WriteString("\tVision bool\n")
-	b.WriteString("\tDocuments bool\n")
+	b.WriteString("\tAudioGeneration  bool\n")
+	b.WriteString("\tBatchAPI         bool\n")
+	b.WriteString("\tCaching          bool\n")
+	b.WriteString("\tCodeExecution    bool\n")
+	b.WriteString("\tDocuments        bool\n")
+	b.WriteString("\tFileSearch       bool\n")
+	b.WriteString("\tFunctionCalling  bool\n")
+	b.WriteString("\tImageGeneration  bool\n")
+	b.WriteString("\tLiveAPI          bool\n")
+	b.WriteString("\tStructuredOutput bool\n")
+	b.WriteString("\tThinking         bool\n")
+	b.WriteString("\tVision           bool\n")
 	b.WriteString("}\n\n")
 	b.WriteString("func CapabilitiesFor(provider, modelID string) ModelCapabilitySet {\n")
 	b.WriteString("\treturn ModelCapabilitySet{\n")
-	b.WriteString("\t\tVision: ProviderSupports(provider, modelID, CapabilityVision),\n")
-	b.WriteString("\t\tDocuments: ProviderSupports(provider, modelID, CapabilityDocuments),\n")
+	b.WriteString("\t\tAudioGeneration:  ProviderSupports(provider, modelID, CapabilityAudioGeneration),\n")
+	b.WriteString("\t\tBatchAPI:         ProviderSupports(provider, modelID, CapabilityBatchAPI),\n")
+	b.WriteString("\t\tCaching:          ProviderSupports(provider, modelID, CapabilityCaching),\n")
+	b.WriteString("\t\tCodeExecution:    ProviderSupports(provider, modelID, CapabilityCodeExecution),\n")
+	b.WriteString("\t\tDocuments:        ProviderSupports(provider, modelID, CapabilityDocuments),\n")
+	b.WriteString("\t\tFileSearch:       ProviderSupports(provider, modelID, CapabilityFileSearch),\n")
+	b.WriteString("\t\tFunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),\n")
+	b.WriteString("\t\tImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),\n")
+	b.WriteString("\t\tLiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),\n")
+	b.WriteString("\t\tStructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),\n")
+	b.WriteString("\t\tThinking:         ProviderSupports(provider, modelID, CapabilityThinking),\n")
+	b.WriteString("\t\tVision:           ProviderSupports(provider, modelID, CapabilityVision),\n")
 	b.WriteString("\t}\n")
 	b.WriteString("}\n\n")
 	b.WriteString("type capabilityEntry struct {\n")
@@ -35,20 +65,12 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	for _, provider := range sortedProviders(source) {
 		fmt.Fprintf(&b, "\t%q: {\n", provider.ID)
 		for _, modelEntry := range provider.Models {
-			if !modelEntry.Capabilities.Vision && !modelEntry.Capabilities.Documents {
+			caps := modelCapabilityClauses(modelEntry.Capabilities)
+			if len(caps) == 0 {
 				continue
 			}
-			fmt.Fprintf(&b, "\t\t{prefix: %q, caps: map[Capability]bool{", modelEntry.ID)
-			if modelEntry.Capabilities.Vision {
-				b.WriteString("CapabilityVision: true")
-				if modelEntry.Capabilities.Documents {
-					b.WriteString(", ")
-				}
-			}
-			if modelEntry.Capabilities.Documents {
-				b.WriteString("CapabilityDocuments: true")
-			}
-			b.WriteString("}},\n")
+			fmt.Fprintf(&b, "\t\t{prefix: %q, caps: map[Capability]bool{%s}},\n",
+				modelEntry.ID, strings.Join(caps, ", "))
 		}
 		b.WriteString("\t},\n")
 	}
@@ -67,6 +89,47 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\treturn false\n")
 	b.WriteString("}\n")
 	return b.String()
+}
+
+func modelCapabilityClauses(c capabilitySource) []string {
+	var caps []string
+	if c.AudioGeneration {
+		caps = append(caps, "CapabilityAudioGeneration: true")
+	}
+	if c.BatchAPI {
+		caps = append(caps, "CapabilityBatchAPI: true")
+	}
+	if c.Caching {
+		caps = append(caps, "CapabilityCaching: true")
+	}
+	if c.CodeExecution {
+		caps = append(caps, "CapabilityCodeExecution: true")
+	}
+	if c.Documents {
+		caps = append(caps, "CapabilityDocuments: true")
+	}
+	if c.FileSearch {
+		caps = append(caps, "CapabilityFileSearch: true")
+	}
+	if c.FunctionCalling {
+		caps = append(caps, "CapabilityFunctionCalling: true")
+	}
+	if c.ImageGeneration {
+		caps = append(caps, "CapabilityImageGeneration: true")
+	}
+	if c.LiveAPI {
+		caps = append(caps, "CapabilityLiveAPI: true")
+	}
+	if c.StructuredOutput {
+		caps = append(caps, "CapabilityStructuredOutput: true")
+	}
+	if c.Thinking {
+		caps = append(caps, "CapabilityThinking: true")
+	}
+	if c.Vision {
+		caps = append(caps, "CapabilityVision: true")
+	}
+	return caps
 }
 
 func renderPricingFromSource(source registrySource) string {
@@ -91,6 +154,8 @@ func renderPricingFromSource(source registrySource) string {
 	b.WriteString("\tTrainingCostPerHour float64\n")
 	b.WriteString("\tEstimatedCostPerMinute float64\n")
 	b.WriteString("\tEstimatedCostPerSecond float64\n")
+	b.WriteString("\tOcrInputCostPerThousandPages float64\n")
+	b.WriteString("\tOcrOutputCostPerThousandPages float64\n")
 	b.WriteString("}\n\n")
 	b.WriteString("var modelPricing = map[string]map[string]ModelPricingSpec{\n")
 	for _, provider := range sortedProviders(source) {
@@ -139,6 +204,12 @@ func renderPricingFromSource(source registrySource) string {
 			}
 			if modelEntry.Pricing.EstimatedCostPerSecond > 0 {
 				fmt.Fprintf(&b, ", EstimatedCostPerSecond: %s", formatFloat(modelEntry.Pricing.EstimatedCostPerSecond))
+			}
+			if modelEntry.Pricing.OcrInputCostPerThousandPages > 0 {
+				fmt.Fprintf(&b, ", OcrInputCostPerThousandPages: %s", formatFloat(modelEntry.Pricing.OcrInputCostPerThousandPages))
+			}
+			if modelEntry.Pricing.OcrOutputCostPerThousandPages > 0 {
+				fmt.Fprintf(&b, ", OcrOutputCostPerThousandPages: %s", formatFloat(modelEntry.Pricing.OcrOutputCostPerThousandPages))
 			}
 			b.WriteString("},\n")
 		}

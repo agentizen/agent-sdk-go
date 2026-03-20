@@ -9,7 +9,7 @@
       "pricing_url": "https://anthropic.com/pricing",
       "models": [
         {
-          "id": "claude-haiku-4-5",
+          "id": "claude-haiku-4-5-20251001",
           "display_name": "Claude Haiku 4.5",
           "description": "The fastest Claude model with near-frontier intelligence, optimized for speed and efficiency with strong reasoning capabilities.",
           "release_date": "2025-10",
@@ -21,51 +21,7 @@
           },
           "pricing": {
             "InputCostPerMillion": 1.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 5.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-opus-4-6",
-          "display_name": "Claude Opus 4.6",
-          "description": "The most intelligent Claude model, designed for building agents and complex coding tasks with exceptional reasoning and long-context handling.",
-          "release_date": "2025-12",
-          "context_window": 1000000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 5.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 25.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 5.0
           }
         },
         {
@@ -81,201 +37,23 @@
           },
           "pricing": {
             "InputCostPerMillion": 3.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 15.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 15.0
           }
         },
         {
-          "id": "claude-opus-4-20250514",
-          "display_name": "Claude Opus 4 (2025-05-14)",
-          "description": "May 2025 snapshot of Claude Opus 4, a highly capable model designed for complex reasoning and agentic tasks.",
-          "release_date": "2025-05",
-          "context_window": 200000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 15.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 75.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-sonnet-4-20250514",
-          "display_name": "Claude Sonnet 4 (2025-05-14)",
-          "description": "May 2025 snapshot of Claude Sonnet 4, offering a strong balance of speed and intelligence for production workloads.",
-          "release_date": "2025-05",
+          "id": "claude-opus-4-6",
+          "display_name": "Claude Opus 4.6",
+          "description": "The most intelligent Claude model, designed for building agents and complex coding tasks with exceptional reasoning and long-context handling.",
+          "release_date": "2025-12",
           "context_window": 1000000,
-          "max_output_tokens": 64000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 3.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 15.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-opus-4-1-20250805",
-          "display_name": "Claude Opus 4.1 (2025-08-05)",
-          "description": "August 2025 snapshot of Claude Opus 4.1, an incremental update with improved reasoning and coding capabilities.",
-          "release_date": "2025-08",
-          "context_window": 200000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 15.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 75.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-sonnet-4-5-20250929",
-          "display_name": "Claude Sonnet 4.5 (2025-09-29)",
-          "description": "September 2025 snapshot of Claude Sonnet 4.5, delivering rapid responses with enhanced reasoning and multimodal understanding.",
-          "release_date": "2025-09",
-          "context_window": 1000000,
-          "max_output_tokens": 64000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 3.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 15.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-haiku-4-5-20251001",
-          "display_name": "Claude Haiku 4.5 (2025-10-01)",
-          "description": "Versioned snapshot of Claude Haiku 4.5 from October 2025, optimized for speed and efficiency with near-frontier intelligence.",
-          "release_date": "2025-10",
-          "context_window": 200000,
-          "max_output_tokens": 64000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 5.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "claude-opus-4-5-20251101",
-          "display_name": "Claude Opus 4.5 (2025-11-01)",
-          "description": "November 2025 snapshot of Claude Opus 4.5, offering advanced reasoning and long-context capabilities for complex tasks.",
-          "release_date": "2025-11",
-          "context_window": 200000,
-          "max_output_tokens": 64000,
+          "max_output_tokens": 128000,
           "capabilities": {
             "vision": true,
             "documents": true
           },
           "pricing": {
             "InputCostPerMillion": 5.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 25.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 25.0
           }
         }
       ]
@@ -288,93 +66,27 @@
       "pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
       "models": [
         {
-          "id": "gemini-2.0-flash",
-          "display_name": "Gemini 2.0 Flash",
-          "description": "[DEPRECATED June 2026] Fast and efficient multimodal model with 1M token context window, optimized for high-frequency tasks with vision and audio support.",
-          "release_date": "2025-02",
+          "id": "gemini-2.5-flash-lite",
+          "display_name": "Gemini 2.5 Flash Lite",
+          "description": "Cost-efficient Gemini 2.5 variant with 1M context, optimized for large-scale deployment with strong reasoning at reduced cost.",
+          "release_date": "2025-06",
           "context_window": 1048576,
-          "max_output_tokens": 8192,
+          "max_output_tokens": 65536,
           "capabilities": {
-            "vision": true,
-            "documents": true
+            "audioGeneration": false,
+            "codeExecution": true,
+            "batchAPI": true,
+            "fileSearch": true,
+            "imageGeneration": false,
+            "structuredOutput": true,
+            "caching": true,
+            "functionCalling": true,
+            "liveAPI": false,
+            "thinking": true
           },
           "pricing": {
             "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.4,
-            "BatchInputCostPerMillion": 0.05,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.0-flash-lite",
-          "display_name": "Gemini 2.0 Flash Lite",
-          "description": "[DEPRECATED] Lightweight version of Gemini 2.0 Flash with 1M context, optimized for cost-efficient high-throughput deployments.",
-          "release_date": "2025-02",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.075,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.3,
-            "BatchInputCostPerMillion": 0.0375,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.15,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-computer-use-preview-10-2025",
-          "display_name": "Gemini 2.5 Computer Use Preview 10 2025",
-          "description": "Gemini 2.5 Flash preview specialized for computer use tasks, enabling autonomous GUI interaction and screen understanding.",
-          "release_date": "2025-10",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 200000,
-            "LongContextInputCostPerMillion": 2.5,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 15.0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 0.4
           }
         },
         {
@@ -385,176 +97,20 @@
           "context_window": 1048576,
           "max_output_tokens": 65536,
           "capabilities": {
-            "vision": true,
-            "documents": true
+            "audioGeneration": false,
+            "codeExecution": true,
+            "batchAPI": true,
+            "fileSearch": true,
+            "imageGeneration": false,
+            "structuredOutput": true,
+            "caching": true,
+            "functionCalling": true,
+            "liveAPI": false,
+            "thinking": true
           },
           "pricing": {
             "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0.15,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 1.25,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-flash-image",
-          "display_name": "Gemini 2.5 Flash Image",
-          "description": "Gemini 2.5 Flash specialized for image generation tasks, supporting native image output alongside text.",
-          "release_date": "2025-06",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-flash-lite",
-          "display_name": "Gemini 2.5 Flash Lite",
-          "description": "Cost-efficient Gemini 2.5 variant with 1M context, optimized for large-scale deployment with strong reasoning at reduced cost.",
-          "release_date": "2025-06",
-          "context_window": 1048576,
-          "max_output_tokens": 32768,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.4,
-            "BatchInputCostPerMillion": 0.05,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-flash-native-audio-preview-12-2025",
-          "display_name": "Gemini 2.5 Flash Native Audio Preview 12 2025",
-          "description": "Gemini 2.5 Flash preview with native audio understanding and generation capabilities for voice-first applications.",
-          "release_date": "2025-12",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-flash-preview-09-2025",
-          "display_name": "Gemini 2.5 Flash Preview 09 2025",
-          "description": "Preview release of Gemini 2.5 Flash for September 2025, featuring updated reasoning and instruction-following improvements.",
-          "release_date": "2025-09",
-          "context_window": 1048576,
-          "max_output_tokens": 65536,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0.15,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 1.25,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-flash-preview-tts",
-          "display_name": "Gemini 2.5 Flash Preview TTS",
-          "description": "Gemini 2.5 Flash preview optimized for text-to-speech conversion with natural-sounding voice synthesis.",
-          "release_date": "2025-06",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 2.5
           }
         },
         {
@@ -565,296 +121,23 @@
           "context_window": 1048576,
           "max_output_tokens": 65536,
           "capabilities": {
-            "vision": true,
-            "documents": true
+            "audioGeneration": false,
+            "codeExecution": true,
+            "batchAPI": true,
+            "fileSearch": true,
+            "imageGeneration": false,
+            "structuredOutput": true,
+            "caching": true,
+            "functionCalling": true,
+            "liveAPI": false,
+            "thinking": true
           },
           "pricing": {
             "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0,
             "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0.625,
-            "BatchCachedInputCostPerMillion": 1.25,
-            "BatchOutputCostPerMillion": 7.5,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
             "LongContextTriggerAtTokens": 200000,
             "LongContextInputCostPerMillion": 2.5,
-            "LongContextCachedInputCostPerMillion": 1.25,
-            "LongContextOutputCostPerMillion": 15.0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-2.5-pro-preview-tts",
-          "display_name": "Gemini 2.5 Pro Preview TTS",
-          "description": "Gemini 2.5 Pro preview optimized for high-quality text-to-speech with expressive and natural voice synthesis.",
-          "release_date": "2025-06",
-          "context_window": 1048576,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 200000,
-            "LongContextInputCostPerMillion": 2.5,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 15.0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3",
-          "display_name": "Gemini 3",
-          "description": "Next-generation Gemini flagship model with enhanced multimodal understanding, reasoning, and long-context capabilities.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 3.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3-flash-preview",
-          "display_name": "Gemini 3 Flash Preview",
-          "description": "Preview release of the Gemini 3 Flash series, offering next-generation speed and efficiency for high-frequency applications.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 3.0,
-            "BatchInputCostPerMillion": 0.25,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 1.5,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3-pro-image-preview",
-          "display_name": "Gemini 3 Pro Image Preview",
-          "description": "Gemini 3 Pro preview specialized for native image generation and understanding with state-of-the-art visual capabilities.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 12.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3-pro-preview",
-          "display_name": "Gemini 3 Pro Preview",
-          "description": "Preview release of the Gemini 3 Pro series, targeting complex reasoning and multimodal tasks at frontier-class performance.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 12.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 200000,
-            "LongContextInputCostPerMillion": 4.0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 18.0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3.1-flash-image-preview",
-          "display_name": "Gemini 3.1 Flash Image Preview",
-          "description": "Gemini 3.1 Flash preview with native image generation, combining efficient text and visual output in a single model.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.25,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3.1-flash-lite-preview",
-          "display_name": "Gemini 3.1 Flash Lite Preview",
-          "description": "Lightweight Gemini 3.1 Flash preview optimized for cost-effective deployments with updated capabilities.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.25,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0.125,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.75,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-3.1-pro-preview",
-          "display_name": "Gemini 3.1 Pro Preview",
-          "description": "Gemini 3.1 Pro preview with enhanced multimodal reasoning, coding, and instruction-following at frontier performance.",
-          "release_date": "",
-          "context_window": 1000000,
-          "max_output_tokens": 200000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 12.0,
-            "BatchInputCostPerMillion": 1.0,
-            "BatchCachedInputCostPerMillion": 2.0,
-            "BatchOutputCostPerMillion": 6.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 200000,
-            "LongContextInputCostPerMillion": 4.0,
-            "LongContextCachedInputCostPerMillion": 2.0,
-            "LongContextOutputCostPerMillion": 18.0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gemini-flash-latest",
-          "display_name": "Gemini Flash Latest",
-          "description": "Alias pointing to the latest stable Gemini Flash model, automatically updated to the most recent Flash release.",
-          "release_date": "",
-          "context_window": 1048576,
-          "max_output_tokens": 65536,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.3,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "LongContextOutputCostPerMillion": 15.0
           }
         }
       ]
@@ -875,430 +158,132 @@
       "pricing_url": "https://mistral.ai/pricing",
       "models": [
         {
-          "id": "magistral-medium-2506",
-          "display_name": "Magistral Medium 2506",
-          "description": "Advanced reasoning model with frontier-class performance supporting function-calling, document QnA, chat completions, and batching.",
-          "release_date": "2025-06",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 5.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "magistral-medium-2507",
-          "display_name": "Magistral Medium 2507",
-          "description": "Advanced reasoning model with frontier-class performance supporting function-calling, document QnA, chat completions, and batching.",
-          "release_date": "2025-07",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 5.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "magistral-medium-2509",
-          "display_name": "Magistral Medium 2509",
-          "description": "Advanced reasoning model with frontier-class performance supporting function-calling, document QnA, chat completions, and batching.",
-          "release_date": "2025-09",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 5.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "magistral-small-2506",
-          "display_name": "Magistral Small 2506",
-          "description": "Efficient reasoning model providing advanced problem-solving capabilities with optimized performance for resource-constrained deployments.",
-          "release_date": "2025-06",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "magistral-small-2507",
-          "display_name": "Magistral Small 2507",
-          "description": "Efficient reasoning model providing advanced problem-solving capabilities with optimized performance for resource-constrained deployments.",
-          "release_date": "2025-07",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "magistral-small-2509",
-          "display_name": "Magistral Small 2509",
-          "description": "Efficient reasoning model providing advanced problem-solving capabilities with optimized performance for resource-constrained deployments.",
-          "release_date": "2025-09",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "ministral-3b-2410",
-          "display_name": "Ministral 3B 2410",
+          "id": "ministral-3b-2512",
+          "display_name": "Ministral 3 3B",
           "description": "Compact 3B parameter model offering best-in-class text and vision capabilities for edge and lightweight deployments.",
-          "release_date": "2024-10",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.04,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.04,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "ministral-8b-2410",
-          "display_name": "Ministral 8B 2410",
-          "description": "Efficient 8B parameter model with best-in-class text and vision capabilities for balanced performance and computational efficiency.",
-          "release_date": "2024-10",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
+          "release_date": "2025-12",
+          "context_window": 256000,
           "capabilities": {
             "vision": true,
             "documents": false
           },
           "pricing": {
             "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.1,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 0.1
           }
         },
         {
           "id": "ministral-8b-2512",
-          "display_name": "Ministral 8B 2512",
+          "display_name": "Ministral 3 8B",
           "description": "Efficient 8B parameter model with best-in-class text and vision capabilities for balanced performance and computational efficiency.",
           "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
+          "context_window": 256000,
           "capabilities": {
             "vision": true,
             "documents": false
           },
           "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.1,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "InputCostPerMillion": 0.15,
+            "OutputCostPerMillion": 0.15
           }
         },
         {
-          "id": "mistral-large-2402",
-          "display_name": "Mistral Large 2402",
-          "description": "State-of-the-art general-purpose multimodal model for high-complexity tasks requiring maximum reasoning capability.",
-          "release_date": "2024-02",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 4.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 12.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-large-2407",
-          "display_name": "Mistral Large 2407",
-          "description": "State-of-the-art general-purpose multimodal model for high-complexity tasks requiring maximum reasoning capability.",
-          "release_date": "2024-07",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 6.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-large-2512",
-          "display_name": "Mistral Large 2512",
-          "description": "State-of-the-art general-purpose multimodal model for high-complexity tasks requiring maximum reasoning capability.",
+          "id": "ministral-14b-2512",
+          "display_name": "Ministral 3 14B",
+          "description": "Largest model in the Ministral 3 family with 14B parameters, combining strong text and vision capabilities with efficient inference.",
           "release_date": "2025-12",
           "context_window": 256000,
-          "max_output_tokens": 32000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.2,
+            "OutputCostPerMillion": 0.2
+          }
+        },
+        {
+          "id": "mistral-small-2603",
+          "display_name": "Mistral Small 4",
+          "description": "March 2026 release of Mistral Small 4, a highly efficient hybrid model unifying instruction following, reasoning, and coding capabilities.",
+          "release_date": "2026-03",
+          "context_window": 256000,
           "capabilities": {
             "vision": true,
             "documents": false
           },
           "pricing": {
             "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 6.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-medium-2312",
-          "display_name": "Mistral Medium 2312",
-          "description": "Frontier-class multimodal model for advanced applications requiring sophisticated reasoning and multi-modal understanding.",
-          "release_date": "2023-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.7,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 8.1,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 5.0
           }
         },
         {
           "id": "mistral-medium-2508",
-          "display_name": "Mistral Medium 2508",
+          "display_name": "Mistral Medium 3.1",
           "description": "Frontier-class multimodal model released August 2025 for advanced applications requiring sophisticated reasoning and multi-modal understanding.",
           "release_date": "2025-08",
           "context_window": 128000,
-          "max_output_tokens": 32000,
           "capabilities": {
             "vision": true,
             "documents": false
           },
           "pricing": {
             "InputCostPerMillion": 0.4,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 2.0
           }
         },
         {
-          "id": "mistral-ocr-2503",
-          "display_name": "Mistral OCR 2503",
+          "id": "mistral-large-2512",
+          "display_name": "Mistral Large 3",
+          "description": "State-of-the-art general-purpose multimodal model for high-complexity tasks requiring maximum reasoning capability.",
+          "release_date": "2025-12",
+          "context_window": 256000,
+          "capabilities": {
+            "vision": true,
+            "documents": false
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "OutputCostPerMillion": 1.5
+          }
+        },
+        {
+          "id": "magistral-small-2509",
+          "display_name": "Magistral Small 1.2",
+          "description": "Efficient reasoning model providing advanced problem-solving capabilities with optimized performance for resource-constrained deployments.",
+          "release_date": "2025-09",
+          "context_window": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": false,
+            "thinking": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 0.5,
+            "OutputCostPerMillion": 1.5
+          }
+        },
+        {
+          "id": "magistral-medium-2509",
+          "display_name": "Magistral Medium 1.2",
+          "description": "Advanced reasoning model with frontier-class performance supporting function-calling, document QnA, chat completions, and batching.",
+          "release_date": "2025-09",
+          "context_window": 128000,
+          "capabilities": {
+            "vision": true,
+            "documents": false,
+            "thinking": true
+          },
+          "pricing": {
+            "InputCostPerMillion": 2.0,
+            "OutputCostPerMillion": 5.0
+          }
+        },
+        {
+          "id": "mistral-ocr-2512",
+          "display_name": "Mistral OCR 2512",
           "description": "Specialized OCR model powering Mistral's Document AI stack for high-accuracy document understanding and information extraction.",
-          "release_date": "2025-03",
+          "release_date": "2025-12",
           "context_window": 128000,
           "max_output_tokens": 32000,
           "capabilities": {
@@ -1307,411 +292,9 @@
           },
           "pricing": {
             "InputCostPerMillion": 1.0,
-            "CachedInputCostPerMillion": 0,
             "OutputCostPerMillion": 1.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-2402",
-          "display_name": "Mistral Small 2402",
-          "description": "Efficient model unifying instruction following, reasoning, and coding in a single streamlined package for versatile deployments.",
-          "release_date": "2024-02",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.2,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.6,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-2409",
-          "display_name": "Mistral Small 2409",
-          "description": "Efficient model unifying instruction following, reasoning, and coding in a single streamlined package for versatile deployments.",
-          "release_date": "2024-09",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.2,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.6,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-2501",
-          "display_name": "Mistral Small 2501",
-          "description": "Efficient model unifying instruction following, reasoning, and coding in a single streamlined package for versatile deployments.",
-          "release_date": "2025-01",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.3,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-2503",
-          "display_name": "Mistral Small 2503",
-          "description": "Efficient model unifying instruction following, reasoning, and coding in a single streamlined package for versatile deployments.",
-          "release_date": "2025-03",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.3,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-2506",
-          "display_name": "Mistral Small 2506",
-          "description": "Efficient hybrid model unifying instruction following, reasoning, and coding capabilities in a single streamlined package.",
-          "release_date": "2025-06",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.3,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "pixtral",
-          "display_name": "Pixtral",
-          "description": "Frontier-class multimodal vision model for vision-intensive applications and complex visual understanding tasks.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 6.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "pixtral-12b-2409",
-          "display_name": "Pixtral 12B 2409",
-          "description": "Compact 12B multimodal vision model released November 2024, supporting image inputs for visual understanding and analysis.",
-          "release_date": "2024-09",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.15,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.15,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-large-3-25-12",
-          "display_name": "Mistral Large 3 (2512)",
-          "description": "Mistral's most capable general-purpose model with 256K context, offering state-of-the-art multimodal reasoning and instruction following.",
-          "release_date": "2025-12",
-          "context_window": 256000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 6.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "devstral-2-25-12",
-          "display_name": "Devstral 2 (2512)",
-          "description": "Code-specialized Mistral model optimized for software engineering tasks including code generation, debugging, and technical documentation.",
-          "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": false,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.27,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.1,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "mistral-small-4-0-26-03",
-          "display_name": "Mistral Small 4 (2603)",
-          "description": "March 2026 release of Mistral Small 4, a highly efficient hybrid model unifying instruction following, reasoning, and coding capabilities.",
-          "release_date": "2026-03",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.3,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "ministral-3-3b-25-12",
-          "display_name": "Ministral 3 3B (2512)",
-          "description": "Ultra-compact 3B parameter Ministral 3 model for edge and on-device deployments with best-in-class efficiency.",
-          "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.04,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.04,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "ministral-3-8b-25-12",
-          "display_name": "Ministral 3 8B (2512)",
-          "description": "Efficient 8B parameter Ministral 3 model with best-in-class text and vision capabilities for balanced performance.",
-          "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.1,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.1,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "ministral-3-14b-25-12",
-          "display_name": "Ministral 3 14B (2512)",
-          "description": "High-capacity 14B parameter Ministral 3 model combining strong text and vision capabilities with efficient inference.",
-          "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.15,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.15,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OcrInputCostPerThousandPages": 2.0,
+            "OcrOutputCostPerThousandPages": 3.0
           }
         }
       ]
@@ -1724,1203 +307,71 @@
       "pricing_url": "https://developers.openai.com/api/docs/pricing",
       "models": [
         {
-          "id": "gpt-3.5-0301",
-          "display_name": "GPT-3.5 0301",
-          "description": "Snapshot of GPT-3.5 from March 2023, with 4K context window for text completion and chat tasks.",
-          "release_date": "2023-03",
-          "context_window": 4096,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 1.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo",
-          "display_name": "GPT-3.5 Turbo",
-          "description": "Optimized GPT-3.5 model with 16K context window, balancing speed and quality for chat and instruction-following tasks.",
-          "release_date": "2022-11",
-          "context_window": 16385,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0.25,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.75,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo-0125",
-          "display_name": "GPT-3.5 Turbo 0125",
-          "description": "January 2024 GPT-3.5 Turbo snapshot with improved accuracy and reduced hallucinations.",
-          "release_date": "2024-01",
-          "context_window": 16385,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 1.5,
-            "BatchInputCostPerMillion": 0.25,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.75,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo-0613",
-          "display_name": "GPT-3.5 Turbo 0613",
-          "description": "June 2023 GPT-3.5 Turbo snapshot with function calling support and 4K context window.",
-          "release_date": "2023-06",
-          "context_window": 4096,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 1.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo-1106",
-          "display_name": "GPT-3.5 Turbo 1106",
-          "description": "November 2023 GPT-3.5 Turbo snapshot adding JSON mode and parallel function calling support.",
-          "release_date": "2023-11",
-          "context_window": 16385,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 1,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo-16k-0613",
-          "display_name": "GPT-3.5 Turbo 16K 0613",
-          "description": "Extended-context GPT-3.5 Turbo with 16K token window for processing longer documents and conversations.",
-          "release_date": "2023-06",
-          "context_window": 16384,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 3.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 4.0,
-            "BatchInputCostPerMillion": 1.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-3.5-turbo-instruct",
-          "display_name": "GPT-3.5 Turbo Instruct",
-          "description": "GPT-3.5 Turbo variant using completion-style API for instruction-following without chat message formatting.",
-          "release_date": "2023-09",
-          "context_window": 4096,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-0125-preview",
-          "display_name": "GPT-4 0125 Preview",
-          "description": "January 2024 GPT-4 Turbo preview with 128K context, reduced laziness, and improved task completion.",
-          "release_date": "2024-01",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 10.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 30.0,
-            "BatchInputCostPerMillion": 5.0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 15.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-0314",
-          "display_name": "GPT-4 0314",
-          "description": "Original GPT-4 snapshot from March 2023 with 8K context for complex reasoning and generation tasks.",
-          "release_date": "2023-03",
-          "context_window": 8192,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 30.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 60.0,
-            "BatchInputCostPerMillion": 15,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 30,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-0613",
-          "display_name": "GPT-4 0613",
-          "description": "June 2023 GPT-4 snapshot with improved function calling support and 8K context window.",
-          "release_date": "2023-06",
-          "context_window": 8192,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 30.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 60.0,
-            "BatchInputCostPerMillion": 15,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 30,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-1106-preview",
-          "display_name": "GPT-4 1106 Preview",
-          "description": "GPT-4 Turbo preview from November 2023 with 128K context, improved instruction following, and JSON mode.",
-          "release_date": "2023-11",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 10.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 30.0,
-            "BatchInputCostPerMillion": 5.0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 15.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-1106-vision-preview",
-          "display_name": "GPT-4 1106 Vision Preview",
-          "description": "GPT-4 Turbo preview with vision capabilities for image understanding and analysis with 128K context.",
-          "release_date": "2023-11",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 10.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 30.0,
-            "BatchInputCostPerMillion": 5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 15,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-32k",
-          "display_name": "GPT-4 32K",
-          "description": "GPT-4 variant with 32K context window for processing large documents and extended conversations.",
-          "release_date": "2023-06",
-          "context_window": 32768,
-          "max_output_tokens": 8192,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 60.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 120.0,
-            "BatchInputCostPerMillion": 30,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 60,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4-turbo-2024-04-09",
-          "display_name": "GPT-4 Turbo 2024 04 09",
-          "description": "GPT-4 Turbo with vision, April 2024 release, featuring 128K context and improved performance over preview versions.",
-          "release_date": "2024-04",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 10.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 30.0,
-            "BatchInputCostPerMillion": 5.0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 15.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o",
-          "display_name": "GPT-4o",
-          "description": "Omni model combining GPT-4-level intelligence with faster speed, vision support, and 128K context at lower cost.",
-          "release_date": "2024-05",
-          "context_window": 128000,
-          "max_output_tokens": 16384,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 1.25,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 1.25,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 5.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o-mini-transcribe",
-          "display_name": "GPT-4o Mini Transcribe",
-          "description": "Cost-efficient GPT-4o Mini variant specialized for high-accuracy speech-to-text transcription.",
-          "release_date": "2025-03",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.15,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.6,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 3,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o-mini-tts",
-          "display_name": "GPT-4o Mini TTS",
-          "description": "Cost-efficient GPT-4o Mini variant specialized for natural-sounding text-to-speech synthesis.",
-          "release_date": "2025-03",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.15,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 0.6,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 12,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o-transcribe",
-          "display_name": "GPT-4o Transcribe",
-          "description": "GPT-4o variant specialized for high-accuracy audio transcription with improved language understanding.",
-          "release_date": "2025-03",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 6,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o-transcribe-diarize",
-          "display_name": "GPT-4o Transcribe Diarize",
-          "description": "GPT-4o transcription model with speaker diarization support for multi-speaker audio identification.",
-          "release_date": "2025-03",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 6,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5",
-          "display_name": "GPT-5",
-          "description": "OpenAI flagship model excelling at coding, reasoning, and agentic tasks with configurable reasoning effort and 400K context.",
-          "release_date": "2025-05",
-          "context_window": 400000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0.125,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0.625,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 5.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5-mini",
-          "display_name": "GPT-5 Mini",
-          "description": "Near-frontier intelligence at lower cost, optimized for high-volume workloads with precise instruction following and 400K context.",
-          "release_date": "2025-05",
-          "context_window": 400000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.25,
-            "CachedInputCostPerMillion": 0.025,
-            "OutputCostPerMillion": 2.0,
-            "BatchInputCostPerMillion": 0.125,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 1.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.1",
-          "display_name": "GPT-5.1",
-          "description": "OpenAI flagship model with configurable reasoning effort (none/low/medium/high), designed for coding and agentic tasks.",
-          "release_date": "2025-07",
-          "context_window": 400000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0.125,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0.625,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 5.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.1-codex",
-          "display_name": "GPT-5.1 Codex",
-          "description": "Specialized GPT-5.1 variant for agentic coding tasks in Codex environments, available exclusively via Responses API.",
-          "release_date": "2025-07",
-          "context_window": 400000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.25,
-            "CachedInputCostPerMillion": 0.125,
-            "OutputCostPerMillion": 10.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.4",
-          "display_name": "GPT-5.4",
-          "description": "Frontier model for complex professional work excelling in agentic, coding, and professional workflows with 1M context and variable reasoning.",
-          "release_date": "2025-08",
-          "context_window": 1050000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 0.25,
-            "OutputCostPerMillion": 15.0,
-            "BatchInputCostPerMillion": 1.25,
-            "BatchCachedInputCostPerMillion": 0.13,
-            "BatchOutputCostPerMillion": 7.5,
-            "PriorityInputCostPerMillion": 5,
-            "PriorityCachedInputCostPerMillion": 0.5,
-            "PriorityOutputCostPerMillion": 30,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 5,
-            "LongContextCachedInputCostPerMillion": 0.5,
-            "LongContextOutputCostPerMillion": 22.5,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.4-pro",
-          "display_name": "GPT-5.4 Pro",
-          "description": "Premium GPT-5.4 variant offering maximum capability for complex enterprise workloads at frontier performance.",
-          "release_date": "2025-08",
-          "context_window": 1050000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 30.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 180.0,
-            "BatchInputCostPerMillion": 15.0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 90.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 60,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 270,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-audio-1.5",
-          "display_name": "GPT-audio 1.5",
-          "description": "Audio-specialized GPT model supporting real-time audio input and output for voice-based applications.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 32.0,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 64.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-image-1-mini",
-          "display_name": "GPT-image 1 Mini",
-          "description": "Cost-efficient image generation model producing high-quality images from natural language descriptions.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 0.25,
-            "OutputCostPerMillion": 8.0,
-            "BatchInputCostPerMillion": 1.25,
-            "BatchCachedInputCostPerMillion": 0.13,
-            "BatchOutputCostPerMillion": 4.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-image-1.5",
-          "display_name": "GPT-image 1.5",
-          "description": "Advanced image generation model with enhanced visual fidelity and instruction-following for complex prompts.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 8.0,
-            "CachedInputCostPerMillion": 2.0,
-            "OutputCostPerMillion": 32.0,
-            "BatchInputCostPerMillion": 4.0,
-            "BatchCachedInputCostPerMillion": 1.0,
-            "BatchOutputCostPerMillion": 16.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-realtime-1.5",
-          "display_name": "GPT-realtime 1.5",
-          "description": "Real-time audio model enabling low-latency voice interactions with speech-to-speech processing capabilities.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 32.0,
-            "CachedInputCostPerMillion": 0.4,
-            "OutputCostPerMillion": 64.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-realtime-mini",
-          "display_name": "GPT-realtime Mini",
-          "description": "Lightweight real-time audio model for cost-efficient low-latency voice interactions at scale.",
-          "release_date": "",
-          "context_window": 128000,
-          "max_output_tokens": 4096,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 10.0,
-            "CachedInputCostPerMillion": 0.3,
-            "OutputCostPerMillion": 20.0,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "o1",
-          "display_name": "O1",
-          "description": "OpenAI's first reasoning model using chain-of-thought to excel at complex math, science, and coding problems.",
-          "release_date": "2024-12",
-          "context_window": 200000,
-          "max_output_tokens": 100000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 15.0,
-            "CachedInputCostPerMillion": 7.5,
-            "OutputCostPerMillion": 60.0,
-            "BatchInputCostPerMillion": 7.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 30.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "o3",
-          "display_name": "O3",
-          "description": "Well-rounded reasoning model setting new standards for math, science, coding, and visual reasoning with 200K context.",
-          "release_date": "2025-04",
-          "context_window": 200000,
-          "max_output_tokens": 100000,
-          "capabilities": {
-            "vision": true,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0.5,
-            "OutputCostPerMillion": 8.0,
-            "BatchInputCostPerMillion": 1.0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 4.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-4o-mini",
-          "display_name": "GPT-4o Mini",
-          "description": "Cost-efficient GPT-4o variant delivering strong multimodal capabilities at a fraction of the cost, ideal for high-volume tasks.",
-          "release_date": "2024-07",
-          "context_window": 128000,
-          "max_output_tokens": 16384,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.15,
-            "CachedInputCostPerMillion": 0.075,
-            "OutputCostPerMillion": 0.6,
-            "BatchInputCostPerMillion": 0.075,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0.3,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "o1-preview",
-          "display_name": "O1 Preview",
-          "description": "Preview release of OpenAI's o1 reasoning model, using chain-of-thought to excel at complex math, science, and coding problems.",
-          "release_date": "2024-09",
-          "context_window": 128000,
-          "max_output_tokens": 32768,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 15.0,
-            "CachedInputCostPerMillion": 7.5,
-            "OutputCostPerMillion": 60.0,
-            "BatchInputCostPerMillion": 7.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 30.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "o1-mini",
-          "display_name": "O1 Mini",
-          "description": "Efficient version of the o1 reasoning model, optimized for STEM reasoning tasks with reduced cost and faster response times.",
-          "release_date": "2024-09",
-          "context_window": 128000,
-          "max_output_tokens": 65536,
-          "capabilities": {
-            "vision": false,
-            "documents": false
-          },
-          "pricing": {
-            "InputCostPerMillion": 3.0,
-            "CachedInputCostPerMillion": 1.5,
-            "OutputCostPerMillion": 12.0,
-            "BatchInputCostPerMillion": 1.5,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 6.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.4-mini",
-          "display_name": "GPT-5.4 Mini",
-          "description": "Fastest mini model for coding, computer use, and subagents — brings GPT-5.4 capabilities to high-volume workloads with 400K context.",
-          "release_date": "2025-08",
-          "context_window": 400000,
-          "max_output_tokens": 128000,
-          "capabilities": {
-            "vision": true,
-            "documents": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 0.75,
-            "CachedInputCostPerMillion": 0.075,
-            "OutputCostPerMillion": 4.5,
-            "BatchInputCostPerMillion": 0.375,
-            "BatchCachedInputCostPerMillion": 0.0375,
-            "BatchOutputCostPerMillion": 2.25,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
-          }
-        },
-        {
-          "id": "gpt-5.4-nano",
+          "id": "gpt-5.4-nano-2026-03-17",
           "display_name": "GPT-5.4 Nano",
           "description": "Cheapest GPT-5.4-class model optimized for classification, data extraction, ranking, and sub-agents at scale.",
-          "release_date": "2025-08",
+          "release_date": "2026-03",
           "context_window": 400000,
           "max_output_tokens": 128000,
           "capabilities": {
             "vision": true,
-            "documents": true
+            "documents": false,
+            "thinking": true
           },
           "pricing": {
             "InputCostPerMillion": 0.2,
-            "CachedInputCostPerMillion": 0.02,
-            "OutputCostPerMillion": 1.25,
-            "BatchInputCostPerMillion": 0.1,
-            "BatchCachedInputCostPerMillion": 0.01,
-            "BatchOutputCostPerMillion": 0.625,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 1.25
           }
         },
         {
-          "id": "gpt-4.1",
-          "display_name": "GPT-4.1",
-          "description": "Smartest non-reasoning model excelling at instruction following and tool calling with broad knowledge across domains and 1M context.",
-          "release_date": "2025-04",
-          "context_window": 1047576,
-          "max_output_tokens": 32768,
+          "id": "gpt-5.4-mini-2026-03-17",
+          "display_name": "GPT-5.4 Mini",
+          "description": "Fastest mini model for coding, computer use, and subagents — brings GPT-5.4 capabilities to high-volume workloads with 400K context.",
+          "release_date": "2026-03",
+          "context_window": 400000,
+          "max_output_tokens": 128000,
           "capabilities": {
             "vision": true,
-            "documents": true
+            "documents": false,
+            "thinking": true
           },
           "pricing": {
-            "InputCostPerMillion": 2.0,
-            "CachedInputCostPerMillion": 0.5,
-            "OutputCostPerMillion": 8.0,
-            "BatchInputCostPerMillion": 1.0,
-            "BatchCachedInputCostPerMillion": 0.5,
-            "BatchOutputCostPerMillion": 4.0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 25.0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "InputCostPerMillion": 0.75,
+            "OutputCostPerMillion": 4.5
           }
         },
         {
-          "id": "gpt-4.1-mini",
-          "display_name": "GPT-4.1 Mini",
-          "description": "Smaller, faster version of GPT-4.1 delivering strong instruction-following and tool usage without a reasoning step.",
-          "release_date": "2025-04",
-          "context_window": 1047576,
-          "max_output_tokens": 32768,
+          "id": "gpt-5.4-2026-03-05",
+          "display_name": "GPT-5.4",
+          "description": "Frontier model for complex professional work excelling in agentic, coding, and professional workflows with 1M context and variable reasoning.",
+          "release_date": "2026-03",
+          "context_window": 1050000,
+          "max_output_tokens": 128000,
           "capabilities": {
             "vision": true,
-            "documents": true
+            "documents": false,
+            "thinking": true
           },
           "pricing": {
-            "InputCostPerMillion": 0.4,
-            "CachedInputCostPerMillion": 0.1,
-            "OutputCostPerMillion": 1.6,
-            "BatchInputCostPerMillion": 0.2,
-            "BatchCachedInputCostPerMillion": 0.1,
-            "BatchOutputCostPerMillion": 0.8,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 5.0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "InputCostPerMillion": 2.5,
+            "OutputCostPerMillion": 15.0
           }
         },
         {
-          "id": "o4-mini",
-          "display_name": "O4 Mini",
-          "description": "Fast, cost-efficient reasoning model optimized for coding and visual tasks with 200K context and 100K output.",
-          "release_date": "2025-04",
-          "context_window": 200000,
-          "max_output_tokens": 100000,
+          "id": "gpt-5.4-pro-2026-03-05",
+          "display_name": "GPT-5.4 Pro",
+          "description": "Premium GPT-5.4 variant offering maximum capability for complex enterprise workloads at frontier performance.",
+          "release_date": "2026-03",
+          "context_window": 1050000,
+          "max_output_tokens": 128000,
           "capabilities": {
             "vision": true,
-            "documents": false
+            "documents": false,
+            "thinking": true
           },
           "pricing": {
-            "InputCostPerMillion": 1.1,
-            "CachedInputCostPerMillion": 0.275,
-            "OutputCostPerMillion": 4.4,
-            "BatchInputCostPerMillion": 0.55,
-            "BatchCachedInputCostPerMillion": 0.138,
-            "BatchOutputCostPerMillion": 2.2,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 100.0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "InputCostPerMillion": 30.0,
+            "OutputCostPerMillion": 180.0
           }
         }
       ]

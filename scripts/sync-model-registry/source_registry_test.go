@@ -59,21 +59,7 @@ func TestLoadRegistrySourceDisallowUnknownFields(t *testing.T) {
           },
           "pricing": {
             "InputCostPerMillion": 2.5,
-            "CachedInputCostPerMillion": 0,
-            "OutputCostPerMillion": 10,
-            "BatchInputCostPerMillion": 0,
-            "BatchCachedInputCostPerMillion": 0,
-            "BatchOutputCostPerMillion": 0,
-            "PriorityInputCostPerMillion": 0,
-            "PriorityCachedInputCostPerMillion": 0,
-            "PriorityOutputCostPerMillion": 0,
-            "LongContextTriggerAtTokens": 0,
-            "LongContextInputCostPerMillion": 0,
-            "LongContextCachedInputCostPerMillion": 0,
-            "LongContextOutputCostPerMillion": 0,
-            "TrainingCostPerHour": 0,
-            "EstimatedCostPerMinute": 0,
-            "EstimatedCostPerSecond": 0
+            "OutputCostPerMillion": 10
           },
           "unexpected": true
         }

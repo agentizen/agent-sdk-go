@@ -57,7 +57,6 @@
                 "description",
                 "release_date",
                 "context_window",
-                "max_output_tokens",
                 "capabilities",
                 "pricing"
               ],
@@ -89,41 +88,69 @@
                 },
                 "capabilities": {
                   "type": "object",
-                  "required": [
-                    "vision",
-                    "documents"
-                  ],
                   "additionalProperties": false,
                   "properties": {
-                    "vision": {
+                    "audioGeneration": {
+                      "type": "boolean"
+                    },
+                    "batchAPI": {
+                      "type": "boolean"
+                    },
+                    "caching": {
+                      "type": "boolean"
+                    },
+                    "codeExecution": {
                       "type": "boolean"
                     },
                     "documents": {
+                      "type": "boolean"
+                    },
+                    "fileSearch": {
+                      "type": "boolean"
+                    },
+                    "functionCalling": {
+                      "type": "boolean"
+                    },
+                    "imageGeneration": {
+                      "type": "boolean"
+                    },
+                    "liveAPI": {
+                      "type": "boolean"
+                    },
+                    "structuredOutput": {
+                      "type": "boolean"
+                    },
+                    "thinking": {
+                      "type": "boolean"
+                    },
+                    "vision": {
                       "type": "boolean"
                     }
                   }
                 },
                 "pricing": {
                   "type": "object",
-                  "required": [
-                    "InputCostPerMillion",
-                    "CachedInputCostPerMillion",
-                    "OutputCostPerMillion",
-                    "BatchInputCostPerMillion",
-                    "BatchCachedInputCostPerMillion",
-                    "BatchOutputCostPerMillion",
-                    "PriorityInputCostPerMillion",
-                    "PriorityCachedInputCostPerMillion",
-                    "PriorityOutputCostPerMillion",
-                    "LongContextTriggerAtTokens",
-                    "LongContextInputCostPerMillion",
-                    "LongContextCachedInputCostPerMillion",
-                    "LongContextOutputCostPerMillion",
-                    "TrainingCostPerHour",
-                    "EstimatedCostPerMinute",
-                    "EstimatedCostPerSecond"
-                  ],
-                  "additionalProperties": false
+                  "additionalProperties": false,
+                  "properties": {
+                    "BatchCachedInputCostPerMillion":       { "type": "number", "minimum": 0 },
+                    "BatchInputCostPerMillion":             { "type": "number", "minimum": 0 },
+                    "BatchOutputCostPerMillion":            { "type": "number", "minimum": 0 },
+                    "CachedInputCostPerMillion":            { "type": "number", "minimum": 0 },
+                    "EstimatedCostPerMinute":               { "type": "number", "minimum": 0 },
+                    "EstimatedCostPerSecond":               { "type": "number", "minimum": 0 },
+                    "InputCostPerMillion":                  { "type": "number", "minimum": 0 },
+                    "LongContextCachedInputCostPerMillion": { "type": "number", "minimum": 0 },
+                    "LongContextInputCostPerMillion":       { "type": "number", "minimum": 0 },
+                    "LongContextOutputCostPerMillion":      { "type": "number", "minimum": 0 },
+                    "LongContextTriggerAtTokens":           { "type": "integer", "minimum": 0 },
+                    "OcrInputCostPerThousandPages":         { "type": "number", "minimum": 0 },
+                    "OcrOutputCostPerThousandPages":        { "type": "number", "minimum": 0 },
+                    "OutputCostPerMillion":                 { "type": "number", "minimum": 0 },
+                    "PriorityCachedInputCostPerMillion":    { "type": "number", "minimum": 0 },
+                    "PriorityInputCostPerMillion":          { "type": "number", "minimum": 0 },
+                    "PriorityOutputCostPerMillion":         { "type": "number", "minimum": 0 },
+                    "TrainingCostPerHour":                  { "type": "number", "minimum": 0 }
+                  }
                 }
               }
             }

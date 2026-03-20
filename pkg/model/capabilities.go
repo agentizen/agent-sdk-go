@@ -7,19 +7,49 @@ import "strings"
 type Capability string
 
 const (
-	CapabilityVision    Capability = "vision"
-	CapabilityDocuments Capability = "documents"
+	CapabilityAudioGeneration  Capability = "audioGeneration"
+	CapabilityBatchAPI         Capability = "batchAPI"
+	CapabilityCaching          Capability = "caching"
+	CapabilityCodeExecution    Capability = "codeExecution"
+	CapabilityDocuments        Capability = "documents"
+	CapabilityFileSearch       Capability = "fileSearch"
+	CapabilityFunctionCalling  Capability = "functionCalling"
+	CapabilityImageGeneration  Capability = "imageGeneration"
+	CapabilityLiveAPI          Capability = "liveAPI"
+	CapabilityStructuredOutput Capability = "structuredOutput"
+	CapabilityThinking         Capability = "thinking"
+	CapabilityVision           Capability = "vision"
 )
 
 type ModelCapabilitySet struct {
-	Vision    bool
-	Documents bool
+	AudioGeneration  bool
+	BatchAPI         bool
+	Caching          bool
+	CodeExecution    bool
+	Documents        bool
+	FileSearch       bool
+	FunctionCalling  bool
+	ImageGeneration  bool
+	LiveAPI          bool
+	StructuredOutput bool
+	Thinking         bool
+	Vision           bool
 }
 
 func CapabilitiesFor(provider, modelID string) ModelCapabilitySet {
 	return ModelCapabilitySet{
-		Vision:    ProviderSupports(provider, modelID, CapabilityVision),
-		Documents: ProviderSupports(provider, modelID, CapabilityDocuments),
+		AudioGeneration:  ProviderSupports(provider, modelID, CapabilityAudioGeneration),
+		BatchAPI:         ProviderSupports(provider, modelID, CapabilityBatchAPI),
+		Caching:          ProviderSupports(provider, modelID, CapabilityCaching),
+		CodeExecution:    ProviderSupports(provider, modelID, CapabilityCodeExecution),
+		Documents:        ProviderSupports(provider, modelID, CapabilityDocuments),
+		FileSearch:       ProviderSupports(provider, modelID, CapabilityFileSearch),
+		FunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),
+		ImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),
+		LiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),
+		StructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),
+		Thinking:         ProviderSupports(provider, modelID, CapabilityThinking),
+		Vision:           ProviderSupports(provider, modelID, CapabilityVision),
 	}
 }
 
@@ -30,88 +60,32 @@ type capabilityEntry struct {
 
 var providerCapabilities = map[string][]capabilityEntry{
 	"anthropic": {
-		{prefix: "claude-haiku-4-5", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-haiku-4-5-20251001", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-opus-4-1-20250805", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-opus-4-20250514", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-opus-4-5-20251101", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-opus-4-6", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-sonnet-4-20250514", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-sonnet-4-5-20250929", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "claude-sonnet-4-6", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
+		{prefix: "claude-haiku-4-5-20251001", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
+		{prefix: "claude-opus-4-6", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
+		{prefix: "claude-sonnet-4-6", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
 	},
 	"gemini": {
-		{prefix: "gemini-2.0-flash", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.0-flash-lite", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-computer-use-preview-10-2025", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash-image", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash-lite", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash-native-audio-preview-12-2025", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash-preview-09-2025", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-flash-preview-tts", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-pro", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-2.5-pro-preview-tts", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3-flash-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3-pro-image-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3-pro-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3.1-flash-image-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3.1-flash-lite-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-3.1-pro-preview", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gemini-flash-latest", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
+		{prefix: "gemini-2.5-flash", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
+		{prefix: "gemini-2.5-flash-lite", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
+		{prefix: "gemini-2.5-pro", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
 	},
 	"lmstudio": {},
 	"mistral": {
-		{prefix: "devstral-2-25-12", caps: map[Capability]bool{CapabilityDocuments: true}},
-		{prefix: "magistral-medium-2506", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "magistral-medium-2507", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "magistral-medium-2509", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "magistral-small-2506", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "magistral-small-2507", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "magistral-small-2509", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "ministral-3-14b-25-12", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "ministral-3-3b-25-12", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "ministral-3-8b-25-12", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "ministral-3b-2410", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "ministral-8b-2410", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "magistral-medium-2509", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "magistral-small-2509", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "ministral-14b-2512", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "ministral-3b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "ministral-8b-2512", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-large-2402", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-large-2407", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-large-3-25-12", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "mistral-medium-2312", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-ocr-2503", caps: map[Capability]bool{CapabilityDocuments: true}},
-		{prefix: "mistral-small-2402", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-2409", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-2501", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-2503", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-2506", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-4-0-26-03", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "pixtral", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "pixtral-12b-2409", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityDocuments: true}},
+		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"openai": {
-		{prefix: "gpt-4.1", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4.1-mini", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o-mini", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o-mini-transcribe", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o-mini-tts", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o-transcribe", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-4o-transcribe-diarize", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5-mini", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.1", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.1-codex", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.4", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.4-mini", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.4-nano", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "gpt-5.4-pro", caps: map[Capability]bool{CapabilityVision: true, CapabilityDocuments: true}},
-		{prefix: "o1", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "o3", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "o4-mini", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "gpt-5.4-2026-03-05", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-mini-2026-03-17", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-nano-2026-03-17", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-pro-2026-03-05", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
 	},
 }
 

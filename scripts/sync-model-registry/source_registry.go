@@ -38,8 +38,18 @@ type modelSource struct {
 }
 
 type capabilitySource struct {
-	Vision    bool `json:"vision"`
-	Documents bool `json:"documents"`
+	AudioGeneration  bool `json:"audioGeneration"`
+	BatchAPI         bool `json:"batchAPI"`
+	Caching          bool `json:"caching"`
+	CodeExecution    bool `json:"codeExecution"`
+	Documents        bool `json:"documents"`
+	FileSearch       bool `json:"fileSearch"`
+	FunctionCalling  bool `json:"functionCalling"`
+	ImageGeneration  bool `json:"imageGeneration"`
+	LiveAPI          bool `json:"liveAPI"`
+	StructuredOutput bool `json:"structuredOutput"`
+	Thinking         bool `json:"thinking"`
+	Vision           bool `json:"vision"`
 }
 
 var canonicalIDRegexp = regexp.MustCompile(`^[a-z0-9][a-z0-9.-]*$`)
@@ -149,9 +159,6 @@ func validateRegistrySource(source registrySource) error {
 			}
 			if modelEntry.ContextWindow <= 0 {
 				return fmt.Errorf("provider %s model %s context_window must be > 0", providerID, modelID)
-			}
-			if modelEntry.MaxOutputTokens <= 0 {
-				return fmt.Errorf("provider %s model %s max_output_tokens must be > 0", providerID, modelID)
 			}
 			if modelEntry.Pricing.InputCostPerMillion < 0 || modelEntry.Pricing.OutputCostPerMillion < 0 {
 				return fmt.Errorf("provider %s model %s pricing fields must be >= 0", providerID, modelID)
