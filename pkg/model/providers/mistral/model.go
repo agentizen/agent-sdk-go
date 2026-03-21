@@ -12,6 +12,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -129,6 +130,10 @@ func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model
 
 		if attempt > 0 {
 			backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
+			var rlErr *RateLimitError
+			if errors.As(lastErr, &rlErr) && rlErr.RetryAfter > backoff {
+				backoff = rlErr.RetryAfter
+			}
 			select {
 			case <-ctx.Done():
 				return nil, fmt.Errorf("mistral: context canceled during backoff: %w", ctx.Err())
@@ -215,7 +220,11 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 
 	if resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
+		msg := fmt.Sprintf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
+		if resp.StatusCode == http.StatusTooManyRequests {
+			return nil, &RateLimitError{Message: msg, RetryAfter: parseRetryAfter(resp.Header.Get("Retry-After"))}
+		}
+		return nil, fmt.Errorf("%s", msg)
 	}
 
 	var apiResp chatCompletionResponse
@@ -408,6 +417,10 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 
 			if attempt > 0 {
 				backoff := calculateBackoff(attempt, m.Provider.RetryAfter)
+				var rlErr *RateLimitError
+				if errors.As(lastErr, &rlErr) && rlErr.RetryAfter > backoff {
+					backoff = rlErr.RetryAfter
+				}
 				select {
 				case <-ctx.Done():
 					events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: fmt.Errorf("mistral: context canceled during backoff: %w", ctx.Err())}
@@ -548,7 +561,11 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 
 	if resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
+		msg := fmt.Sprintf("mistral: API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
+		if resp.StatusCode == http.StatusTooManyRequests {
+			return &RateLimitError{Message: msg, RetryAfter: parseRetryAfter(resp.Header.Get("Retry-After"))}
+		}
+		return fmt.Errorf("%s", msg)
 	}
 
 	type toolCallAccumulator struct {
@@ -826,12 +843,21 @@ func buildMistralMultimodalContent(parts []model.ContentPart, input interface{},
 		return ""
 	}
 
-	// Return a plain string when only a single text part is present and there
-	// are no image parts, to avoid unnecessary array wrapping.
-	if !hasImage && len(contentParts) == 1 {
-		if txt, ok := contentParts[0]["text"].(string); ok {
-			return txt
+	// When no images are present, concatenate all text parts into a single plain
+	// string. Text-only Mistral models (e.g. magistral reasoning models) do not
+	// accept the array content format and silently drop or ignore extra parts
+	// when the content is an array, causing OCR-extracted text to be lost.
+	if !hasImage {
+		var sb strings.Builder
+		for i, part := range contentParts {
+			if i > 0 {
+				sb.WriteString("\n\n")
+			}
+			if txt, ok := part["text"].(string); ok {
+				sb.WriteString(txt)
+			}
 		}
+		return sb.String()
 	}
 
 	return contentParts
@@ -1150,15 +1176,40 @@ func getBoolArg(args map[string]interface{}, key string) (bool, bool) {
 	return false, false
 }
 
+// RateLimitError is returned when the Mistral API responds with HTTP 429.
+// It carries the Retry-After duration from the response header when present.
+type RateLimitError struct {
+	Message    string
+	RetryAfter time.Duration
+}
+
+func (e *RateLimitError) Error() string { return e.Message }
+
+// parseRetryAfter parses the value of a Retry-After HTTP header into a duration.
+// It handles both integer seconds and HTTP-date formats.
+func parseRetryAfter(header string) time.Duration {
+	if header == "" {
+		return 0
+	}
+	if secs, err := strconv.Atoi(strings.TrimSpace(header)); err == nil && secs > 0 {
+		return time.Duration(secs) * time.Second
+	}
+	if t, err := http.ParseTime(header); err == nil {
+		if d := time.Until(t); d > 0 {
+			return d
+		}
+	}
+	return 0
+}
+
 // isRateLimitError checks if an error is likely a rate limit error.
 func isRateLimitError(err error) bool {
 	if err == nil {
 		return false
 	}
-	var apiErr interface{ Error() string }
-	if errors.As(err, &apiErr) {
-		s := apiErr.Error()
-		return strings.Contains(s, "429") || strings.Contains(strings.ToLower(s), "rate limit")
+	var rlErr *RateLimitError
+	if errors.As(err, &rlErr) {
+		return true
 	}
 	s := err.Error()
 	return strings.Contains(s, "429") || strings.Contains(strings.ToLower(s), "rate limit")

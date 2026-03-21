@@ -14,11 +14,14 @@ func TestProviderSupports(t *testing.T) {
 		want     bool
 	}{
 		// Mistral
-		{"mistral", "mistral-large-2512", model.CapabilityVision, true},
-		{"mistral", "mistral-medium-2508", model.CapabilityVision, true},
-		{"mistral", "mistral-small-2603", model.CapabilityVision, true},
-		{"mistral", "magistral-medium-2509", model.CapabilityVision, true},
-		{"mistral", "ministral-8b-2512", model.CapabilityVision, true},
+		{"mistral", "mistral-large-2512", model.CapabilityVision, false},
+		{"mistral", "mistral-medium-2508", model.CapabilityVision, false},
+		{"mistral", "mistral-small-2603", model.CapabilityVision, false},
+		{"mistral", "magistral-medium-2509", model.CapabilityVision, false},
+		{"mistral", "magistral-medium-2509", model.CapabilityThinking, true},
+		{"mistral", "magistral-small-2509", model.CapabilityVision, false},
+		{"mistral", "magistral-small-2509", model.CapabilityThinking, true},
+		{"mistral", "ministral-8b-2512", model.CapabilityVision, false},
 		{"mistral", "mistral-ocr-2512", model.CapabilityDocuments, true},
 		{"mistral", "mistral-ocr-2512", model.CapabilityOCR, true},
 		{"mistral", "mistral-ocr-2512", model.CapabilityVision, false},
@@ -52,7 +55,7 @@ func TestProviderSupports(t *testing.T) {
 		{"unknown", "gpt-5.4", model.CapabilityVision, false},
 
 		// Case-insensitivity
-		{"Mistral", "MISTRAL-LARGE-2512", model.CapabilityVision, true},
+		{"Mistral", "MISTRAL-LARGE-2512", model.CapabilityVision, false},
 		{"OPENAI", "GPT-5.4-2026-03-05", model.CapabilityVision, true},
 	}
 
