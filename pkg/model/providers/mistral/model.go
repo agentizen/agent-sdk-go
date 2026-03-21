@@ -357,14 +357,14 @@ func buildOCRDocument(request *model.Request) (ocrDocument, error) {
 
 	for _, p := range request.InputParts {
 		if p.Type == model.ContentPartTypeDocument && len(p.Data) > 0 {
-			name := p.Name
-			if name == "" {
-				name = "document.pdf"
+			mimeType := p.MimeType
+			if mimeType == "" {
+				mimeType = "application/pdf"
 			}
+			dataURL := "data:" + mimeType + ";base64," + base64.StdEncoding.EncodeToString(p.Data)
 			return ocrDocument{
-				Type:           "base64_document",
-				DocumentName:   name,
-				Base64Document: base64.StdEncoding.EncodeToString(p.Data),
+				Type:        "document_url",
+				DocumentURL: dataURL,
 			}, nil
 		}
 	}

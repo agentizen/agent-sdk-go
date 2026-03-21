@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -143,9 +144,11 @@ func TestMistralOCRModel_GetResponse_WithBase64Document(t *testing.T) {
 		var body map[string]interface{}
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		doc, _ := body["document"].(map[string]interface{})
-		assert.Equal(t, "base64_document", doc["type"])
-		assert.Equal(t, "invoice.pdf", doc["document_name"])
-		assert.NotEmpty(t, doc["base64_document"])
+		assert.Equal(t, "document_url", doc["type"])
+		assert.Nil(t, doc["document_name"])
+		assert.Nil(t, doc["base64_document"])
+		docURL, _ := doc["document_url"].(string)
+		assert.True(t, strings.HasPrefix(docURL, "data:application/pdf;base64,"), "document_url should be a base64 data URL")
 
 		resp := map[string]interface{}{
 			"id":    "ocr-test",
