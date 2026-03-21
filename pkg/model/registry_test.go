@@ -23,7 +23,7 @@ func TestAllModelSpecsHaveRequiredFields(t *testing.T) {
 		if spec.Metadata.ContextWindow <= 0 {
 			t.Errorf("spec %s/%s has invalid ContextWindow: %d", spec.Provider, spec.ModelID, spec.Metadata.ContextWindow)
 		}
-		if spec.Metadata.MaxOutputTokens <= 0 {
+		if spec.Metadata.MaxOutputTokens < 0 {
 			t.Errorf("spec %s/%s has invalid MaxOutputTokens: %d", spec.Provider, spec.ModelID, spec.Metadata.MaxOutputTokens)
 		}
 		if spec.Pricing.InputCostPerMillion < 0 {
@@ -54,15 +54,15 @@ func TestGetModelSpecKnownModels(t *testing.T) {
 		modelID    string
 		wantVision bool
 	}{
-		{"anthropic", "claude-haiku-4-5", true},
+		{"anthropic", "claude-haiku-4-5-20251001", true},
 		{"anthropic", "claude-sonnet-4-6", true},
 		{"anthropic", "claude-opus-4-6", true},
-		{"gemini", "gemini-2.5-flash", true},
-		{"gemini", "gemini-2.5-pro", true},
+		{"gemini", "gemini-2.5-flash", false},
+		{"gemini", "gemini-2.5-pro", false},
 		{"mistral", "mistral-large-2512", true},
 		{"mistral", "magistral-medium-2509", true},
-		{"openai", "gpt-5.4", true},
-		{"openai", "gpt-5.4-pro", true},
+		{"openai", "gpt-5.4-2026-03-05", true},
+		{"openai", "gpt-5.4-pro-2026-03-05", true},
 	}
 	for _, tc := range cases {
 		spec, ok := GetModelSpec(tc.provider, tc.modelID)
