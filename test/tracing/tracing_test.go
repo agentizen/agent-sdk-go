@@ -91,7 +91,7 @@ func TestNewFileTracer_PathTraversal(t *testing.T) {
 	require.NoError(t, os.Chdir(tmpDir))
 	defer func() { _ = os.Chdir(origDir) }()
 
-	// The implementation sanitises the agent name before building the path, so
+	// The implementation sanitizes the agent name before building the path, so
 	// "../../etc/passwd" becomes "____etc_passwd" and the resulting file is
 	// always placed inside tmpDir.  We verify that no file was created outside
 	// tmpDir regardless of whether NewFileTracer returns an error or succeeds.
