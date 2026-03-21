@@ -208,18 +208,15 @@ func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-c
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer func() { _ = httpResponse.Body.Close() }()
 
 	// Check for errors
 	if httpResponse.StatusCode != http.StatusOK {
-		err := httpResponse.Body.Close()
-		if err != nil {
-			return nil, fmt.Errorf("failed to close response body: %w (original status code: %d)", err, httpResponse.StatusCode)
-		}
+		defer func() { _ = httpResponse.Body.Close() }()
 		return nil, m.handleError(httpResponse)
 	}
 
-	// Start a goroutine to process the stream
+	// Start a goroutine to process the stream.
+	// The goroutine owns the response body and is responsible for closing it.
 	go func() {
 		defer func() { _ = httpResponse.Body.Close() }()
 		defer close(eventChan)
