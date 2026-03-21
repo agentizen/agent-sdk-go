@@ -16,6 +16,7 @@ const (
 	CapabilityFunctionCalling  Capability = "functionCalling"
 	CapabilityImageGeneration  Capability = "imageGeneration"
 	CapabilityLiveAPI          Capability = "liveAPI"
+	CapabilityOCR              Capability = "ocr"
 	CapabilityStructuredOutput Capability = "structuredOutput"
 	CapabilityThinking         Capability = "thinking"
 	CapabilityVision           Capability = "vision"
@@ -31,6 +32,7 @@ type ModelCapabilitySet struct {
 	FunctionCalling  bool
 	ImageGeneration  bool
 	LiveAPI          bool
+	OCR              bool
 	StructuredOutput bool
 	Thinking         bool
 	Vision           bool
@@ -47,6 +49,7 @@ func CapabilitiesFor(provider, modelID string) ModelCapabilitySet {
 		FunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),
 		ImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),
 		LiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),
+		OCR:              ProviderSupports(provider, modelID, CapabilityOCR),
 		StructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),
 		Thinking:         ProviderSupports(provider, modelID, CapabilityThinking),
 		Vision:           ProviderSupports(provider, modelID, CapabilityVision),
@@ -78,7 +81,7 @@ var providerCapabilities = map[string][]capabilityEntry{
 		{prefix: "ministral-8b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityDocuments: true}},
+		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityOCR: true}},
 		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"openai": {

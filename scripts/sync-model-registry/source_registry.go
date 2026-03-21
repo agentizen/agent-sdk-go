@@ -47,6 +47,7 @@ type capabilitySource struct {
 	FunctionCalling  bool `json:"functionCalling"`
 	ImageGeneration  bool `json:"imageGeneration"`
 	LiveAPI          bool `json:"liveAPI"`
+	OCR              bool `json:"ocr"`
 	StructuredOutput bool `json:"structuredOutput"`
 	Thinking         bool `json:"thinking"`
 	Vision           bool `json:"vision"`

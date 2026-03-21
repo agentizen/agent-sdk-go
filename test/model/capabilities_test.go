@@ -20,6 +20,7 @@ func TestProviderSupports(t *testing.T) {
 		{"mistral", "magistral-medium-2509", model.CapabilityVision, true},
 		{"mistral", "ministral-8b-2512", model.CapabilityVision, true},
 		{"mistral", "mistral-ocr-2512", model.CapabilityDocuments, true},
+		{"mistral", "mistral-ocr-2512", model.CapabilityOCR, true},
 		{"mistral", "mistral-ocr-2512", model.CapabilityVision, false},
 		{"mistral", "codestral-25-08", model.CapabilityVision, false},
 

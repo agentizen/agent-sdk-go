@@ -22,6 +22,7 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\tCapabilityFunctionCalling   Capability = \"functionCalling\"\n")
 	b.WriteString("\tCapabilityImageGeneration   Capability = \"imageGeneration\"\n")
 	b.WriteString("\tCapabilityLiveAPI           Capability = \"liveAPI\"\n")
+	b.WriteString("\tCapabilityOCR               Capability = \"ocr\"\n")
 	b.WriteString("\tCapabilityStructuredOutput  Capability = \"structuredOutput\"\n")
 	b.WriteString("\tCapabilityThinking          Capability = \"thinking\"\n")
 	b.WriteString("\tCapabilityVision            Capability = \"vision\"\n")
@@ -36,6 +37,7 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\tFunctionCalling  bool\n")
 	b.WriteString("\tImageGeneration  bool\n")
 	b.WriteString("\tLiveAPI          bool\n")
+	b.WriteString("\tOCR              bool\n")
 	b.WriteString("\tStructuredOutput bool\n")
 	b.WriteString("\tThinking         bool\n")
 	b.WriteString("\tVision           bool\n")
@@ -51,6 +53,7 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\t\tFunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),\n")
 	b.WriteString("\t\tImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),\n")
 	b.WriteString("\t\tLiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),\n")
+	b.WriteString("\t\tOCR:              ProviderSupports(provider, modelID, CapabilityOCR),\n")
 	b.WriteString("\t\tStructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),\n")
 	b.WriteString("\t\tThinking:         ProviderSupports(provider, modelID, CapabilityThinking),\n")
 	b.WriteString("\t\tVision:           ProviderSupports(provider, modelID, CapabilityVision),\n")
@@ -119,6 +122,9 @@ func modelCapabilityClauses(c capabilitySource) []string {
 	}
 	if c.LiveAPI {
 		caps = append(caps, "CapabilityLiveAPI: true")
+	}
+	if c.OCR {
+		caps = append(caps, "CapabilityOCR: true")
 	}
 	if c.StructuredOutput {
 		caps = append(caps, "CapabilityStructuredOutput: true")
