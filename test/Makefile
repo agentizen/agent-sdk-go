@@ -3,6 +3,7 @@
 # Test variables
 TEST_PACKAGE ?= ./...
 COVERAGE_FILE ?= coverage.out
+COVERPKG ?= github.com/citizenofai/agent-sdk-go/pkg/...
 
 # Default rule - run all tests
 .PHONY: test
@@ -12,7 +13,7 @@ test:
 # Run tests with coverage
 .PHONY: test-cover
 test-cover:
-	go test -v -coverprofile=$(COVERAGE_FILE) $(TEST_PACKAGE)
+	go test -v -coverprofile=$(COVERAGE_FILE) -coverpkg=$(COVERPKG) $(TEST_PACKAGE)
 	go tool cover -func=$(COVERAGE_FILE)
 
 # Generate an HTML coverage report
@@ -41,6 +42,10 @@ test-tool:
 test-tracing:
 	go test -v ./tracing/...
 
+.PHONY: test-result
+test-result:
+	go test -v ./result/...
+
 .PHONY: test-integration
 test-integration:
 	go test -v ./integration/...
@@ -65,5 +70,5 @@ ci-test-race:
 
 # CI test with coverage
 ci-test-coverage:
-	go test -buildvcs=false -v -coverprofile=coverage.out $(TEST_PACKAGE)
+	go test -buildvcs=false -v -coverprofile=coverage.out -coverpkg=$(COVERPKG) $(TEST_PACKAGE)
 	go tool cover -func=coverage.out 

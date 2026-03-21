@@ -1,353 +1,213 @@
-// This file contains tests for the tracing package, but they need to be updated to match the actual API
-// The MemoryTracer and other functions used here don't exist in the current API.
-// These tests will be updated in a future PR.
-
-/*
 package tracing_test
 
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
-	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
 	"github.com/citizenofai/agent-sdk-go/pkg/tracing"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-// Helper function to create a temporary trace file
-func createTempTraceFile(t *testing.T) (*os.File, func()) {
-	file, err := os.CreateTemp("", "trace_*.log")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
+// ---- NoopTracer ----
 
-	cleanup := func() {
-		file.Close()
-		os.Remove(file.Name())
-	}
+func TestNoopTracer(t *testing.T) {
+	tracer := &tracing.NoopTracer{}
+	ctx := context.Background()
 
-	return file, cleanup
+	// RecordEvent should not panic
+	tracer.RecordEvent(ctx, tracing.Event{Type: tracing.EventTypeAgentStart, AgentName: "agent"})
+
+	// Flush and Close should return nil
+	assert.NoError(t, tracer.Flush())
+	assert.NoError(t, tracer.Close())
 }
 
-// Test creating a new file tracer
+// ---- FileTracer ----
+
 func TestNewFileTracer(t *testing.T) {
-	file, cleanup := createTempTraceFile(t)
-	defer cleanup()
+	tmpDir := t.TempDir()
+	origDir, err := os.Getwd()
+	require.NoError(t, err)
+	require.NoError(t, os.Chdir(tmpDir))
+	defer func() { _ = os.Chdir(origDir) }()
 
-	tracer, err := tracing.NewFileTracer(file.Name())
-	if err != nil {
-		t.Fatalf("Failed to create file tracer: %v", err)
-	}
+	tracer, err := tracing.NewFileTracer("test-agent")
+	require.NoError(t, err)
+	require.NotNil(t, tracer)
+	defer func() { _ = tracer.Close() }()
 
-	if tracer == nil {
-		t.Fatalf("NewFileTracer returned nil")
-	}
+	// Verify trace file was created
+	entries, err := filepath.Glob(filepath.Join(tmpDir, "trace_test-agent.log"))
+	require.NoError(t, err)
+	assert.Len(t, entries, 1)
 }
 
-// Test creating a new memory tracer
-func TestNewMemoryTracer(t *testing.T) {
-	tracer := tracing.NewMemoryTracer()
+func TestFileTracer_RecordEvent(t *testing.T) {
+	tmpDir := t.TempDir()
+	origDir, err := os.Getwd()
+	require.NoError(t, err)
+	require.NoError(t, os.Chdir(tmpDir))
+	defer func() { _ = os.Chdir(origDir) }()
 
-	if tracer == nil {
-		t.Fatalf("NewMemoryTracer returned nil")
-	}
-}
+	tracer, err := tracing.NewFileTracer("record-test")
+	require.NoError(t, err)
+	defer func() { _ = tracer.Close() }()
 
-// Test basic tracing operations with memory tracer
-func TestBasicTracing(t *testing.T) {
-	tracer := tracing.NewMemoryTracer()
-
-	// Create a trace context
 	ctx := context.Background()
-	traceCtx := tracer.StartTrace(ctx, &tracing.TraceOptions{
-		WorkflowName: "test-workflow",
-		TraceID:      "test-trace-id",
-		GroupID:      "test-group-id",
-		Metadata: map[string]string{
-			"key": "value",
-		},
+	tracer.RecordEvent(ctx, tracing.Event{
+		Type:      tracing.EventTypeAgentStart,
+		AgentName: "my-agent",
+		Details:   map[string]interface{}{"input": "hello"},
 	})
+	require.NoError(t, tracer.Flush())
 
-	// Get trace from context
-	trace := tracing.GetTraceFromContext(traceCtx)
-	if trace == nil {
-		t.Fatalf("GetTraceFromContext returned nil")
+	content, err := os.ReadFile(filepath.Join(tmpDir, "trace_record-test.log"))
+	require.NoError(t, err)
+	assert.Contains(t, string(content), tracing.EventTypeAgentStart)
+	assert.Contains(t, string(content), "my-agent")
+}
+
+func TestFileTracer_FlushAndClose(t *testing.T) {
+	tmpDir := t.TempDir()
+	origDir, err := os.Getwd()
+	require.NoError(t, err)
+	require.NoError(t, os.Chdir(tmpDir))
+	defer func() { _ = os.Chdir(origDir) }()
+
+	tracer, err := tracing.NewFileTracer("flush-test")
+	require.NoError(t, err)
+
+	assert.NoError(t, tracer.Flush())
+	assert.NoError(t, tracer.Close())
+}
+
+func TestNewFileTracer_PathTraversal(t *testing.T) {
+	tmpDir := t.TempDir()
+	origDir, err := os.Getwd()
+	require.NoError(t, err)
+	require.NoError(t, os.Chdir(tmpDir))
+	defer func() { _ = os.Chdir(origDir) }()
+
+	// The implementation sanitises the agent name before building the path, so
+	// "../../etc/passwd" becomes "____etc_passwd" and the resulting file is
+	// always placed inside tmpDir.  We verify that no file was created outside
+	// tmpDir regardless of whether NewFileTracer returns an error or succeeds.
+	tracer, tracerErr := tracing.NewFileTracer("../../etc/passwd")
+	if tracer != nil {
+		defer func() { _ = tracer.Close() }()
 	}
 
-	// Add agent start event
-	agent := agent.NewAgent().WithName("test-agent")
-	traceCtx = tracer.AgentStart(traceCtx, &tracing.AgentStartOpts{
-		Agent: agent,
-		Input: "Test input",
-	})
+	if tracerErr != nil {
+		// An error is fine; confirm nothing was created outside tmpDir.
+		outsideFiles, globErr := filepath.Glob(filepath.Join(origDir, "trace_*.log"))
+		require.NoError(t, globErr)
+		assert.Empty(t, outsideFiles, "no trace files should be created outside tmpDir on error")
+	} else {
+		// Success is fine too provided the file landed inside tmpDir.
+		insideFiles, globErr := filepath.Glob(filepath.Join(tmpDir, "trace_*.log"))
+		require.NoError(t, globErr)
+		assert.NotEmpty(t, insideFiles, "trace file should be inside tmpDir")
 
-	// Add model request event
-	modelReq := &model.Request{
-		SystemInstructions: "System instructions",
-		Input:              "Test input",
-	}
-	traceCtx = tracer.ModelRequest(traceCtx, &tracing.ModelRequestOpts{
-		Agent:   agent,
-		Request: modelReq,
-	})
-
-	// Add model response event
-	modelResp := &model.Response{
-		Content: "Test response",
-	}
-	traceCtx = tracer.ModelResponse(traceCtx, &tracing.ModelResponseOpts{
-		Agent:    agent,
-		Response: modelResp,
-	})
-
-	// Add tool call event
-	toolCall := model.ToolCall{
-		ID:   "test-tool-call-id",
-		Type: "function",
-		Function: model.FunctionToolCall{
-			Name:      "test-function",
-			Arguments: `{"arg1":"value1"}`,
-		},
-	}
-	traceCtx = tracer.ToolCall(traceCtx, &tracing.ToolCallOpts{
-		Agent:    agent,
-		ToolCall: toolCall,
-	})
-
-	// Add tool result event
-	traceCtx = tracer.ToolResult(traceCtx, &tracing.ToolResultOpts{
-		Agent:  agent,
-		CallID: toolCall.ID,
-		Result: `{"result":"success"}`,
-	})
-
-	// Add handoff event
-	handoffCall := model.ToolCall{
-		ID:   "test-handoff-id",
-		Type: "function",
-		Function: model.FunctionToolCall{
-			Name:      "test-handoff",
-			Arguments: `{"arg1":"value1"}`,
-		},
-	}
-	targetAgent := agent.NewAgent().WithName("target-agent")
-	traceCtx = tracer.Handoff(traceCtx, &tracing.HandoffOpts{
-		SourceAgent: agent,
-		TargetAgent: targetAgent,
-		HandoffCall: handoffCall,
-	})
-
-	// Add agent end event
-	traceCtx = tracer.AgentEnd(traceCtx, &tracing.AgentEndOpts{
-		Agent: agent,
-		FinalOutput: map[string]interface{}{
-			"result": "success",
-		},
-	})
-
-	// End the trace
-	tracer.EndTrace(traceCtx)
-
-	// Get events from memory tracer
-	memTracer, ok := tracer.(*tracing.MemoryTracer)
-	if !ok {
-		t.Fatalf("Failed to cast tracer to MemoryTracer")
-	}
-
-	events := memTracer.GetEvents()
-	if len(events) != 8 {
-		t.Fatalf("Expected 8 events, got %d", len(events))
-	}
-
-	// Check event types
-	expectedTypes := []string{
-		"trace_start",
-		"agent_start",
-		"model_request",
-		"model_response",
-		"tool_call",
-		"tool_result",
-		"handoff",
-		"agent_end",
-	}
-
-	for i, eventType := range expectedTypes {
-		if events[i].Type != eventType {
-			t.Errorf("Event %d: expected type %s, got %s", i, eventType, events[i].Type)
-		}
+		// Ensure no file was written in a parent directory.
+		outsideFiles, globErr := filepath.Glob(filepath.Join(origDir, "trace_*.log"))
+		require.NoError(t, globErr)
+		assert.Empty(t, outsideFiles, "no trace files should escape to parent directories")
 	}
 }
 
-// Test file tracer
-func TestFileTracer(t *testing.T) {
-	file, cleanup := createTempTraceFile(t)
-	defer cleanup()
+// ---- Global tracer ----
 
-	tracer, err := tracing.NewFileTracer(file.Name())
-	if err != nil {
-		t.Fatalf("Failed to create file tracer: %v", err)
-	}
+func TestSetAndGetGlobalTracer(t *testing.T) {
+	original := tracing.GetGlobalTracer()
+	defer tracing.SetGlobalTracer(original)
 
-	// Create a trace context
+	noop := &tracing.NoopTracer{}
+	tracing.SetGlobalTracer(noop)
+	assert.Equal(t, noop, tracing.GetGlobalTracer())
+}
+
+func TestRecordEvent_GlobalTracer(t *testing.T) {
+	// RecordEvent should not panic even with the default global tracer
 	ctx := context.Background()
-	traceCtx := tracer.StartTrace(ctx, &tracing.TraceOptions{
-		WorkflowName: "test-workflow",
-		TraceID:      "test-trace-id",
+	tracing.RecordEvent(ctx, tracing.Event{
+		Type:      tracing.EventTypeToolCall,
+		AgentName: "test",
+		Details:   map[string]interface{}{"tool": "search"},
 	})
-
-	// Add agent start event
-	agent := agent.NewAgent().WithName("test-agent")
-	traceCtx = tracer.AgentStart(traceCtx, &tracing.AgentStartOpts{
-		Agent: agent,
-		Input: "Test input",
-	})
-
-	// End the trace
-	tracer.EndTrace(traceCtx)
-
-	// Verify file contents
-	// Wait a moment for the file to be written
-	time.Sleep(100 * time.Millisecond)
-
-	content, err := os.ReadFile(file.Name())
-	if err != nil {
-		t.Fatalf("Failed to read trace file: %v", err)
-	}
-
-	if len(content) == 0 {
-		t.Fatalf("Trace file is empty")
-	}
 }
 
-// Test getting trace from context
-func TestGetTraceFromContext(t *testing.T) {
-	// Create a trace
-	tracer := tracing.NewMemoryTracer()
+// ---- Context helpers ----
+
+func TestWithTracer_And_GetTracer(t *testing.T) {
+	noop := &tracing.NoopTracer{}
+	ctx := tracing.WithTracer(context.Background(), noop)
+	got := tracing.GetTracer(ctx)
+	assert.Equal(t, noop, got)
+}
+
+func TestGetTracer_FallsBackToGlobal(t *testing.T) {
+	// A plain context should return the global tracer
 	ctx := context.Background()
-	traceCtx := tracer.StartTrace(ctx, &tracing.TraceOptions{
-		WorkflowName: "test-workflow",
-		TraceID:      "test-trace-id",
-	})
-
-	// Get trace from context
-	trace := tracing.GetTraceFromContext(traceCtx)
-	if trace == nil {
-		t.Fatalf("GetTraceFromContext returned nil")
-	}
-
-	// Check trace properties
-	if trace.WorkflowName != "test-workflow" {
-		t.Errorf("Trace.WorkflowName = %s, want test-workflow", trace.WorkflowName)
-	}
-
-	if trace.TraceID != "test-trace-id" {
-		t.Errorf("Trace.TraceID = %s, want test-trace-id", trace.TraceID)
-	}
-
-	// Test with a context that doesn't have a trace
-	emptyCtx := context.Background()
-	emptyTrace := tracing.GetTraceFromContext(emptyCtx)
-	if emptyTrace != nil {
-		t.Errorf("GetTraceFromContext with empty context returned non-nil")
-	}
+	got := tracing.GetTracer(ctx)
+	assert.Equal(t, tracing.GetGlobalTracer(), got)
 }
 
-// Test multiple traces
-func TestMultipleTraces(t *testing.T) {
-	tracer := tracing.NewMemoryTracer()
-
-	// Create first trace
-	ctx1 := context.Background()
-	trace1Ctx := tracer.StartTrace(ctx1, &tracing.TraceOptions{
-		WorkflowName: "workflow-1",
-		TraceID:      "trace-1",
+func TestRecordEventContext(t *testing.T) {
+	noop := &tracing.NoopTracer{}
+	ctx := tracing.WithTracer(context.Background(), noop)
+	// Should not panic
+	tracing.RecordEventContext(ctx, tracing.Event{
+		Type:      tracing.EventTypeModelRequest,
+		AgentName: "agent",
 	})
-
-	// Create second trace
-	ctx2 := context.Background()
-	trace2Ctx := tracer.StartTrace(ctx2, &tracing.TraceOptions{
-		WorkflowName: "workflow-2",
-		TraceID:      "trace-2",
-	})
-
-	// Add events to each trace
-	agent1 := agent.NewAgent().WithName("agent-1")
-	agent2 := agent.NewAgent().WithName("agent-2")
-
-	trace1Ctx = tracer.AgentStart(trace1Ctx, &tracing.AgentStartOpts{
-		Agent: agent1,
-		Input: "Input 1",
-	})
-
-	trace2Ctx = tracer.AgentStart(trace2Ctx, &tracing.AgentStartOpts{
-		Agent: agent2,
-		Input: "Input 2",
-	})
-
-	// End both traces
-	tracer.EndTrace(trace1Ctx)
-	tracer.EndTrace(trace2Ctx)
-
-	// Check traces
-	memTracer, ok := tracer.(*tracing.MemoryTracer)
-	if !ok {
-		t.Fatalf("Failed to cast tracer to MemoryTracer")
-	}
-
-	events := memTracer.GetEvents()
-	if len(events) != 4 {
-		t.Fatalf("Expected 4 events, got %d", len(events))
-	}
-
-	// Check trace IDs
-	if events[0].TraceID != "trace-1" {
-		t.Errorf("Event 0: expected trace ID trace-1, got %s", events[0].TraceID)
-	}
-
-	if events[1].TraceID != "trace-1" {
-		t.Errorf("Event 1: expected trace ID trace-1, got %s", events[1].TraceID)
-	}
-
-	if events[2].TraceID != "trace-2" {
-		t.Errorf("Event 2: expected trace ID trace-2, got %s", events[2].TraceID)
-	}
-
-	if events[3].TraceID != "trace-2" {
-		t.Errorf("Event 3: expected trace ID trace-2, got %s", events[3].TraceID)
-	}
-}
-*/
-
-// Basic test to make sure the package compiles
-package tracing_test
-
-import (
-	"testing"
-
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-)
-
-// Test that just passes
-func TestBasic(t *testing.T) {
-	// This test just ensures the package compiles
-	// Actual tracing tests will be added in a future PR
 }
 
-// Test model request/response events
-func TestModelRequestResponseEvents(t *testing.T) {
-	// This is a placeholder test that will be implemented in a future PR
-	// For now, we're just ensuring it compiles
+// ---- Event type constants ----
 
-	// Create a model request
-	_ = &model.Request{
-		SystemInstructions: "Test system instructions",
-		Input:              "Test input",
-	}
+func TestEventTypeConstants(t *testing.T) {
+	assert.Equal(t, "agent_start", tracing.EventTypeAgentStart)
+	assert.Equal(t, "agent_end", tracing.EventTypeAgentEnd)
+	assert.Equal(t, "tool_call", tracing.EventTypeToolCall)
+	assert.Equal(t, "tool_result", tracing.EventTypeToolResult)
+	assert.Equal(t, "model_request", tracing.EventTypeModelRequest)
+	assert.Equal(t, "model_response", tracing.EventTypeModelResponse)
+	assert.Equal(t, "handoff", tracing.EventTypeHandoff)
+	assert.Equal(t, "handoff_complete", tracing.EventTypeHandoffComplete)
+	assert.Equal(t, "agent_message", tracing.EventTypeAgentMessage)
+	assert.Equal(t, "error", tracing.EventTypeError)
+}
 
-	// Create a model response
-	_ = &model.Response{
-		Content: "Test content",
-	}
+// ---- Convenience event functions ----
+
+func TestTracingEventFunctions(t *testing.T) {
+	noop := &tracing.NoopTracer{}
+	ctx := tracing.WithTracer(context.Background(), noop)
+
+	// None of these should panic
+	tracing.AgentStart(ctx, "agent1", "hello")
+	tracing.AgentEnd(ctx, "agent1", "result")
+	tracing.ToolCall(ctx, "agent1", "search", map[string]interface{}{"q": "go"})
+	tracing.ToolResult(ctx, "agent1", "search", "results", nil)
+	tracing.ModelRequest(ctx, "agent1", "gpt-4", "prompt", nil)
+	tracing.ModelResponse(ctx, "agent1", "gpt-4", "response", nil)
+	tracing.Handoff(ctx, "agent1", "agent2", "task")
+	tracing.HandoffComplete(ctx, "agent2", "agent1", "done")
+	tracing.AgentMessage(ctx, "agent1", "user", "hello")
+	tracing.Error(ctx, "agent1", "something failed", assert.AnError)
+}
+
+func TestTraceForAgent(t *testing.T) {
+	tmpDir := t.TempDir()
+	origDir, err := os.Getwd()
+	require.NoError(t, err)
+	require.NoError(t, os.Chdir(tmpDir))
+	defer func() { _ = os.Chdir(origDir) }()
+
+	tracer, err := tracing.TraceForAgent("my-agent")
+	require.NoError(t, err)
+	require.NotNil(t, tracer)
+	defer func() { _ = tracer.Close() }()
 }
