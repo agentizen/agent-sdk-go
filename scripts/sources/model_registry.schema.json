@@ -123,6 +123,9 @@
                     "thinking": {
                       "type": "boolean"
                     },
+                    "ocr": {
+                      "type": "boolean"
+                    },
                     "vision": {
                       "type": "boolean"
                     }

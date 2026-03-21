@@ -288,7 +288,8 @@
           "max_output_tokens": 32000,
           "capabilities": {
             "vision": false,
-            "documents": true
+            "documents": true,
+            "ocr": true
           },
           "pricing": {
             "InputCostPerMillion": 1.0,
