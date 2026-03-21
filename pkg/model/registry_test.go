@@ -59,8 +59,8 @@ func TestGetModelSpecKnownModels(t *testing.T) {
 		{"anthropic", "claude-opus-4-6", true},
 		{"gemini", "gemini-2.5-flash", false},
 		{"gemini", "gemini-2.5-pro", false},
-		{"mistral", "mistral-large-2512", true},
-		{"mistral", "magistral-medium-2509", true},
+		{"mistral", "mistral-large-2512", false},
+		{"mistral", "magistral-medium-2509", false},
 		{"openai", "gpt-5.4-2026-03-05", true},
 		{"openai", "gpt-5.4-pro-2026-03-05", true},
 	}
