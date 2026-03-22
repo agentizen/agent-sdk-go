@@ -3,6 +3,7 @@ package model_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -240,6 +241,172 @@ func TestMistralOCRModel_GetResponse_NoDocument(t *testing.T) {
 	_, err = m.GetResponse(context.Background(), req)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "document")
+}
+
+func TestMistralModel_GetResponse_VisionImage(t *testing.T) {
+	imageData := []byte{0xFF, 0xD8, 0xFF, 0xE0} // minimal JPEG header bytes
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/v1/chat/completions", r.URL.Path)
+
+		var body map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&body)
+		assert.NoError(t, err)
+
+		messages, _ := body["messages"].([]interface{})
+		assert.Len(t, messages, 1)
+		msg, _ := messages[0].(map[string]interface{})
+		assert.Equal(t, "user", msg["role"])
+
+		content, _ := msg["content"].([]interface{})
+		assert.Len(t, content, 2)
+
+		textPart, _ := content[0].(map[string]interface{})
+		assert.Equal(t, "text", textPart["type"])
+		assert.Equal(t, "What is in this image?", textPart["text"])
+
+		imagePart, _ := content[1].(map[string]interface{})
+		assert.Equal(t, "image_url", imagePart["type"])
+		imageURL, _ := imagePart["image_url"].(map[string]interface{})
+		url, _ := imageURL["url"].(string)
+		assert.True(t, strings.HasPrefix(url, "data:image/jpeg;base64,"), "image URL should be a base64 data URI")
+
+		resp := map[string]interface{}{
+			"id":      "chatcmpl-vision-test",
+			"object":  "chat.completion",
+			"created": time.Now().Unix(),
+			"model":   "mistral-small-2603",
+			"choices": []map[string]interface{}{
+				{
+					"index":         0,
+					"message":       map[string]interface{}{"role": "assistant", "content": "I see an image."},
+					"finish_reason": "stop",
+				},
+			},
+			"usage": map[string]interface{}{"total_tokens": 15},
+		}
+		_ = json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-small-2603")
+	p.SetEndpoint(server.URL)
+
+	m, err := p.GetModel("")
+	assert.NoError(t, err)
+
+	req := &model.Request{
+		Input: "What is in this image?",
+		InputParts: []model.ContentPart{
+			{
+				Type:     model.ContentPartTypeImage,
+				MimeType: "image/jpeg",
+				Data:     imageData,
+				Name:     "photo.jpg",
+			},
+		},
+	}
+
+	resp, err := m.GetResponse(context.Background(), req)
+	assert.NoError(t, err)
+	assert.Equal(t, "I see an image.", resp.Content)
+}
+
+func TestMistralModel_GetResponse_VisionRejectedOnNonVisionModel(t *testing.T) {
+	// Use an unknown model name so no vision capability matches → validateInputParts rejects the image.
+	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-text-only-test")
+
+	m, err := p.GetModel("")
+	assert.NoError(t, err)
+
+	req := &model.Request{
+		InputParts: []model.ContentPart{
+			{
+				Type:     model.ContentPartTypeImage,
+				MimeType: "image/jpeg",
+				Data:     []byte{0xFF, 0xD8},
+				Name:     "photo.jpg",
+			},
+		},
+	}
+
+	_, err = m.GetResponse(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "image")
+}
+
+func TestMistralModel_StreamResponse_VisionImage(t *testing.T) {
+	imageData := []byte{0xFF, 0xD8, 0xFF, 0xE0}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/v1/chat/completions", r.URL.Path)
+
+		var body map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&body)
+		assert.NoError(t, err)
+		assert.True(t, body["stream"].(bool))
+
+		messages, _ := body["messages"].([]interface{})
+		assert.Len(t, messages, 1)
+		msg, _ := messages[0].(map[string]interface{})
+		content, _ := msg["content"].([]interface{})
+		assert.Len(t, content, 1)
+		imagePart, _ := content[0].(map[string]interface{})
+		assert.Equal(t, "image_url", imagePart["type"])
+
+		flusher, ok := w.(http.Flusher)
+		assert.True(t, ok)
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.WriteHeader(http.StatusOK)
+
+		chunks := []string{
+			`{"id":"stream-1","model":"mistral-small-2603","choices":[{"index":0,"delta":{"role":"assistant","content":"An"},"finish_reason":null}]}`,
+			`{"id":"stream-1","model":"mistral-small-2603","choices":[{"index":0,"delta":{"content":" image."},"finish_reason":"stop"}],"usage":{"prompt_tokens":10,"completion_tokens":2,"total_tokens":12}}`,
+		}
+		for _, chunk := range chunks {
+			_, _ = fmt.Fprintf(w, "data: %s\n\n", chunk)
+			flusher.Flush()
+		}
+		_, _ = fmt.Fprintf(w, "data: [DONE]\n\n")
+		flusher.Flush()
+	}))
+	defer server.Close()
+
+	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-small-2603")
+	p.SetEndpoint(server.URL)
+
+	m, err := p.GetModel("")
+	assert.NoError(t, err)
+
+	req := &model.Request{
+		InputParts: []model.ContentPart{
+			{
+				Type:     model.ContentPartTypeImage,
+				MimeType: "image/jpeg",
+				Data:     imageData,
+				Name:     "photo.jpg",
+			},
+		},
+	}
+
+	events, err := m.StreamResponse(context.Background(), req)
+	assert.NoError(t, err)
+
+	var content string
+	var doneEvent *model.StreamEvent
+	for event := range events {
+		switch event.Type {
+		case model.StreamEventTypeContent:
+			content += event.Content
+		case model.StreamEventTypeDone:
+			ev := event
+			doneEvent = &ev
+		}
+	}
+
+	assert.Equal(t, "An image.", content)
+	assert.NotNil(t, doneEvent)
+	assert.Equal(t, "An image.", doneEvent.Response.Content)
 }
 
 func TestMistralNonOCRModel_UsesCompletionsEndpoint(t *testing.T) {

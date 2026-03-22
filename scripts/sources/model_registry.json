@@ -164,7 +164,7 @@
           "release_date": "2025-12",
           "context_window": 256000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -179,7 +179,7 @@
           "release_date": "2025-12",
           "context_window": 256000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -194,7 +194,7 @@
           "release_date": "2025-12",
           "context_window": 256000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -209,7 +209,7 @@
           "release_date": "2026-03",
           "context_window": 256000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -224,7 +224,7 @@
           "release_date": "2025-08",
           "context_window": 128000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -239,7 +239,7 @@
           "release_date": "2025-12",
           "context_window": 256000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false
           },
           "pricing": {
@@ -254,7 +254,7 @@
           "release_date": "2025-09",
           "context_window": 128000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false,
             "thinking": true
           },
@@ -270,7 +270,7 @@
           "release_date": "2025-09",
           "context_window": 128000,
           "capabilities": {
-            "vision": false,
+            "vision": true,
             "documents": false,
             "thinking": true
           },
