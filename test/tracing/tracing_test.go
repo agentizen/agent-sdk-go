@@ -187,7 +187,7 @@ func TestTracingEventFunctions(t *testing.T) {
 	ctx := tracing.WithTracer(context.Background(), noop)
 
 	// None of these should panic
-	tracing.AgentStart(ctx, "agent1", "hello")
+	tracing.AgentStart(ctx, "agent1", "hello", nil)
 	tracing.AgentEnd(ctx, "agent1", "result")
 	tracing.ToolCall(ctx, "agent1", "search", map[string]interface{}{"q": "go"})
 	tracing.ToolResult(ctx, "agent1", "search", "results", nil)

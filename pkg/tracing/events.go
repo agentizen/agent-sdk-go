@@ -5,15 +5,21 @@ import (
 	"time"
 )
 
-// AgentStart records an agent start event
-func AgentStart(ctx context.Context, agentName string, input interface{}) {
+// AgentStart records an agent start event.
+// metadata is an optional map of extra key/value pairs merged into the event Details
+// (e.g. sessionId, userId). Pass nil when no extra metadata is needed.
+func AgentStart(ctx context.Context, agentName string, input interface{}, metadata map[string]interface{}) {
+	details := map[string]interface{}{
+		"input": input,
+	}
+	for k, v := range metadata {
+		details[k] = v
+	}
 	RecordEventContext(ctx, Event{
 		Type:      EventTypeAgentStart,
 		AgentName: agentName,
 		Timestamp: time.Now(),
-		Details: map[string]interface{}{
-			"input": input,
-		},
+		Details:   details,
 	})
 }
 

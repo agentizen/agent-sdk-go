@@ -141,7 +141,11 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 		}()
 
 		// Emit agent start so tracers (e.g. Langfuse) can create a root trace.
-		tracing.AgentStart(ctx, agent.Name, opts.Input)
+		var tracingMeta map[string]interface{}
+		if opts.RunConfig != nil && opts.RunConfig.TracingConfig != nil {
+			tracingMeta = opts.RunConfig.TracingConfig.Metadata
+		}
+		tracing.AgentStart(ctx, agent.Name, opts.Input, tracingMeta)
 
 		// Call run start hooks
 		if err := r.callRunStartHooks(ctx, agent, opts.Input, opts, eventCh); err != nil {
@@ -301,7 +305,11 @@ func (r *Runner) setupTracing(ctx context.Context, agent AgentType, input interf
 	tracingCtx := tracing.WithTracer(ctx, tracer)
 
 	// Record agent start event
-	tracing.AgentStart(tracingCtx, agent.Name, input)
+	var tracingMeta map[string]interface{}
+	if opts.RunConfig != nil && opts.RunConfig.TracingConfig != nil {
+		tracingMeta = opts.RunConfig.TracingConfig.Metadata
+	}
+	tracing.AgentStart(tracingCtx, agent.Name, input, tracingMeta)
 
 	isGlobalTracer := tracer == tracing.GetGlobalTracer()
 
