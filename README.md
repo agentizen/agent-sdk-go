@@ -72,6 +72,36 @@ Core queries:
 - `pkg/tool`: function tools and schema
 - `pkg/model/providers/*`: provider clients (OpenAI, Anthropic, Gemini, Mistral, LM Studio, Azure OpenAI)
 
+## Agent Networks
+
+`pkg/network` lets multiple agents collaborate on a single user prompt. Configure a roster of
+specialised agents, choose a dispatch strategy, and let the built-in orchestrator handle
+decomposition and synthesis.
+
+```go
+cfg := network.NewNetworkConfig().
+    WithAgents(
+        network.AgentSlot{Agent: researcher, Role: "Research specialist"},
+        network.AgentSlot{Agent: analyst,    Role: "Strategic analyst"},
+        network.AgentSlot{Agent: writer,     Role: "Content writer"},
+    ).
+    WithStrategy(network.StrategyParallel)
+
+nr := network.NewNetworkRunner(runner.NewRunner().WithDefaultProvider(provider))
+result, err := nr.RunNetwork(ctx, cfg, opts)
+fmt.Println(result.FinalOutput)
+```
+
+Three built-in strategies:
+
+| Strategy | Use case |
+|---|---|
+| `StrategyParallel` | Independent sub-tasks — maximum throughput |
+| `StrategySequential` | Pipeline where each stage depends on the previous one |
+| `StrategyCompetitive` | Fastest non-error response wins — minimum latency |
+
+Full guide: [docs/agent_network.md](./docs/agent_network.md)
+
 ## Model Registry Refresh Workflow
 
 Single workflow: [ .github/workflows/model-capabilities-sync.yml ](./.github/workflows/model-capabilities-sync.yml)
@@ -104,7 +134,7 @@ Copilot note:
 
 ## Examples and Detailed Guides
 
-High-signal examples:
+Single-agent examples:
 
 - [examples/openai_example](./examples/openai_example)
 - [examples/openai_multi_agent_example](./examples/openai_multi_agent_example)
@@ -114,8 +144,16 @@ High-signal examples:
 - [examples/bidirectional_flow_example](./examples/bidirectional_flow_example)
 - [examples/azure_openai_example](./examples/azure_openai_example)
 
+Agent Network examples:
+
+- [examples/agent_network_parallel](./examples/agent_network_parallel) — parallel strategy (Researcher + Analyst + Writer)
+- [examples/agent_network_sequential](./examples/agent_network_sequential) — sequential pipeline (Planner → Coder → Reviewer)
+- [examples/agent_network_competitive](./examples/agent_network_competitive) — competitive race (fast model vs powerful model)
+- [examples/agent_network_custom_orchestrator](./examples/agent_network_custom_orchestrator) — custom orchestrator for domain-specific decomposition
+
 Project docs:
 
+- [docs/agent_network.md](./docs/agent_network.md)
 - [docs/model_registry_single_source_of_truth.md](./docs/model_registry_single_source_of_truth.md)
 - [docs/GO_QUALITY_GUIDELINES.md](./docs/GO_QUALITY_GUIDELINES.md)
 

@@ -377,6 +377,16 @@ func TestBuildInputText(req *model.Request) string {
 	return buildInputText(req)
 }
 
+// TestBuildGenerateContentConfig is a small helper to expose buildGenerateContentConfig for tests.
+// It returns the ResponseMIMEType and ResponseJsonSchema fields from the built config.
+func TestBuildGenerateContentConfig(req *model.Request) (mimeType string, jsonSchema interface{}) {
+	cfg := buildGenerateContentConfig(req)
+	if cfg == nil {
+		return "", nil
+	}
+	return cfg.ResponseMIMEType, cfg.ResponseJsonSchema
+}
+
 // buildGenerateContentConfig builds a genai.GenerateContentConfig from a generic request.
 // It currently maps tools/handoffs and a subset of model.Settings.
 func buildGenerateContentConfig(req *model.Request) *genai.GenerateContentConfig {
@@ -417,9 +427,15 @@ func buildGenerateContentConfig(req *model.Request) *genai.GenerateContentConfig
 		}
 	}
 
+	// Structured output: set response MIME type and JSON schema when OutputSchema is provided.
+	if req.OutputSchema != nil {
+		cfg.ResponseMIMEType = "application/json"
+		cfg.ResponseJsonSchema = req.OutputSchema
+	}
+
 	// If there are no tools and no settings, we can return nil to avoid
 	// sending an entirely empty config. Otherwise, return cfg.
-	if len(cfg.Tools) == 0 && req.Settings == nil {
+	if len(cfg.Tools) == 0 && req.Settings == nil && req.OutputSchema == nil {
 		return nil
 	}
 

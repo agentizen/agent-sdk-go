@@ -382,3 +382,187 @@ func TestMistralModel_GetResponse_WithTools(t *testing.T) {
 	assert.Equal(t, "test_tool", resp.ToolCalls[0].Name)
 	assert.Equal(t, "value1", resp.ToolCalls[0].Parameters["param1"])
 }
+
+func TestMistral_BuildParams_WithOutputSchema(t *testing.T) {
+	outputSchema := map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"name": map[string]interface{}{
+				"type": "string",
+			},
+			"age": map[string]interface{}{
+				"type": "integer",
+			},
+		},
+		"required":             []string{"name", "age"},
+		"additionalProperties": false,
+	}
+
+	t.Run("OutputSchemaIncludedInRequest", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "/v1/chat/completions", r.URL.Path)
+
+			var body map[string]interface{}
+			err := json.NewDecoder(r.Body).Decode(&body)
+			assert.NoError(t, err)
+
+			// Verify response_format is set with json_schema type
+			responseFormat, ok := body["response_format"].(map[string]interface{})
+			assert.True(t, ok, "response_format should be present in request")
+			assert.Equal(t, "json_schema", responseFormat["type"])
+
+			jsonSchema, ok := responseFormat["json_schema"].(map[string]interface{})
+			assert.True(t, ok, "json_schema should be present in response_format")
+			assert.Equal(t, "structured_output", jsonSchema["name"])
+
+			schema, ok := jsonSchema["schema"].(map[string]interface{})
+			assert.True(t, ok, "schema should be present in json_schema")
+			assert.Equal(t, "object", schema["type"])
+
+			properties, ok := schema["properties"].(map[string]interface{})
+			assert.True(t, ok)
+			assert.Contains(t, properties, "name")
+			assert.Contains(t, properties, "age")
+
+			resp := map[string]interface{}{
+				"id":      "chatcmpl-schema-test",
+				"object":  "chat.completion",
+				"created": time.Now().Unix(),
+				"model":   "mistral-small-latest",
+				"choices": []map[string]interface{}{
+					{
+						"index": 0,
+						"message": map[string]interface{}{
+							"role":    "assistant",
+							"content": `{"name":"Bob","age":25}`,
+						},
+						"finish_reason": "stop",
+					},
+				},
+				"usage": map[string]interface{}{
+					"prompt_tokens":     15,
+					"completion_tokens": 8,
+					"total_tokens":      23,
+				},
+			}
+			_ = json.NewEncoder(w).Encode(resp)
+		}))
+		defer server.Close()
+
+		p := mistral.NewProvider("test-key").WithDefaultModel("mistral-small-latest")
+		p.SetEndpoint(server.URL)
+
+		m, err := p.GetModel("")
+		assert.NoError(t, err)
+
+		req := &model.Request{
+			Input:        "Return a person object with name and age.",
+			OutputSchema: outputSchema,
+		}
+
+		resp, err := m.GetResponse(context.Background(), req)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+		assert.Equal(t, `{"name":"Bob","age":25}`, resp.Content)
+		assert.Equal(t, 23, resp.Usage.TotalTokens)
+	})
+
+	t.Run("NoOutputSchemaOmitsResponseFormat", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var body map[string]interface{}
+			err := json.NewDecoder(r.Body).Decode(&body)
+			assert.NoError(t, err)
+
+			// Verify response_format is NOT set when OutputSchema is nil
+			_, hasResponseFormat := body["response_format"]
+			assert.False(t, hasResponseFormat, "response_format should not be present when OutputSchema is nil")
+
+			resp := map[string]interface{}{
+				"id":      "chatcmpl-no-schema",
+				"object":  "chat.completion",
+				"created": time.Now().Unix(),
+				"model":   "mistral-small-latest",
+				"choices": []map[string]interface{}{
+					{
+						"index":         0,
+						"message":       map[string]interface{}{"role": "assistant", "content": "Plain response"},
+						"finish_reason": "stop",
+					},
+				},
+				"usage": map[string]interface{}{"total_tokens": 8},
+			}
+			_ = json.NewEncoder(w).Encode(resp)
+		}))
+		defer server.Close()
+
+		p := mistral.NewProvider("test-key").WithDefaultModel("mistral-small-latest")
+		p.SetEndpoint(server.URL)
+
+		m, err := p.GetModel("")
+		assert.NoError(t, err)
+
+		req := &model.Request{
+			Input: "Hello",
+		}
+
+		resp, err := m.GetResponse(context.Background(), req)
+		assert.NoError(t, err)
+		assert.Equal(t, "Plain response", resp.Content)
+	})
+
+	t.Run("StreamWithOutputSchema", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var body map[string]interface{}
+			err := json.NewDecoder(r.Body).Decode(&body)
+			assert.NoError(t, err)
+			assert.True(t, body["stream"].(bool))
+
+			// Verify response_format includes json_schema for streaming too
+			responseFormat, ok := body["response_format"].(map[string]interface{})
+			assert.True(t, ok, "response_format should be present in streaming request")
+			assert.Equal(t, "json_schema", responseFormat["type"])
+
+			flusher, ok := w.(http.Flusher)
+			assert.True(t, ok)
+			w.Header().Set("Content-Type", "text/event-stream")
+			w.WriteHeader(http.StatusOK)
+
+			chunks := []string{
+				`{"id":"stream-1","model":"mistral-small-latest","choices":[{"index":0,"delta":{"role":"assistant","content":"{\"name\":"},"finish_reason":null}]}`,
+				`{"id":"stream-1","model":"mistral-small-latest","choices":[{"index":0,"delta":{"content":"\"Eve\",\"age\":28}"},"finish_reason":"stop"}],"usage":{"total_tokens":20}}`,
+			}
+			for _, chunk := range chunks {
+				_, _ = fmt.Fprintf(w, "data: %s\n\n", chunk)
+				flusher.Flush()
+			}
+			_, _ = fmt.Fprintf(w, "data: [DONE]\n\n")
+			flusher.Flush()
+		}))
+		defer server.Close()
+
+		p := mistral.NewProvider("test-key").WithDefaultModel("mistral-small-latest")
+		p.SetEndpoint(server.URL)
+
+		m, err := p.GetModel("")
+		assert.NoError(t, err)
+
+		req := &model.Request{
+			Input:        "Return a person.",
+			OutputSchema: outputSchema,
+		}
+
+		events, err := m.StreamResponse(context.Background(), req)
+		assert.NoError(t, err)
+
+		var content string
+		for event := range events {
+			if event.Error != nil {
+				t.Fatalf("Stream error: %v", event.Error)
+			}
+			if event.Type == model.StreamEventTypeContent {
+				content += event.Content
+			}
+		}
+		assert.Contains(t, content, "Eve")
+	})
+}
