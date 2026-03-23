@@ -79,15 +79,15 @@ var providerCapabilities = map[string][]capabilityEntry{
 		{prefix: "ministral-14b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "ministral-3b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "ministral-8b-2512", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityVision: true}},
+		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityVision: true}},
+		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityVision: true}},
 	},
 	"openai": {
-		{prefix: "gpt-5.4-2026-03-05", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
-		{prefix: "gpt-5.4-mini-2026-03-17", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
-		{prefix: "gpt-5.4-nano-2026-03-17", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
-		{prefix: "gpt-5.4-pro-2026-03-05", caps: map[Capability]bool{CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-2026-03-05", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-mini-2026-03-17", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-nano-2026-03-17", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gpt-5.4-pro-2026-03-05", caps: map[Capability]bool{CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
 	},
 }
 

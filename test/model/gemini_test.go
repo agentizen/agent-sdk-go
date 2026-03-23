@@ -64,6 +64,57 @@ func TestGeminiProvider_UpdateTokenCount(t *testing.T) {
 	assert.Greater(t, time.Since(start), 0*time.Millisecond)
 }
 
+func TestGemini_BuildConfig_WithOutputSchema(t *testing.T) {
+	outputSchema := map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"name": map[string]interface{}{
+				"type": "string",
+			},
+			"age": map[string]interface{}{
+				"type": "integer",
+			},
+		},
+		"required": []string{"name", "age"},
+	}
+
+	t.Run("OutputSchemaSetsMIMETypeAndSchema", func(t *testing.T) {
+		req := &model.Request{
+			Input:        "Return a person object.",
+			OutputSchema: outputSchema,
+		}
+
+		mimeType, jsonSchema := gemini.TestBuildGenerateContentConfig(req)
+		assert.Equal(t, "application/json", mimeType)
+		assert.NotNil(t, jsonSchema)
+
+		schema, ok := jsonSchema.(map[string]interface{})
+		assert.True(t, ok, "jsonSchema should be a map")
+		assert.Equal(t, "object", schema["type"])
+
+		properties, ok := schema["properties"].(map[string]interface{})
+		assert.True(t, ok)
+		assert.Contains(t, properties, "name")
+		assert.Contains(t, properties, "age")
+	})
+
+	t.Run("NoOutputSchemaReturnsEmptyMIME", func(t *testing.T) {
+		req := &model.Request{
+			Input: "Just a plain text request.",
+		}
+
+		mimeType, jsonSchema := gemini.TestBuildGenerateContentConfig(req)
+		assert.Equal(t, "", mimeType)
+		assert.Nil(t, jsonSchema)
+	})
+
+	t.Run("NilRequestReturnsEmpty", func(t *testing.T) {
+		mimeType, jsonSchema := gemini.TestBuildGenerateContentConfig(nil)
+		assert.Equal(t, "", mimeType)
+		assert.Nil(t, jsonSchema)
+	})
+}
+
 func TestGeminiBuildInputText(t *testing.T) {
 	t.Run("NilRequest", func(t *testing.T) {
 		text := gemini.TestBuildInputText(nil)

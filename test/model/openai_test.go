@@ -288,6 +288,136 @@ func TestOpenAIModel(t *testing.T) {
 	})
 }
 
+func TestOpenAI_ConstructRequest_WithOutputSchema(t *testing.T) {
+	outputSchema := map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"name": map[string]interface{}{
+				"type": "string",
+			},
+			"age": map[string]interface{}{
+				"type": "integer",
+			},
+		},
+		"required":             []string{"name", "age"},
+		"additionalProperties": false,
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Parse request body to verify response_format
+		var requestBody map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		assert.NoError(t, err)
+
+		// Verify response_format is set with json_schema type
+		responseFormat, ok := requestBody["response_format"].(map[string]interface{})
+		assert.True(t, ok, "response_format should be present in request")
+		assert.Equal(t, "json_schema", responseFormat["type"])
+
+		jsonSchema, ok := responseFormat["json_schema"].(map[string]interface{})
+		assert.True(t, ok, "json_schema should be present in response_format")
+		assert.Equal(t, "structured_output", jsonSchema["name"])
+		assert.Equal(t, true, jsonSchema["strict"])
+
+		schema, ok := jsonSchema["schema"].(map[string]interface{})
+		assert.True(t, ok, "schema should be present in json_schema")
+		assert.Equal(t, "object", schema["type"])
+
+		properties, ok := schema["properties"].(map[string]interface{})
+		assert.True(t, ok, "properties should be present in schema")
+		assert.Contains(t, properties, "name")
+		assert.Contains(t, properties, "age")
+
+		// Return a mock structured response
+		response := map[string]interface{}{
+			"id":      "test-id",
+			"object":  "chat.completion",
+			"created": time.Now().Unix(),
+			"model":   "gpt-4",
+			"choices": []map[string]interface{}{
+				{
+					"index": 0,
+					"message": map[string]interface{}{
+						"role":    "assistant",
+						"content": `{"name":"Alice","age":30}`,
+					},
+					"finish_reason": "stop",
+				},
+			},
+			"usage": map[string]interface{}{
+				"prompt_tokens":     20,
+				"completion_tokens": 10,
+				"total_tokens":      30,
+			},
+		}
+		err = json.NewEncoder(w).Encode(response)
+		assert.NoError(t, err)
+	}))
+	defer server.Close()
+
+	provider := openai.NewProvider("test-key")
+	provider.SetBaseURL(server.URL)
+	openaiModel, err := provider.GetModel("gpt-4")
+	assert.NoError(t, err)
+
+	request := &model.Request{
+		Input:        "Return a person object with name and age.",
+		OutputSchema: outputSchema,
+	}
+
+	resp, err := openaiModel.GetResponse(context.Background(), request)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+	assert.Equal(t, `{"name":"Alice","age":30}`, resp.Content)
+	assert.Equal(t, 30, resp.Usage.TotalTokens)
+}
+
+func TestOpenAI_ConstructRequest_WithoutOutputSchema(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var requestBody map[string]interface{}
+		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		assert.NoError(t, err)
+
+		// Verify response_format is NOT set when OutputSchema is nil
+		_, hasResponseFormat := requestBody["response_format"]
+		assert.False(t, hasResponseFormat, "response_format should not be present when OutputSchema is nil")
+
+		response := map[string]interface{}{
+			"id":      "test-id",
+			"object":  "chat.completion",
+			"created": time.Now().Unix(),
+			"model":   "gpt-4",
+			"choices": []map[string]interface{}{
+				{
+					"index": 0,
+					"message": map[string]interface{}{
+						"role":    "assistant",
+						"content": "Plain text response",
+					},
+					"finish_reason": "stop",
+				},
+			},
+			"usage": map[string]interface{}{"total_tokens": 10},
+		}
+		err = json.NewEncoder(w).Encode(response)
+		assert.NoError(t, err)
+	}))
+	defer server.Close()
+
+	provider := openai.NewProvider("test-key")
+	provider.SetBaseURL(server.URL)
+	openaiModel, err := provider.GetModel("gpt-4")
+	assert.NoError(t, err)
+
+	request := &model.Request{
+		Input: "Hello",
+	}
+
+	resp, err := openaiModel.GetResponse(context.Background(), request)
+	assert.NoError(t, err)
+	assert.Equal(t, "Plain text response", resp.Content)
+}
+
 func TestOpenAIRateLimiting(t *testing.T) {
 	t.Run("RequestRateLimit", func(t *testing.T) {
 		provider := openai.NewProvider("test-key")

@@ -206,6 +206,8 @@
           "release_date": "2026-03",
           "context_window": 256000,
           "capabilities": {
+            "functionCalling": true,
+            "structuredOutput": true,
             "vision": true
           },
           "pricing": {
@@ -220,6 +222,8 @@
           "release_date": "2025-08",
           "context_window": 128000,
           "capabilities": {
+            "functionCalling": true,
+            "structuredOutput": true,
             "vision": true
           },
           "pricing": {
@@ -234,6 +238,8 @@
           "release_date": "2025-12",
           "context_window": 256000,
           "capabilities": {
+            "functionCalling": true,
+            "structuredOutput": true,
             "vision": true
           },
           "pricing": {
@@ -288,8 +294,10 @@
           "context_window": 400000,
           "max_output_tokens": 128000,
           "capabilities": {
-            "vision": true,
-            "thinking": true
+            "functionCalling": true,
+            "structuredOutput": true,
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 0.2,
@@ -304,8 +312,10 @@
           "context_window": 400000,
           "max_output_tokens": 128000,
           "capabilities": {
-            "vision": true,
-            "thinking": true
+            "functionCalling": true,
+            "structuredOutput": true,
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 0.75,
@@ -320,8 +330,10 @@
           "context_window": 1050000,
           "max_output_tokens": 128000,
           "capabilities": {
-            "vision": true,
-            "thinking": true
+            "functionCalling": true,
+            "structuredOutput": true,
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 2.5,
@@ -336,8 +348,10 @@
           "context_window": 1050000,
           "max_output_tokens": 128000,
           "capabilities": {
-            "vision": true,
-            "thinking": true
+            "functionCalling": true,
+            "structuredOutput": true,
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 30.0,
