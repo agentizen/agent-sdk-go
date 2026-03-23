@@ -86,40 +86,8 @@ type chatMessage struct {
 	ToolCallID string                `json:"tool_call_id,omitempty"`
 }
 
-// ocrDocument represents the document field in an OCR API request.
-type ocrDocument struct {
-	Type           string `json:"type"`
-	DocumentURL    string `json:"document_url,omitempty"`
-	DocumentName   string `json:"document_name,omitempty"`
-	Base64Document string `json:"base64_document,omitempty"`
-}
-
-// ocrRequest is the request body for the Mistral /v1/ocr endpoint.
-type ocrRequest struct {
-	Model    string      `json:"model"`
-	Document ocrDocument `json:"document"`
-}
-
-// ocrPage represents a single page in the OCR API response.
-type ocrPage struct {
-	Index    int    `json:"index"`
-	Markdown string `json:"markdown"`
-}
-
-// ocrResponse is the response body from the Mistral /v1/ocr endpoint.
-type ocrResponse struct {
-	ID    string                  `json:"id"`
-	Model string                  `json:"model"`
-	Usage chatCompletionUsageInfo `json:"usage"`
-	Pages []ocrPage               `json:"pages"`
-}
-
 // GetResponse gets a single response from the model with retry logic.
 func (m *Model) GetResponse(ctx context.Context, request *model.Request) (*model.Response, error) {
-	if model.ProviderSupports("mistral", m.ModelName, model.CapabilityOCR) {
-		return m.getResponseOCR(ctx, request)
-	}
-
 	var (
 		resp    *model.Response
 		lastErr error
@@ -280,132 +248,9 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 	}, nil
 }
 
-// getResponseOCR sends a request to the Mistral /v1/ocr endpoint.
-// The document is taken from the first ContentPartTypeDocument in InputParts (as
-// base64) or from Input as a URL string when no document part is present.
-// The pages returned by the API are concatenated into a single markdown string.
-func (m *Model) getResponseOCR(ctx context.Context, request *model.Request) (*model.Response, error) {
-	doc, err := buildOCRDocument(request)
-	if err != nil {
-		return nil, err
-	}
-
-	ocrReq := ocrRequest{
-		Model:    m.ModelName,
-		Document: doc,
-	}
-
-	endpoint := m.Provider.endpoint
-	if endpoint == "" {
-		endpoint = mistralsdk.Endpoint
-	}
-	url := strings.TrimRight(endpoint, "/") + "/v1/ocr"
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(ocrReq); err != nil {
-		return nil, fmt.Errorf("mistral: failed to encode OCR request: %w", err)
-	}
-
-	httpClient := m.Provider.getHTTPClient()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, &buf)
-	if err != nil {
-		return nil, fmt.Errorf("mistral: failed to create OCR request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+m.Provider.APIKey)
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("mistral: OCR HTTP request failed: %w", err)
-	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode >= 400 {
-		bodyBytes, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("mistral: OCR API error %d: %s", resp.StatusCode, strings.TrimSpace(string(bodyBytes)))
-	}
-
-	var apiResp ocrResponse
-	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
-		return nil, fmt.Errorf("mistral: failed to decode OCR response: %w", err)
-	}
-
-	var content strings.Builder
-	for i, page := range apiResp.Pages {
-		if i > 0 {
-			content.WriteString("\n\n")
-		}
-		content.WriteString(page.Markdown)
-	}
-
-	usage := &model.Usage{
-		PromptTokens: apiResp.Usage.PromptTokens,
-		TotalTokens:  apiResp.Usage.TotalTokens,
-	}
-	if usage.TotalTokens > 0 {
-		m.Provider.UpdateTokenCount(usage.TotalTokens)
-	}
-
-	return &model.Response{
-		Content: content.String(),
-		Usage:   usage,
-	}, nil
-}
-
-// buildOCRDocument constructs the document field for an OCR API request from
-// a model.Request.  The document source is resolved in order:
-//  1. The first ContentPartTypeDocument in InputParts (base64-encoded).
-//  2. Input as a string URL.
-func buildOCRDocument(request *model.Request) (ocrDocument, error) {
-	if request == nil {
-		return ocrDocument{}, fmt.Errorf("mistral: OCR request is nil")
-	}
-
-	for _, p := range request.InputParts {
-		if p.Type == model.ContentPartTypeDocument && len(p.Data) > 0 {
-			mimeType := p.MimeType
-			if mimeType == "" {
-				mimeType = "application/pdf"
-			}
-			dataURL := "data:" + mimeType + ";base64," + base64.StdEncoding.EncodeToString(p.Data)
-			return ocrDocument{
-				Type:        "document_url",
-				DocumentURL: dataURL,
-			}, nil
-		}
-	}
-
-	if urlStr, ok := request.Input.(string); ok && strings.TrimSpace(urlStr) != "" {
-		return ocrDocument{
-			Type:        "document_url",
-			DocumentURL: strings.TrimSpace(urlStr),
-		}, nil
-	}
-
-	return ocrDocument{}, fmt.Errorf("mistral: OCR request requires a document part or a URL as Input")
-}
-
 // StreamResponse streams a response from the model with retry logic.
 func (m *Model) StreamResponse(ctx context.Context, request *model.Request) (<-chan model.StreamEvent, error) {
 	events := make(chan model.StreamEvent)
-
-	// The OCR endpoint does not support streaming; wrap the synchronous call.
-	if model.ProviderSupports("mistral", m.ModelName, model.CapabilityOCR) {
-		go func() {
-			defer close(events)
-			resp, err := m.getResponseOCR(ctx, request)
-			if err != nil {
-				events <- model.StreamEvent{Type: model.StreamEventTypeError, Error: err}
-				return
-			}
-			events <- model.StreamEvent{Type: model.StreamEventTypeContent, Content: resp.Content}
-			events <- model.StreamEvent{Type: model.StreamEventTypeDone, Response: resp}
-		}()
-		return events, nil
-	}
 
 	go func() {
 		defer close(events)
@@ -476,7 +321,7 @@ type streamChunk struct {
 }
 
 // validateInputParts returns an error if the request contains content parts that
-// the model does not support. Pixtral models support image inputs; all other
+// the model does not support. Vision-capable models support image inputs; all other
 // Mistral models only accept text parts.
 func (mdl *Model) validateInputParts(request *model.Request) error {
 	supportsVision := model.ProviderSupports("mistral", mdl.ModelName, model.CapabilityVision)
@@ -795,8 +640,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 //
 // When supportsVision is true and the parts include images, the content is returned
 // as a slice of content-part objects (text + image_url) matching the Mistral vision
-// API format. Documents are always sent as plain text because Mistral has no native
-// PDF API; the provider falls back to inline text extraction.
+// API format.
 //
 // When no image parts are present the result is always a plain string so that
 // text-only payloads remain as compact as possible.
@@ -830,12 +674,6 @@ func buildMistralMultimodalContent(parts []model.ContentPart, input interface{},
 					},
 				})
 			}
-		case model.ContentPartTypeDocument:
-			// Mistral has no native document API; send decoded content as text.
-			contentParts = append(contentParts, map[string]interface{}{
-				"type": "text",
-				"text": fmt.Sprintf("[Document: %s]\n%s", p.Name, string(p.Data)),
-			})
 		}
 	}
 
@@ -845,8 +683,7 @@ func buildMistralMultimodalContent(parts []model.ContentPart, input interface{},
 
 	// When no images are present, concatenate all text parts into a single plain
 	// string. Text-only Mistral models (e.g. magistral reasoning models) do not
-	// accept the array content format and silently drop or ignore extra parts
-	// when the content is an array, causing OCR-extracted text to be lost.
+	// accept the array content format.
 	if !hasImage {
 		var sb strings.Builder
 		for i, part := range contentParts {

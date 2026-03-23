@@ -21,8 +21,6 @@ type ModelPricingSpec struct {
 	TrainingCostPerHour                  float64
 	EstimatedCostPerMinute               float64
 	EstimatedCostPerSecond               float64
-	OcrInputCostPerThousandPages         float64
-	OcrOutputCostPerThousandPages        float64
 }
 
 var modelPricing = map[string]map[string]ModelPricingSpec{
@@ -45,7 +43,6 @@ var modelPricing = map[string]map[string]ModelPricingSpec{
 		"ministral-8b-2512":     {InputCostPerMillion: 0.15, OutputCostPerMillion: 0.15},
 		"mistral-large-2512":    {InputCostPerMillion: 0.5, OutputCostPerMillion: 1.5},
 		"mistral-medium-2508":   {InputCostPerMillion: 0.4, OutputCostPerMillion: 2.0},
-		"mistral-ocr-2512":      {InputCostPerMillion: 1.0, OutputCostPerMillion: 1.0, OcrInputCostPerThousandPages: 2.0, OcrOutputCostPerThousandPages: 3.0},
 		"mistral-small-2603":    {InputCostPerMillion: 2.0, OutputCostPerMillion: 5.0},
 	},
 	"openai": {

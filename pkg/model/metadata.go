@@ -128,13 +128,6 @@ var modelMetadata = map[string]map[string]ModelMetadata{
 			ContextWindow:   128000,
 			MaxOutputTokens: 0,
 		},
-		"mistral-ocr-2512": {
-			DisplayName:     "Mistral OCR 2512",
-			Description:     "Specialized OCR model powering Mistral's Document AI stack for high-accuracy document understanding and information extraction.",
-			ReleaseDate:     "2025-12",
-			ContextWindow:   128000,
-			MaxOutputTokens: 32000,
-		},
 		"mistral-small-2603": {
 			DisplayName:     "Mistral Small 4",
 			Description:     "March 2026 release of Mistral Small 4, a highly efficient hybrid model unifying instruction following, reasoning, and coding capabilities.",

@@ -91,158 +91,6 @@ func TestMistralModel_GetResponse_Success(t *testing.T) {
 	assert.Equal(t, 12, resp.Usage.TotalTokens)
 }
 
-func TestMistralOCRModel_GetResponse_WithURL(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/v1/ocr", r.URL.Path)
-		assert.Equal(t, "Bearer test-key", r.Header.Get("Authorization"))
-
-		var body map[string]interface{}
-		err := json.NewDecoder(r.Body).Decode(&body)
-		assert.NoError(t, err)
-		assert.Equal(t, "mistral-ocr-2512", body["model"])
-		doc, _ := body["document"].(map[string]interface{})
-		assert.Equal(t, "document_url", doc["type"])
-		assert.Equal(t, "https://example.com/doc.pdf", doc["document_url"])
-
-		resp := map[string]interface{}{
-			"id":    "ocr-test",
-			"model": "mistral-ocr-2512",
-			"usage": map[string]interface{}{
-				"prompt_tokens": 100,
-				"total_tokens":  100,
-			},
-			"pages": []map[string]interface{}{
-				{"index": 0, "markdown": "# Page 1\nContent"},
-				{"index": 1, "markdown": "## Page 2\nMore content"},
-			},
-		}
-		_ = json.NewEncoder(w).Encode(resp)
-	}))
-	defer server.Close()
-
-	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-ocr-2512")
-	p.SetEndpoint(server.URL)
-
-	m, err := p.GetModel("")
-	assert.NoError(t, err)
-
-	req := &model.Request{
-		Input: "https://example.com/doc.pdf",
-	}
-
-	resp, err := m.GetResponse(context.Background(), req)
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
-	assert.Equal(t, "# Page 1\nContent\n\n## Page 2\nMore content", resp.Content)
-	assert.Equal(t, 100, resp.Usage.TotalTokens)
-}
-
-func TestMistralOCRModel_GetResponse_WithBase64Document(t *testing.T) {
-	docData := []byte("%PDF-1.4 test content")
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/v1/ocr", r.URL.Path)
-
-		var body map[string]interface{}
-		_ = json.NewDecoder(r.Body).Decode(&body)
-		doc, _ := body["document"].(map[string]interface{})
-		assert.Equal(t, "document_url", doc["type"])
-		assert.Nil(t, doc["document_name"])
-		assert.Nil(t, doc["base64_document"])
-		docURL, _ := doc["document_url"].(string)
-		assert.True(t, strings.HasPrefix(docURL, "data:application/pdf;base64,"), "document_url should be a base64 data URL")
-
-		resp := map[string]interface{}{
-			"id":    "ocr-test",
-			"model": "mistral-ocr-2512",
-			"usage": map[string]interface{}{"total_tokens": 50},
-			"pages": []map[string]interface{}{
-				{"index": 0, "markdown": "Invoice content"},
-			},
-		}
-		_ = json.NewEncoder(w).Encode(resp)
-	}))
-	defer server.Close()
-
-	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-ocr-2512")
-	p.SetEndpoint(server.URL)
-
-	m, err := p.GetModel("")
-	assert.NoError(t, err)
-
-	req := &model.Request{
-		InputParts: []model.ContentPart{
-			{
-				Type:     model.ContentPartTypeDocument,
-				MimeType: "application/pdf",
-				Data:     docData,
-				Name:     "invoice.pdf",
-			},
-		},
-	}
-
-	resp, err := m.GetResponse(context.Background(), req)
-	assert.NoError(t, err)
-	assert.Equal(t, "Invoice content", resp.Content)
-}
-
-func TestMistralOCRModel_StreamResponse_WrapsSync(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "/v1/ocr", r.URL.Path)
-
-		resp := map[string]interface{}{
-			"id":    "ocr-stream-test",
-			"model": "mistral-ocr-2512",
-			"usage": map[string]interface{}{"total_tokens": 20},
-			"pages": []map[string]interface{}{
-				{"index": 0, "markdown": "Streamed OCR content"},
-			},
-		}
-		_ = json.NewEncoder(w).Encode(resp)
-	}))
-	defer server.Close()
-
-	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-ocr-2512")
-	p.SetEndpoint(server.URL)
-
-	m, err := p.GetModel("")
-	assert.NoError(t, err)
-
-	req := &model.Request{
-		Input: "https://example.com/document.pdf",
-	}
-
-	events, err := m.StreamResponse(context.Background(), req)
-	assert.NoError(t, err)
-
-	var contentEvents []string
-	var doneEvent *model.StreamEvent
-	for event := range events {
-		switch event.Type {
-		case model.StreamEventTypeContent:
-			contentEvents = append(contentEvents, event.Content)
-		case model.StreamEventTypeDone:
-			ev := event
-			doneEvent = &ev
-		}
-	}
-
-	assert.Equal(t, []string{"Streamed OCR content"}, contentEvents)
-	assert.NotNil(t, doneEvent)
-	assert.Equal(t, "Streamed OCR content", doneEvent.Response.Content)
-}
-
-func TestMistralOCRModel_GetResponse_NoDocument(t *testing.T) {
-	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-ocr-2512")
-
-	m, err := p.GetModel("")
-	assert.NoError(t, err)
-
-	req := &model.Request{}
-	_, err = m.GetResponse(context.Background(), req)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "document")
-}
-
 func TestMistralModel_GetResponse_VisionImage(t *testing.T) {
 	imageData := []byte{0xFF, 0xD8, 0xFF, 0xE0} // minimal JPEG header bytes
 
@@ -409,7 +257,30 @@ func TestMistralModel_StreamResponse_VisionImage(t *testing.T) {
 	assert.Equal(t, "An image.", doneEvent.Response.Content)
 }
 
-func TestMistralNonOCRModel_UsesCompletionsEndpoint(t *testing.T) {
+func TestMistralModel_GetResponse_DocumentRejectedOnNonVisionModel(t *testing.T) {
+	// Use an unknown model name so no vision capability matches → validateInputParts rejects the document.
+	p := mistral.NewProvider("test-key").WithDefaultModel("mistral-text-only-test")
+
+	m, err := p.GetModel("")
+	assert.NoError(t, err)
+
+	req := &model.Request{
+		InputParts: []model.ContentPart{
+			{
+				Type:     model.ContentPartTypeDocument,
+				MimeType: "application/pdf",
+				Data:     []byte("%PDF-1.4 test"),
+				Name:     "report.pdf",
+			},
+		},
+	}
+
+	_, err = m.GetResponse(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "document")
+}
+
+func TestMistralModel_UsesCompletionsEndpoint(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/v1/chat/completions", r.URL.Path)
 

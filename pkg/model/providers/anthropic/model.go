@@ -553,6 +553,9 @@ func (m *Model) constructRequest(request *model.Request) (*AnthropicMessageReque
 	var messages []AnthropicMessage
 	var err error
 	if len(request.InputParts) > 0 {
+		if err = model.ValidateInputPartsVision("anthropic", m.ModelName, request.InputParts); err != nil {
+			return nil, err
+		}
 		messages, err = m.createMessagesFromParts(request.InputParts, request.Input)
 	} else {
 		messages, err = m.createMessages(request.Input)

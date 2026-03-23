@@ -2,7 +2,10 @@
 
 package model
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Capability string
 
@@ -16,7 +19,6 @@ const (
 	CapabilityFunctionCalling  Capability = "functionCalling"
 	CapabilityImageGeneration  Capability = "imageGeneration"
 	CapabilityLiveAPI          Capability = "liveAPI"
-	CapabilityOCR              Capability = "ocr"
 	CapabilityStructuredOutput Capability = "structuredOutput"
 	CapabilityThinking         Capability = "thinking"
 	CapabilityVision           Capability = "vision"
@@ -32,7 +34,6 @@ type ModelCapabilitySet struct {
 	FunctionCalling  bool
 	ImageGeneration  bool
 	LiveAPI          bool
-	OCR              bool
 	StructuredOutput bool
 	Thinking         bool
 	Vision           bool
@@ -49,7 +50,6 @@ func CapabilitiesFor(provider, modelID string) ModelCapabilitySet {
 		FunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),
 		ImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),
 		LiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),
-		OCR:              ProviderSupports(provider, modelID, CapabilityOCR),
 		StructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),
 		Thinking:         ProviderSupports(provider, modelID, CapabilityThinking),
 		Vision:           ProviderSupports(provider, modelID, CapabilityVision),
@@ -68,9 +68,9 @@ var providerCapabilities = map[string][]capabilityEntry{
 		{prefix: "claude-sonnet-4-6", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"gemini": {
-		{prefix: "gemini-2.5-flash", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
-		{prefix: "gemini-2.5-flash-lite", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
-		{prefix: "gemini-2.5-pro", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
+		{prefix: "gemini-2.5-flash", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gemini-2.5-flash-lite", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
+		{prefix: "gemini-2.5-pro", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true, CapabilityVision: true}},
 	},
 	"lmstudio": {},
 	"mistral": {
@@ -81,7 +81,6 @@ var providerCapabilities = map[string][]capabilityEntry{
 		{prefix: "ministral-8b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityOCR: true}},
 		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"openai": {
@@ -104,4 +103,19 @@ func ProviderSupports(provider, modelID string, cap Capability) bool {
 		}
 	}
 	return false
+}
+
+// ValidateInputPartsVision returns an error if parts contains image or document
+// content and the given provider/model does not declare vision support. Call this
+// before building any provider-specific request payload.
+func ValidateInputPartsVision(provider, modelID string, parts []ContentPart) error {
+	for _, p := range parts {
+		if p.Type == ContentPartTypeImage || p.Type == ContentPartTypeDocument {
+			if !ProviderSupports(provider, modelID, CapabilityVision) {
+				return fmt.Errorf("%s: model %q does not support vision — attachments require a vision-capable model", provider, modelID)
+			}
+			return nil
+		}
+	}
+	return nil
 }

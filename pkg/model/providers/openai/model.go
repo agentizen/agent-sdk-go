@@ -619,6 +619,9 @@ func (m *Model) constructRequest(request *model.Request) (*ChatCompletionRequest
 
 	// Add input messages — use InputParts when set for multimodal content.
 	if len(request.InputParts) > 0 {
+		if err := model.ValidateInputPartsVision("openai", m.ModelName, request.InputParts); err != nil {
+			return nil, err
+		}
 		addUserInputPartsMessages(chatRequest, request.InputParts, request.Input)
 	} else {
 		addUserInputMessages(chatRequest, request.Input)

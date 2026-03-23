@@ -10,10 +10,10 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	var b strings.Builder
 	b.WriteString(generatedFileHeader)
 	b.WriteString("package model\n\n")
-	b.WriteString("import \"strings\"\n\n")
+	b.WriteString("import (\n\t\"fmt\"\n\t\"strings\"\n)\n\n")
 	b.WriteString("type Capability string\n\n")
 	b.WriteString("const (\n")
-	b.WriteString("\tCapabilityAudioGeneration  Capability = \"audioGeneration\"\n")
+	b.WriteString("\tCapabilityAudioGeneration   Capability = \"audioGeneration\"\n")
 	b.WriteString("\tCapabilityBatchAPI          Capability = \"batchAPI\"\n")
 	b.WriteString("\tCapabilityCaching           Capability = \"caching\"\n")
 	b.WriteString("\tCapabilityCodeExecution     Capability = \"codeExecution\"\n")
@@ -22,7 +22,6 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\tCapabilityFunctionCalling   Capability = \"functionCalling\"\n")
 	b.WriteString("\tCapabilityImageGeneration   Capability = \"imageGeneration\"\n")
 	b.WriteString("\tCapabilityLiveAPI           Capability = \"liveAPI\"\n")
-	b.WriteString("\tCapabilityOCR               Capability = \"ocr\"\n")
 	b.WriteString("\tCapabilityStructuredOutput  Capability = \"structuredOutput\"\n")
 	b.WriteString("\tCapabilityThinking          Capability = \"thinking\"\n")
 	b.WriteString("\tCapabilityVision            Capability = \"vision\"\n")
@@ -37,7 +36,6 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\tFunctionCalling  bool\n")
 	b.WriteString("\tImageGeneration  bool\n")
 	b.WriteString("\tLiveAPI          bool\n")
-	b.WriteString("\tOCR              bool\n")
 	b.WriteString("\tStructuredOutput bool\n")
 	b.WriteString("\tThinking         bool\n")
 	b.WriteString("\tVision           bool\n")
@@ -53,7 +51,6 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\t\tFunctionCalling:  ProviderSupports(provider, modelID, CapabilityFunctionCalling),\n")
 	b.WriteString("\t\tImageGeneration:  ProviderSupports(provider, modelID, CapabilityImageGeneration),\n")
 	b.WriteString("\t\tLiveAPI:          ProviderSupports(provider, modelID, CapabilityLiveAPI),\n")
-	b.WriteString("\t\tOCR:              ProviderSupports(provider, modelID, CapabilityOCR),\n")
 	b.WriteString("\t\tStructuredOutput: ProviderSupports(provider, modelID, CapabilityStructuredOutput),\n")
 	b.WriteString("\t\tThinking:         ProviderSupports(provider, modelID, CapabilityThinking),\n")
 	b.WriteString("\t\tVision:           ProviderSupports(provider, modelID, CapabilityVision),\n")
@@ -90,6 +87,20 @@ func renderCapabilitiesFromSource(source registrySource) string {
 	b.WriteString("\t\t}\n")
 	b.WriteString("\t}\n")
 	b.WriteString("\treturn false\n")
+	b.WriteString("}\n\n")
+	b.WriteString("// ValidateInputPartsVision returns an error if parts contains image or document\n")
+	b.WriteString("// content and the given provider/model does not declare vision support. Call this\n")
+	b.WriteString("// before building any provider-specific request payload.\n")
+	b.WriteString("func ValidateInputPartsVision(provider, modelID string, parts []ContentPart) error {\n")
+	b.WriteString("\tfor _, p := range parts {\n")
+	b.WriteString("\t\tif p.Type == ContentPartTypeImage || p.Type == ContentPartTypeDocument {\n")
+	b.WriteString("\t\t\tif !ProviderSupports(provider, modelID, CapabilityVision) {\n")
+	b.WriteString("\t\t\t\treturn fmt.Errorf(\"%s: model %q does not support vision — attachments require a vision-capable model\", provider, modelID)\n")
+	b.WriteString("\t\t\t}\n")
+	b.WriteString("\t\t\treturn nil\n")
+	b.WriteString("\t\t}\n")
+	b.WriteString("\t}\n")
+	b.WriteString("\treturn nil\n")
 	b.WriteString("}\n")
 	return b.String()
 }
@@ -122,9 +133,6 @@ func modelCapabilityClauses(c capabilitySource) []string {
 	}
 	if c.LiveAPI {
 		caps = append(caps, "CapabilityLiveAPI: true")
-	}
-	if c.OCR {
-		caps = append(caps, "CapabilityOCR: true")
 	}
 	if c.StructuredOutput {
 		caps = append(caps, "CapabilityStructuredOutput: true")
@@ -160,8 +168,6 @@ func renderPricingFromSource(source registrySource) string {
 	b.WriteString("\tTrainingCostPerHour float64\n")
 	b.WriteString("\tEstimatedCostPerMinute float64\n")
 	b.WriteString("\tEstimatedCostPerSecond float64\n")
-	b.WriteString("\tOcrInputCostPerThousandPages float64\n")
-	b.WriteString("\tOcrOutputCostPerThousandPages float64\n")
 	b.WriteString("}\n\n")
 	b.WriteString("var modelPricing = map[string]map[string]ModelPricingSpec{\n")
 	for _, provider := range sortedProviders(source) {
@@ -210,12 +216,6 @@ func renderPricingFromSource(source registrySource) string {
 			}
 			if modelEntry.Pricing.EstimatedCostPerSecond > 0 {
 				fmt.Fprintf(&b, ", EstimatedCostPerSecond: %s", formatFloat(modelEntry.Pricing.EstimatedCostPerSecond))
-			}
-			if modelEntry.Pricing.OcrInputCostPerThousandPages > 0 {
-				fmt.Fprintf(&b, ", OcrInputCostPerThousandPages: %s", formatFloat(modelEntry.Pricing.OcrInputCostPerThousandPages))
-			}
-			if modelEntry.Pricing.OcrOutputCostPerThousandPages > 0 {
-				fmt.Fprintf(&b, ", OcrOutputCostPerThousandPages: %s", formatFloat(modelEntry.Pricing.OcrOutputCostPerThousandPages))
 			}
 			b.WriteString("},\n")
 		}

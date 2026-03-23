@@ -79,7 +79,8 @@
             "caching": true,
             "functionCalling": true,
             "liveAPI": false,
-            "thinking": true
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 0.1,
@@ -103,7 +104,8 @@
             "caching": true,
             "functionCalling": true,
             "liveAPI": false,
-            "thinking": true
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 0.3,
@@ -127,7 +129,8 @@
             "caching": true,
             "functionCalling": true,
             "liveAPI": false,
-            "thinking": true
+            "thinking": true,
+            "vision": true
           },
           "pricing": {
             "InputCostPerMillion": 1.25,
@@ -266,24 +269,6 @@
           "pricing": {
             "InputCostPerMillion": 2.0,
             "OutputCostPerMillion": 5.0
-          }
-        },
-        {
-          "id": "mistral-ocr-2512",
-          "display_name": "Mistral OCR 2512",
-          "description": "Specialized OCR model powering Mistral's Document AI stack for high-accuracy document understanding and information extraction.",
-          "release_date": "2025-12",
-          "context_window": 128000,
-          "max_output_tokens": 32000,
-          "capabilities": {
-            "vision": false,
-            "ocr": true
-          },
-          "pricing": {
-            "InputCostPerMillion": 1.0,
-            "OutputCostPerMillion": 1.0,
-            "OcrInputCostPerThousandPages": 2.0,
-            "OcrOutputCostPerThousandPages": 3.0
           }
         }
       ]

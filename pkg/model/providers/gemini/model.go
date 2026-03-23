@@ -103,6 +103,9 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 
 	var contents []*genai.Content
 	if len(request.InputParts) > 0 {
+		if err := model.ValidateInputPartsVision("gemini", m.ModelName, request.InputParts); err != nil {
+			return nil, err
+		}
 		contents = buildContentsFromParts(request.InputParts, request.Input)
 		if len(contents) == 0 {
 			return nil, fmt.Errorf("gemini: empty content from InputParts")
@@ -243,6 +246,9 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 
 	var contents []*genai.Content
 	if len(request.InputParts) > 0 {
+		if err := model.ValidateInputPartsVision("gemini", m.ModelName, request.InputParts); err != nil {
+			return err
+		}
 		contents = buildContentsFromParts(request.InputParts, request.Input)
 		if len(contents) == 0 {
 			return fmt.Errorf("gemini: empty content from InputParts")
