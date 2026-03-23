@@ -63,9 +63,9 @@ type capabilityEntry struct {
 
 var providerCapabilities = map[string][]capabilityEntry{
 	"anthropic": {
-		{prefix: "claude-haiku-4-5-20251001", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
-		{prefix: "claude-opus-4-6", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
-		{prefix: "claude-sonnet-4-6", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityVision: true}},
+		{prefix: "claude-haiku-4-5-20251001", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "claude-opus-4-6", caps: map[Capability]bool{CapabilityVision: true}},
+		{prefix: "claude-sonnet-4-6", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"gemini": {
 		{prefix: "gemini-2.5-flash", caps: map[Capability]bool{CapabilityBatchAPI: true, CapabilityCaching: true, CapabilityCodeExecution: true, CapabilityFileSearch: true, CapabilityFunctionCalling: true, CapabilityStructuredOutput: true, CapabilityThinking: true}},
@@ -81,7 +81,7 @@ var providerCapabilities = map[string][]capabilityEntry{
 		{prefix: "ministral-8b-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-large-2512", caps: map[Capability]bool{CapabilityVision: true}},
 		{prefix: "mistral-medium-2508", caps: map[Capability]bool{CapabilityVision: true}},
-		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityDocuments: true, CapabilityOCR: true}},
+		{prefix: "mistral-ocr-2512", caps: map[Capability]bool{CapabilityOCR: true}},
 		{prefix: "mistral-small-2603", caps: map[Capability]bool{CapabilityVision: true}},
 	},
 	"openai": {

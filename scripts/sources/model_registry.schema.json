@@ -102,9 +102,6 @@
                     "codeExecution": {
                       "type": "boolean"
                     },
-                    "documents": {
-                      "type": "boolean"
-                    },
                     "fileSearch": {
                       "type": "boolean"
                     },
