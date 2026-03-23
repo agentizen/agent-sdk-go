@@ -77,6 +77,7 @@ type ChatCompletionRequest struct {
 	PresencePenalty     float64       `json:"presence_penalty,omitempty"`
 	MaxCompletionTokens int           `json:"max_completion_tokens,omitempty"`
 	Stream              bool          `json:"stream,omitempty"`
+	ResponseFormat      interface{}   `json:"response_format,omitempty"`
 }
 
 // ChatCompletionResponse represents a response from the chat completions API
@@ -644,6 +645,18 @@ func (m *Model) constructRequest(request *model.Request) (*ChatCompletionRequest
 
 	// Apply model settings if provided
 	applyModelSettings(chatRequest, request.Settings)
+
+	// Structured output: set response_format with json_schema when OutputSchema is provided.
+	if request.OutputSchema != nil {
+		chatRequest.ResponseFormat = map[string]interface{}{
+			"type": "json_schema",
+			"json_schema": map[string]interface{}{
+				"name":   "structured_output",
+				"strict": true,
+				"schema": request.OutputSchema,
+			},
+		}
+	}
 
 	return chatRequest, nil
 }

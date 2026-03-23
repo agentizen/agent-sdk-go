@@ -194,7 +194,7 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 				SystemInstructions: currentAgent.Instructions,
 				Input:              currentInput,
 				Tools:              r.prepareTools(currentAgent.Tools),
-				OutputSchema:       r.prepareOutputSchema(currentAgent.OutputType),
+				OutputSchema:       r.resolveOutputSchema(opts, currentAgent),
 				Handoffs:           r.prepareHandoffs(currentAgent.Handoffs),
 				Settings:           modelSettings,
 			}
@@ -552,7 +552,7 @@ func (r *Runner) executeModelRequest(ctx context.Context, agent AgentType, input
 		SystemInstructions: agent.Instructions,
 		Input:              input,
 		Tools:              r.prepareTools(agent.Tools),
-		OutputSchema:       r.prepareOutputSchema(agent.OutputType),
+		OutputSchema:       r.resolveOutputSchema(opts, agent),
 		Handoffs:           r.prepareHandoffs(agent.Handoffs),
 		Settings:           modelSettings,
 	}
@@ -1209,6 +1209,15 @@ func (r *Runner) prepareTools(tools []tool.Tool) []interface{} {
 	}
 
 	return result
+}
+
+// resolveOutputSchema returns the output schema for a request, preferring
+// RunConfig.OutputSchema (raw JSON Schema) over the agent's OutputType.
+func (r *Runner) resolveOutputSchema(opts *RunOptions, ag AgentType) interface{} {
+	if opts != nil && opts.RunConfig != nil && opts.RunConfig.OutputSchema != nil {
+		return opts.RunConfig.OutputSchema
+	}
+	return r.prepareOutputSchema(ag.OutputType)
 }
 
 // prepareOutputSchema prepares the output schema for the model request

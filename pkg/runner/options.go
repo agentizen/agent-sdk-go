@@ -167,6 +167,9 @@ type RunConfig struct {
 	// OutputGuardrails are global output guardrails
 	OutputGuardrails []OutputGuardrail
 
+	// OutputSchema is a raw JSON Schema to override the agent's OutputType for structured output
+	OutputSchema interface{}
+
 	// TracingDisabled indicates whether tracing is disabled
 	TracingDisabled bool
 

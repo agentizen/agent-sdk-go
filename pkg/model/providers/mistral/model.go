@@ -151,7 +151,15 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 			requestData["tool_choice"] = params.ToolChoice
 		}
 	}
-	if params.ResponseFormat != "" {
+	if request.OutputSchema != nil {
+		requestData["response_format"] = map[string]any{
+			"type": "json_schema",
+			"json_schema": map[string]any{
+				"name":   "structured_output",
+				"schema": request.OutputSchema,
+			},
+		}
+	} else if params.ResponseFormat != "" {
 		requestData["response_format"] = map[string]any{"type": params.ResponseFormat}
 	}
 
@@ -372,7 +380,15 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 			requestData["tool_choice"] = params.ToolChoice
 		}
 	}
-	if params.ResponseFormat != "" {
+	if request.OutputSchema != nil {
+		requestData["response_format"] = map[string]any{
+			"type": "json_schema",
+			"json_schema": map[string]any{
+				"name":   "structured_output",
+				"schema": request.OutputSchema,
+			},
+		}
+	} else if params.ResponseFormat != "" {
 		requestData["response_format"] = map[string]any{"type": params.ResponseFormat}
 	}
 
@@ -752,9 +768,10 @@ func buildChatParamsFromRequest(req *model.Request) *mistralsdk.ChatRequestParam
 
 	params.Tools = buildToolsFromRequest(req)
 
-	if req != nil && req.OutputSchema != nil {
-		params.ResponseFormat = mistralsdk.ResponseFormatJsonObject
-	}
+	// NOTE: OutputSchema handling (structured output) is done at the serialization
+	// level in getResponseOnce/streamResponseOnce, not via params.ResponseFormat,
+	// because the SDK only supports "json_object" but we need "json_schema" with
+	// the full schema payload.
 
 	return &params
 }
