@@ -141,8 +141,10 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 		"temperature": params.Temperature,
 		"max_tokens":  params.MaxTokens,
 		"top_p":       params.TopP,
-		"random_seed": params.RandomSeed,
 		"safe_prompt": params.SafePrompt,
+	}
+	if params.RandomSeed != nil {
+		requestData["random_seed"] = *params.RandomSeed
 	}
 	if params.Tools != nil {
 		requestData["tools"] = params.Tools
@@ -369,9 +371,11 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 		"temperature": params.Temperature,
 		"max_tokens":  params.MaxTokens,
 		"top_p":       params.TopP,
-		"random_seed": params.RandomSeed,
 		"safe_prompt": params.SafePrompt,
 		"stream":      true,
+	}
+	if params.RandomSeed != nil {
+		requestData["random_seed"] = *params.RandomSeed
 	}
 	if params.Tools != nil {
 		requestData["tools"] = params.Tools

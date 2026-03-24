@@ -30,7 +30,7 @@ const toolTypeFunction toolType = "function"
 type chatRequestParams struct {
 	Temperature    float64 `json:"temperature"`
 	TopP           float64 `json:"top_p"`
-	RandomSeed     int     `json:"random_seed"`
+	RandomSeed     *int    `json:"random_seed,omitempty"`
 	MaxTokens      int     `json:"max_tokens"`
 	SafePrompt     bool    `json:"safe_prompt"`
 	Tools          []tool  `json:"tools"`
@@ -39,10 +39,12 @@ type chatRequestParams struct {
 }
 
 // defaultChatRequestParams provides sensible defaults matching the Mistral API.
+// RandomSeed is intentionally omitted so that the API uses its own default
+// (non-deterministic) behaviour. Set it explicitly in request.Settings if
+// reproducible outputs are required.
 var defaultChatRequestParams = chatRequestParams{
 	Temperature: 1,
 	TopP:        1,
-	RandomSeed:  42069,
 	MaxTokens:   4000,
 	SafePrompt:  false,
 }

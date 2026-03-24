@@ -107,7 +107,7 @@ cfg := network.NewNetworkConfig().           // zero value with StrategyParallel
     WithAgents(slots ...AgentSlot).          // set the agent roster
     WithStrategy(strategy DispatchStrategy). // override the dispatch strategy
     WithOrchestrator(orch *agent.Agent).     // use a custom orchestrator instead of the built-in one
-    WithMaxConcurrency(n int)                // cap goroutines in parallel/competitive mode (0 = unlimited)
+    WithMaxConcurrency(n int)                // cap goroutines in parallel mode (0 = unlimited)
 ```
 
 ### AgentSlot
@@ -153,7 +153,7 @@ cfg := network.NewNetworkConfig().
     WithMaxConcurrency(3) // optional goroutine cap
 ```
 
-`result.AgentResults` contains one entry per agent (order not guaranteed).
+`result.AgentResults` contains one entry per agent, in the same order as configured via `WithAgents`.
 
 ---
 
@@ -195,7 +195,7 @@ critical or you want to hedge across model tiers.
 User Prompt ──▶ Agent A (fast model) ──┐
             └──▶ Agent B (big model)  ──┤  First non-error response wins
                                          ▼
-                               Orchestrator (SYNTH) ──▶ FinalOutput
+                                    FinalOutput (winner's output)
 ```
 
 ```go
@@ -208,7 +208,8 @@ cfg := network.NewNetworkConfig().
 ```
 
 `result.AgentResults` contains exactly **one entry** (the winner).
-If all agents fail, `RunNetwork` returns the last observed error.
+`result.OrchestratorResult` is `nil` — synthesis is bypassed; the winner's output is the final answer.
+If all agents fail, `RunNetwork` returns an error.
 
 ---
 
@@ -260,9 +261,9 @@ opts := &runner.RunOptions{
 
 ## Streaming
 
-`RunNetworkStreaming` returns a channel of `NetworkStreamEvent`. Each event carries the
-agent name, an optional sub-task ID, the underlying `StreamEvent`, and an `IsFinal` flag
-that marks the synthesis result.
+`RunNetworkStreaming` returns a channel of `NetworkStreamEvent`. Each event has a `Type` field
+(`EventSubAgentStart`, `EventSubAgentEnd`, `EventOrchestratorContent`, `EventOrchestratorDone`,
+or `EventNetworkError`) and additional fields populated according to the type.
 
 ```go
 ch, err := nr.RunNetworkStreaming(ctx, cfg, opts)
@@ -270,15 +271,20 @@ if err != nil {
     panic(err)
 }
 for evt := range ch {
-    if evt.IsFinal {
-        fmt.Println("=== Final answer ===")
-    } else {
-        fmt.Printf("[%s] %v\n", evt.AgentName, evt.StreamEvent)
+    switch evt.Type {
+    case network.EventSubAgentEnd:
+        fmt.Printf("[%s] finished: %s\n", evt.AgentName, evt.Content)
+    case network.EventOrchestratorContent:
+        fmt.Print(evt.Content) // per-token chunk
+    case network.EventOrchestratorDone:
+        fmt.Printf("\n=== Final answer ===\n%v\n", evt.FinalOutput)
+    case network.EventNetworkError:
+        fmt.Printf("error: %v\n", evt.Error)
     }
 }
 ```
 
-The channel is closed after the synthesis event (or after an error event).
+The channel is closed after the final event (or after an error event).
 
 ---
 
@@ -288,8 +294,8 @@ The channel is closed after the synthesis event (or after an error event).
 |---|---|
 | `Validate()` fails | `RunNetwork` returns error immediately, no LLM calls made |
 | One parallel agent fails | Error recorded in `AgentRunResult.Error`; other agents continue |
-| Sequential agent fails | Pipeline stops; `RunNetwork` returns the error |
-| All competitive agents fail | `RunNetwork` returns the last observed error |
+| Sequential agent fails | Pipeline stops; `RunNetwork` / `RunNetworkStreaming` returns an error |
+| All competitive agents fail | `RunNetwork` / `RunNetworkStreaming` returns an error |
 | Orchestrator (DECOMP) returns invalid JSON | Runner falls back: assigns the raw user prompt to every agent |
 | Context cancelled | In-flight agents are cancelled; `RunNetwork` returns `context.Canceled` |
 
@@ -299,25 +305,8 @@ The channel is closed after the synthesis event (or after an error event).
 
 The network package is tested in `test/network/network_test.go` (coverage ≥ 90 %).
 
-Key patterns used in tests:
-
-```go
-// Implement model.Model directly to avoid provider resolution overhead
-type testModel struct{ content string }
-
-func (m *testModel) StreamResponse(ctx context.Context, params model.StreamParams) (<-chan model.StreamEvent, error) {
-    ch := make(chan model.StreamEvent, 1)
-    ch <- model.StreamEvent{Type: model.EventText, Text: m.content}
-    close(ch)
-    return ch, nil
-}
-
-func (m *testModel) GetModelID() string { return "test-model" }
-
-// Assign the model directly to bypass global RunConfig.Model override
-a := agent.NewAgent("MyAgent", "...")
-a.Model = &testModel{content: "my answer"}
-```
+For the exact, up-to-date method signatures, test helpers, and mock implementations, see:
+[`test/network/network_test.go`](../test/network/network_test.go)
 
 Run the test suite:
 

@@ -61,8 +61,12 @@ func decomposePrompt(
 	orchOpts.RunConfig.OutputSchema = schema
 
 	// Use temperature 0 for maximum determinism during decomposition.
+	// Clone ModelSettings before mutating to avoid side-effects on shared state.
 	if orchOpts.RunConfig.ModelSettings == nil {
 		orchOpts.RunConfig.ModelSettings = &model.Settings{}
+	} else {
+		cloned := *orchOpts.RunConfig.ModelSettings
+		orchOpts.RunConfig.ModelSettings = &cloned
 	}
 	zero := 0.0
 	orchOpts.RunConfig.ModelSettings.Temperature = &zero
