@@ -3,7 +3,6 @@ module github.com/citizenofai/agent-sdk-go
 go 1.25.7
 
 require (
-	github.com/gage-technologies/mistral-go v1.1.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.35.0
 	google.golang.org/genai v1.51.0
