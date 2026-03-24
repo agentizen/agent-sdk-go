@@ -163,6 +163,7 @@
           "description": "Compact 3B parameter model offering best-in-class text and vision capabilities for edge and lightweight deployments.",
           "release_date": "2025-12",
           "context_window": 256000,
+          "max_output_tokens": 65536,
           "capabilities": {
             "vision": true
           },
@@ -177,6 +178,7 @@
           "description": "Efficient 8B parameter model with best-in-class text and vision capabilities for balanced performance and computational efficiency.",
           "release_date": "2025-12",
           "context_window": 256000,
+          "max_output_tokens": 65536,
           "capabilities": {
             "vision": true
           },
@@ -191,6 +193,7 @@
           "description": "Largest model in the Ministral 3 family with 14B parameters, combining strong text and vision capabilities with efficient inference.",
           "release_date": "2025-12",
           "context_window": 256000,
+          "max_output_tokens": 65536,
           "capabilities": {
             "vision": true
           },
@@ -205,6 +208,7 @@
           "description": "March 2026 release of Mistral Small 4, a highly efficient hybrid model unifying instruction following, reasoning, and coding capabilities.",
           "release_date": "2026-03",
           "context_window": 256000,
+          "max_output_tokens": 65536,
           "capabilities": {
             "functionCalling": true,
             "structuredOutput": true,
@@ -221,6 +225,7 @@
           "description": "Frontier-class multimodal model released August 2025 for advanced applications requiring sophisticated reasoning and multi-modal understanding.",
           "release_date": "2025-08",
           "context_window": 128000,
+          "max_output_tokens": 65536,
           "capabilities": {
             "functionCalling": true,
             "structuredOutput": true,
@@ -237,6 +242,7 @@
           "description": "State-of-the-art general-purpose multimodal model for high-complexity tasks requiring maximum reasoning capability.",
           "release_date": "2025-12",
           "context_window": 256000,
+          "max_output_tokens": 131072,
           "capabilities": {
             "functionCalling": true,
             "structuredOutput": true,
@@ -253,6 +259,7 @@
           "description": "Efficient reasoning model providing advanced problem-solving capabilities with optimized performance for resource-constrained deployments.",
           "release_date": "2025-09",
           "context_window": 128000,
+          "max_output_tokens": 40960,
           "capabilities": {
             "vision": true,
             "thinking": true
@@ -268,6 +275,7 @@
           "description": "Advanced reasoning model with frontier-class performance supporting function-calling, document QnA, chat completions, and batching.",
           "release_date": "2025-09",
           "context_window": 128000,
+          "max_output_tokens": 40960,
           "capabilities": {
             "vision": true,
             "thinking": true
