@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	mistralsdk "github.com/gage-technologies/mistral-go"
 )
 
 const (
@@ -38,7 +37,6 @@ type Provider struct {
 
 	// Internal state
 	mu            sync.Mutex
-	client        *mistralsdk.MistralClient
 	httpClient    *http.Client
 	endpoint      string
 	requestCount  int
@@ -102,7 +100,6 @@ func (p *Provider) SetEndpoint(endpoint string) *Provider {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.endpoint = endpoint
-	p.client = nil
 	return p
 }
 
@@ -120,24 +117,6 @@ func (p *Provider) getHTTPClient() *http.Client {
 		Timeout: 60 * time.Second,
 	}
 	return p.httpClient
-}
-
-// getClient returns a lazily initialized mistral-go client.
-func (p *Provider) getClient() *mistralsdk.MistralClient {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	if p.client != nil {
-		return p.client
-	}
-
-	endpoint := p.endpoint
-	if endpoint == "" {
-		endpoint = mistralsdk.Endpoint
-	}
-
-	p.client = mistralsdk.NewMistralClient(p.APIKey, endpoint, mistralsdk.DefaultMaxRetries, mistralsdk.DefaultTimeout)
-	return p.client
 }
 
 // GetModel returns a model by name, satisfying model.Provider.

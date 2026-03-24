@@ -21,10 +21,9 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	mistralsdk "github.com/gage-technologies/mistral-go"
 )
 
-// Model implements the model.Model interface for Mistral using the mistral-go SDK.
+// Model implements the model.Model interface for Mistral.
 type Model struct {
 	ModelName string
 	Provider  *Provider
@@ -80,10 +79,10 @@ type chatCompletionUsageInfo struct {
 // Content is declared as any to support both plain strings (text-only models) and
 // arrays of content-part objects (vision models like Pixtral).
 type chatMessage struct {
-	Role       string                `json:"role"`
-	Content    any                   `json:"content,omitempty"`
-	ToolCalls  []mistralsdk.ToolCall `json:"tool_calls,omitempty"`
-	ToolCallID string                `json:"tool_call_id,omitempty"`
+	Role       string     `json:"role"`
+	Content    any        `json:"content,omitempty"`
+	ToolCalls  []toolCall `json:"tool_calls,omitempty"`
+	ToolCallID string     `json:"tool_call_id,omitempty"`
 }
 
 // GetResponse gets a single response from the model with retry logic.
@@ -142,8 +141,10 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 		"temperature": params.Temperature,
 		"max_tokens":  params.MaxTokens,
 		"top_p":       params.TopP,
-		"random_seed": params.RandomSeed,
 		"safe_prompt": params.SafePrompt,
+	}
+	if params.RandomSeed != nil {
+		requestData["random_seed"] = *params.RandomSeed
 	}
 	if params.Tools != nil {
 		requestData["tools"] = params.Tools
@@ -166,7 +167,7 @@ func (m *Model) getResponseOnce(ctx context.Context, request *model.Request) (*m
 	// Determine endpoint
 	endpoint := m.Provider.endpoint
 	if endpoint == "" {
-		endpoint = mistralsdk.Endpoint
+		endpoint = defaultEndpoint
 	}
 	url := strings.TrimRight(endpoint, "/") + "/v1/chat/completions"
 
@@ -370,9 +371,11 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 		"temperature": params.Temperature,
 		"max_tokens":  params.MaxTokens,
 		"top_p":       params.TopP,
-		"random_seed": params.RandomSeed,
 		"safe_prompt": params.SafePrompt,
 		"stream":      true,
+	}
+	if params.RandomSeed != nil {
+		requestData["random_seed"] = *params.RandomSeed
 	}
 	if params.Tools != nil {
 		requestData["tools"] = params.Tools
@@ -394,7 +397,7 @@ func (m *Model) streamResponseOnce(ctx context.Context, request *model.Request, 
 
 	endpoint := m.Provider.endpoint
 	if endpoint == "" {
-		endpoint = mistralsdk.Endpoint
+		endpoint = defaultEndpoint
 	}
 	url := strings.TrimRight(endpoint, "/") + "/v1/chat/completions"
 
@@ -558,7 +561,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 
 	if strings.TrimSpace(req.SystemInstructions) != "" {
 		messages = append(messages, chatMessage{
-			Role:    mistralsdk.RoleSystem,
+			Role:    roleSystem,
 			Content: req.SystemInstructions,
 		})
 	}
@@ -566,7 +569,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 	// InputParts takes precedence over Input for multimodal messages.
 	if len(req.InputParts) > 0 {
 		messages = append(messages, chatMessage{
-			Role:    mistralsdk.RoleUser,
+			Role:    roleUser,
 			Content: buildMistralMultimodalContent(req.InputParts, req.Input, supportsVision),
 		})
 		return messages
@@ -578,7 +581,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 	case string:
 		if strings.TrimSpace(v) != "" {
 			messages = append(messages, chatMessage{
-				Role:    mistralsdk.RoleUser,
+				Role:    roleUser,
 				Content: v,
 			})
 		}
@@ -601,7 +604,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 					resultContent = fmt.Sprintf("%v", toolResult["content"])
 				}
 				messages = append(messages, chatMessage{
-					Role:       mistralsdk.RoleTool,
+					Role:       roleTool,
 					Content:    resultContent,
 					ToolCallID: toolCallID,
 				})
@@ -610,14 +613,14 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 
 			role, _ := msg["role"].(string)
 			if role == "" {
-				role = mistralsdk.RoleUser
+				role = roleUser
 			}
 			content, _ := msg["content"].(string)
 
 			// Assistant messages may carry tool_calls with no text content.
-			if role == mistralsdk.RoleAssistant {
+			if role == roleAssistant {
 				chatMsg := chatMessage{
-					Role:    mistralsdk.RoleAssistant,
+					Role:    roleAssistant,
 					Content: strings.TrimSpace(content),
 				}
 				if rawToolCallsIface, ok := msg["tool_calls"].([]interface{}); ok {
@@ -643,7 +646,7 @@ func buildChatMessagesFromRequest(req *model.Request, supportsVision bool) []cha
 		}
 	default:
 		messages = append(messages, chatMessage{
-			Role:    mistralsdk.RoleUser,
+			Role:    roleUser,
 			Content: fmt.Sprintf("%v", v),
 		})
 	}
@@ -716,9 +719,9 @@ func buildMistralMultimodalContent(parts []model.ContentPart, input interface{},
 	return contentParts
 }
 
-// convertToMistralToolCalls converts a slice of raw tool call maps to mistralsdk.ToolCall slice.
-func convertToMistralToolCalls(rawToolCalls []map[string]interface{}) []mistralsdk.ToolCall {
-	var toolCalls []mistralsdk.ToolCall
+// convertToMistralToolCalls converts a slice of raw tool call maps to toolCall slice.
+func convertToMistralToolCalls(rawToolCalls []map[string]interface{}) []toolCall {
+	var toolCalls []toolCall
 	for _, tc := range rawToolCalls {
 		id, _ := tc["id"].(string)
 		fn, _ := tc["function"].(map[string]interface{})
@@ -727,10 +730,10 @@ func convertToMistralToolCalls(rawToolCalls []map[string]interface{}) []mistrals
 		}
 		name, _ := fn["name"].(string)
 		arguments, _ := fn["arguments"].(string)
-		toolCalls = append(toolCalls, mistralsdk.ToolCall{
-			Id:   id,
-			Type: mistralsdk.ToolTypeFunction,
-			Function: mistralsdk.FunctionCall{
+		toolCalls = append(toolCalls, toolCall{
+			ID:   id,
+			Type: toolTypeFunction,
+			Function: toolFunctionCall{
 				Name:      name,
 				Arguments: arguments,
 			},
@@ -740,8 +743,8 @@ func convertToMistralToolCalls(rawToolCalls []map[string]interface{}) []mistrals
 }
 
 // buildChatParamsFromRequest builds ChatRequestParams from a generic request.
-func buildChatParamsFromRequest(req *model.Request) *mistralsdk.ChatRequestParams {
-	params := mistralsdk.DefaultChatRequestParams
+func buildChatParamsFromRequest(req *model.Request) *chatRequestParams {
+	params := defaultChatRequestParams
 
 	if req != nil && req.Settings != nil {
 		if req.Settings.Temperature != nil {
@@ -757,11 +760,11 @@ func buildChatParamsFromRequest(req *model.Request) *mistralsdk.ChatRequestParam
 			choice := strings.ToLower(*req.Settings.ToolChoice)
 			switch choice {
 			case "none":
-				params.ToolChoice = mistralsdk.ToolChoiceNone
+				params.ToolChoice = toolChoiceNone
 			case "auto":
-				params.ToolChoice = mistralsdk.ToolChoiceAuto
+				params.ToolChoice = toolChoiceAuto
 			case "any":
-				params.ToolChoice = mistralsdk.ToolChoiceAny
+				params.ToolChoice = toolChoiceAny
 			}
 		}
 	}
@@ -777,12 +780,12 @@ func buildChatParamsFromRequest(req *model.Request) *mistralsdk.ChatRequestParam
 }
 
 // buildToolsFromRequest converts Request.Tools and Request.Handoffs into mistral Tools.
-func buildToolsFromRequest(req *model.Request) []mistralsdk.Tool {
+func buildToolsFromRequest(req *model.Request) []tool {
 	if req == nil {
 		return nil
 	}
 
-	var tools []mistralsdk.Tool
+	var tools []tool
 
 	for _, t := range req.Tools {
 		if tool := convertToMistralTool(t); tool != nil {
@@ -802,9 +805,9 @@ func buildToolsFromRequest(req *model.Request) []mistralsdk.Tool {
 	return tools
 }
 
-// convertToMistralTool converts a generic tool/handoff definition into a mistral Tool.
-func convertToMistralTool(tool interface{}) *mistralsdk.Tool {
-	if tool == nil {
+// convertToMistralTool converts a generic tool/handoff definition into a mistral tool.
+func convertToMistralTool(def interface{}) *tool {
+	if def == nil {
 		return nil
 	}
 
@@ -812,7 +815,7 @@ func convertToMistralTool(tool interface{}) *mistralsdk.Tool {
 	var description string
 	var params any
 
-	if m, ok := tool.(map[string]interface{}); ok {
+	if m, ok := def.(map[string]interface{}); ok {
 		if m["type"] == "function" && m["function"] != nil {
 			if fn, ok := m["function"].(map[string]interface{}); ok {
 				if v, ok := fn["name"].(string); ok {
@@ -839,7 +842,7 @@ func convertToMistralTool(tool interface{}) *mistralsdk.Tool {
 			return nil
 		}
 	} else {
-		if ti, ok := tool.(interface {
+		if ti, ok := def.(interface {
 			GetName() string
 			GetDescription() string
 			GetParametersSchema() map[string]interface{}
@@ -847,7 +850,7 @@ func convertToMistralTool(tool interface{}) *mistralsdk.Tool {
 			name = ti.GetName()
 			description = ti.GetDescription()
 			params = ti.GetParametersSchema()
-		} else if ti, ok := tool.(interface {
+		} else if ti, ok := def.(interface {
 			GetName() string
 			GetDescription() string
 		}); ok {
@@ -861,9 +864,9 @@ func convertToMistralTool(tool interface{}) *mistralsdk.Tool {
 		return nil
 	}
 
-	return &mistralsdk.Tool{
-		Type: mistralsdk.ToolTypeFunction,
-		Function: mistralsdk.Function{
+	return &tool{
+		Type: toolTypeFunction,
+		Function: toolFunction{
 			Name:        name,
 			Description: description,
 			Parameters:  params,
