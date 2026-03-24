@@ -88,7 +88,7 @@ func (nr *NetworkRunner) RunNetwork(
 		}
 		if winner == nil && len(agentResults) > 0 {
 			// All agents failed — surface the error.
-			return nil, fmt.Errorf("network: all competitive agents failed; last error: %w", agentResults[0].Error)
+			return nil, fmt.Errorf("network: all competitive agents failed; last error: %w", agentResults[len(agentResults)-1].Error)
 		}
 		var finalOutput interface{}
 		var lastAgent *agent.Agent
@@ -224,7 +224,7 @@ func (nr *NetworkRunner) RunNetworkStreaming(
 			if winner == nil && len(agentResults) > 0 {
 				ch <- NetworkStreamEvent{
 					Type:  EventNetworkError,
-					Error: fmt.Errorf("all competitive agents failed; last error: %w", agentResults[0].Error),
+					Error: fmt.Errorf("all competitive agents failed; last error: %w", agentResults[len(agentResults)-1].Error),
 				}
 				return
 			}
