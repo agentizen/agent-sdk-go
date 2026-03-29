@@ -5,7 +5,7 @@ go 1.25.7
 require (
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.35.0
-	google.golang.org/genai v1.51.0
+	google.golang.org/genai v1.52.0
 )
 
 require (
