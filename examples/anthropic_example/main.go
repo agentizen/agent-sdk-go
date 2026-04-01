@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/anthropic"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/anthropic"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 func main() {

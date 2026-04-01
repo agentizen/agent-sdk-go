@@ -12,10 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/result"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
-	"github.com/citizenofai/agent-sdk-go/pkg/tracing"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/result"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 )
 
 const (

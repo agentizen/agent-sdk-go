@@ -3,8 +3,8 @@ package network
 import (
 	"testing"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
 )
 
 // ---------------------------------------------------------------------------

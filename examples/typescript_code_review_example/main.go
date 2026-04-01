@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/openai"
-	"github.com/citizenofai/agent-sdk-go/pkg/result"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/openai"
+	"github.com/agentizen/agent-sdk-go/pkg/result"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 // Sample TypeScript function requirement

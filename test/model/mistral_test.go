@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/mistral"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/mistral"
 	"github.com/stretchr/testify/assert"
 )
 

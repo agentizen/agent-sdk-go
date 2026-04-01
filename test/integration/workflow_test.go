@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
-	"github.com/citizenofai/agent-sdk-go/test/mocks"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/test/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

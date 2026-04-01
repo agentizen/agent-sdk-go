@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
 )
 
 // DispatchStrategy defines how sub-tasks are distributed across agents in a network.

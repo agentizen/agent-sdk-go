@@ -3,8 +3,8 @@ package agent
 import (
 	"context"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 // Hooks defines lifecycle hooks for an agent

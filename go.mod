@@ -1,4 +1,4 @@
-module github.com/citizenofai/agent-sdk-go
+module github.com/agentizen/agent-sdk-go
 
 go 1.25.7
 

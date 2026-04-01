@@ -1,8 +1,8 @@
 package result
 
 import (
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 // RunItem represents an item generated during a run

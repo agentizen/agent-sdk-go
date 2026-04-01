@@ -19,7 +19,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 // Model implements the model.Model interface for OpenAI

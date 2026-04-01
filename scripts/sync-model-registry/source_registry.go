@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 type registrySource struct {

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/lmstudio"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/lmstudio"
 	"github.com/stretchr/testify/assert"
 )
 

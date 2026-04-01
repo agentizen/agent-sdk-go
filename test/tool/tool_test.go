@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 // TestNewFunctionTool tests the creation of a new function tool

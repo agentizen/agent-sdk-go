@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/tracing"
+	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
