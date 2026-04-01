@@ -1,137 +1,140 @@
-package main
+// Package agentsdk provides a Go SDK for building multi-agent AI applications.
+//
+// It supports tool use, agent handoffs, streaming responses, multi-turn
+// conversations, and integrations with multiple LLM providers (OpenAI,
+// Anthropic, Gemini, Mistral, LM Studio, Azure OpenAI).
+//
+// # Quick Start
+//
+//	import (
+//	    agentsdk "github.com/agentizen/agent-sdk-go"
+//	    "github.com/agentizen/agent-sdk-go/pkg/model/providers/openai"
+//	)
+//
+//	provider := openai.NewProvider(os.Getenv("OPENAI_API_KEY"))
+//
+//	a := agentsdk.NewAgent("Assistant")
+//	a.SetModelProvider(provider)
+//	a.WithModel("gpt-4o-mini")
+//	a.SetSystemInstructions("You are a helpful assistant.")
+//
+//	r := agentsdk.NewRunner()
+//	r.WithDefaultProvider(provider)
+//
+//	result, err := r.Run(context.Background(), a, &agentsdk.RunOptions{
+//	    Input: "Hello!",
+//	})
+//
+// See the examples/ directory for complete working examples with each provider.
+package agentsdk
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"os"
-	"time"
-
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/lmstudio"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/result"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
-func main() {
-	// Create a new LM Studio provider
-	provider := lmstudio.NewProvider()
+// Version is the SDK version. It is overridden at release time via:
+//
+//	-ldflags "-X github.com/agentizen/agent-sdk-go.Version=<tag>"
+var Version = "dev"
 
-	// Set the base URL and default model
-	provider.SetBaseURL("http://127.0.0.1:1234/v1")
-	provider.SetDefaultModel("gemma-3-4b-it")
+// Core type aliases — re-exported for convenience so callers only need to
+// import this package for the most common use cases.
+type (
+	// Agent is an AI agent with tools, handoffs, and lifecycle hooks.
+	Agent = agent.Agent
 
-	// Create a new agent
-	agent := agent.NewAgent("Time Assistant")
+	// Runner executes agents, managing the turn loop, tool execution, and
+	// agent-to-agent handoffs.
+	Runner = runner.Runner
 
-	// Set the model provider
-	agent.SetModelProvider(provider)
+	// RunOptions configures a single invocation of Runner.Run or
+	// Runner.RunStreaming.
+	RunOptions = runner.RunOptions
 
-	// Set the agent's model
-	agent.WithModel("gemma-3-4b-it")
+	// RunConfig holds global, run-level configuration overrides such as model,
+	// provider, guardrails, and tracing settings.
+	RunConfig = runner.RunConfig
 
-	// Set system instructions
-	agent.SetSystemInstructions(`You are a helpful time assistant that can provide the current time in various formats.
-When a user asks for the time, use the get_current_time tool to get accurate information.
-After using tools, ALWAYS provide a complete response to the user's question in natural language.
-Make your responses helpful and to the point.`)
+	// WorkflowConfig controls retry, state management, validation, and recovery
+	// behavior for multi-agent workflows.
+	WorkflowConfig = runner.WorkflowConfig
 
-	// Add a simple tool to get the current time
-	agent.WithTools(tool.NewFunctionTool(
-		"get_current_time",
-		"Get the current time in a specified format",
-		func(ctx context.Context, params map[string]interface{}) (interface{}, error) {
-			// Default format is RFC3339
-			format := time.RFC3339
+	// RetryConfig configures automatic retries for tool calls and handoffs.
+	RetryConfig = runner.RetryConfig
 
-			// Check if a format is specified
-			if formatParam, ok := params["format"]; ok {
-				if formatStr, ok := formatParam.(string); ok && formatStr != "" {
-					switch formatStr {
-					case "rfc3339":
-						format = time.RFC3339
-					case "kitchen":
-						format = time.Kitchen
-					case "date":
-						format = "2006-01-02"
-					case "datetime":
-						format = "2006-01-02 15:04:05"
-					case "unix":
-						return time.Now().Unix(), nil
-					}
-				}
-			}
+	// TracingConfig carries metadata forwarded to the active tracer.
+	TracingConfig = runner.TracingConfig
 
-			return time.Now().Format(format), nil
-		},
-	).WithSchema(map[string]interface{}{
-		"type": "object",
-		"properties": map[string]interface{}{
-			"format": map[string]interface{}{
-				"type":        "string",
-				"enum":        []string{"rfc3339", "kitchen", "date", "datetime", "unix"},
-				"description": "The format to return the time in. Options: rfc3339, kitchen, date, datetime, unix",
-			},
-		},
-		"required": []string{},
-	}))
+	// Tool is the interface every agent tool must satisfy.
+	Tool = tool.Tool
 
-	// Create a new runner
-	runner := runner.NewRunner()
-	runner.WithDefaultProvider(provider)
+	// FunctionTool wraps a Go function as an agent tool.
+	FunctionTool = tool.FunctionTool
 
-	// Run the agent with a basic query
-	fmt.Println("Running agent with a basic query...")
-	result, err := runner.Run(context.Background(), agent, &RunOptions{
-		Input: "Hi Gemma! Could you please tell me what time it is right now?",
-	})
-	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
-	}
+	// StreamEvent is a single event emitted during a streaming run.
+	StreamEvent = model.StreamEvent
 
-	// Print the result
-	fmt.Println("\nAgent response:")
-	fmt.Println(result.FinalOutput)
+	// ContentPart is one segment of a multi-modal message (text, image, or
+	// document).
+	ContentPart = model.ContentPart
 
-	// Run the agent with a specific format request
-	fmt.Println("\nRunning agent with a specific format request...")
-	result, err = runner.Run(context.Background(), agent, &RunOptions{
-		Input: "What time is it in kitchen format?",
-	})
-	if err != nil {
-		log.Fatalf("Error running agent: %v", err)
-	}
+	// ModelSettings configures model-level parameters (temperature, top-p, …).
+	ModelSettings = model.Settings
 
-	// Print the result
-	fmt.Println("\nAgent response:")
-	fmt.Println(result.FinalOutput)
+	// ModelProvider resolves model names to Model instances.
+	ModelProvider = model.Provider
 
-	// Run the agent streaming
-	fmt.Println("\nRunning agent with streaming...")
-	streamResult, err := runner.RunStreaming(context.Background(), agent, &RunOptions{
-		Input: "What time is it right now?",
-	})
-	if err != nil {
-		log.Fatalf("Error running agent with streaming: %v", err)
-	}
+	// RunResult is the final result of a completed non-streaming run.
+	RunResult = result.RunResult
 
-	// Process the stream
-	fmt.Println("\nStreaming response:")
-	for event := range streamResult.Stream {
-		switch event.Type {
-		case model.StreamEventTypeContent:
-			fmt.Print(event.Content)
-		case model.StreamEventTypeToolCall:
-			fmt.Printf("\n[Tool Call: %s]\n", event.ToolCall.Name)
-		case model.StreamEventTypeDone:
-			fmt.Println("\n[Done]")
-		case model.StreamEventTypeError:
-			fmt.Printf("\n[Error: %v]\n", event.Error)
-			os.Exit(1)
-		}
-	}
+	// StreamedRunResult is the handle returned by Runner.RunStreaming. Consume
+	// events from its Stream channel, then read FinalOutput when done.
+	StreamedRunResult = result.StreamedRunResult
+)
 
-	fmt.Println("\nFinal output:")
-	fmt.Println(streamResult.FinalOutput)
+// Streaming event type constants — forwarded from the model package.
+const (
+	// StreamEventTypeContent is emitted for each streaming text chunk.
+	StreamEventTypeContent = model.StreamEventTypeContent
+
+	// StreamEventTypeToolCall is emitted when the model invokes a tool.
+	StreamEventTypeToolCall = model.StreamEventTypeToolCall
+
+	// StreamEventTypeHandoff is emitted on agent-to-agent handoffs.
+	StreamEventTypeHandoff = model.StreamEventTypeHandoff
+
+	// StreamEventTypeDone is emitted when the model finishes generating.
+	StreamEventTypeDone = model.StreamEventTypeDone
+
+	// StreamEventTypeError is emitted when an unrecoverable error occurs
+	// during streaming.
+	StreamEventTypeError = model.StreamEventTypeError
+)
+
+// NewAgent creates a new Agent. An optional name and instructions can be
+// provided as positional arguments: NewAgent("name", "instructions").
+func NewAgent(name ...string) *Agent {
+	return agent.NewAgent(name...)
+}
+
+// NewRunner creates a new Runner with default configuration (max 10 turns).
+func NewRunner() *Runner {
+	return runner.NewRunner()
+}
+
+// NewFunctionTool creates a tool backed by an arbitrary Go function.
+//
+// The function signature may be:
+//   - func(ctx context.Context, params map[string]interface{}) (interface{}, error)
+//   - func(params map[string]interface{}) (interface{}, error)
+//   - func(ctx context.Context, input MyStruct) (MyResult, error)
+//
+// A JSON Schema is inferred automatically from the function signature.
+// Use (*FunctionTool).WithSchema to override it.
+func NewFunctionTool(name, description string, fn interface{}) *FunctionTool {
+	return tool.NewFunctionTool(name, description, fn)
 }

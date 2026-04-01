@@ -4,45 +4,10 @@ before:
   hooks:
     - go mod tidy
 
+# This is a Go library — no binary artifacts are built.
+# Consumers install it with: go get github.com/agentizen/agent-sdk-go@<version>
 builds:
-  - env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    ldflags:
-      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
-    main: .
-
-archives:
-  - id: default
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    ids:
-      - default
-    files:
-      - LICENSE
-      - README.md
-      - examples/**/*
-      - pkg/**/*
-      - cmd/**/*
-      - go.mod
-      - go.sum
-    formats:
-      - tar.gz
-    format_overrides:
-      - goos: windows
-        formats:
-          - zip
+  - skip: true
 
 checksum:
   name_template: 'checksums.txt'
@@ -67,10 +32,16 @@ release:
   draft: false
   prerelease: auto
   footer: |
+    ## Install
+
+    ```sh
+    go get github.com/agentizen/agent-sdk-go@{{ .Version }}
+    ```
+
     ## Release Information
 
     Version: {{ .Version }}
     Commit: {{ .Commit }}
     Date: {{ .Date }}
 
-    For more information, visit [agentizen/agent-sdk-go](https://github.com/agentizen/agent-sdk-go) 
+    For more information, visit [agentizen/agent-sdk-go](https://github.com/agentizen/agent-sdk-go)
