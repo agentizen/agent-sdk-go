@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 // Agent represents an AI agent with specific configuration

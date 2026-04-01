@@ -3,7 +3,7 @@ package model_test
 import (
 	"testing"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 // TestRequest tests creating a model request

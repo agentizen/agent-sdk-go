@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/openai"
-	"github.com/citizenofai/agent-sdk-go/pkg/network"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/openai"
+	"github.com/agentizen/agent-sdk-go/pkg/network"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
 )
 
 // Competitive Network example

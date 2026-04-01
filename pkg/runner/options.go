@@ -3,7 +3,7 @@ package runner
 import (
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 // RunOptions configures a run

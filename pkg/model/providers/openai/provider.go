@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 type APIType string

@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/gemini"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/gemini"
 )
 
 func main() {

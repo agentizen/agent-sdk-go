@@ -62,7 +62,7 @@ changelog:
 
 release:
   github:
-    owner: citizenofai
+    owner: agentizen
     name: agent-sdk-go
   draft: false
   prerelease: auto
@@ -73,4 +73,4 @@ release:
     Commit: {{ .Commit }}
     Date: {{ .Date }}
 
-    For more information, visit [citizenofai/agent-sdk-go](https://github.com/citizenofai/agent-sdk-go) 
+    For more information, visit [agentizen/agent-sdk-go](https://github.com/agentizen/agent-sdk-go) 

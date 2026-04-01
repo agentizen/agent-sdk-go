@@ -8,7 +8,7 @@ import (
 
 	genai "google.golang.org/genai"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 const (

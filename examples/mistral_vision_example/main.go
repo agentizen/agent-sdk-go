@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
-	"github.com/citizenofai/agent-sdk-go/pkg/model/providers/mistral"
-	"github.com/citizenofai/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model/providers/mistral"
+	"github.com/agentizen/agent-sdk-go/pkg/runner"
 )
 
 func loadImage(path string) ([]byte, string, error) {

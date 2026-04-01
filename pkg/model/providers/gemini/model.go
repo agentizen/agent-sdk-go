@@ -15,7 +15,7 @@ import (
 	"golang.org/x/text/language"
 	genai "google.golang.org/genai"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 // handoffFunctionNameToAgentName maps sanitized Gemini function names for

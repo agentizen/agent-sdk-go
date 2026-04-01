@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/agent"
-	"github.com/citizenofai/agent-sdk-go/pkg/result"
+	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/result"
 )
 
 // WorkflowRunner extends the base Runner with workflow capabilities

@@ -3,10 +3,10 @@
 Build and orchestrate AI agents in Go with a maintained multi-provider runtime and a typed model registry.
 
 <p align="center">
-  <a href="https://github.com/citizenofai/agent-sdk-go/actions/workflows/code-quality.yml"><img src="https://github.com/citizenofai/agent-sdk-go/actions/workflows/code-quality.yml/badge.svg" alt="Code Quality"></a>
-  <a href="https://github.com/citizenofai/agent-sdk-go/actions/workflows/model-capabilities-sync.yml"><img src="https://github.com/citizenofai/agent-sdk-go/actions/workflows/model-capabilities-sync.yml/badge.svg" alt="Model Registry Refresh"></a>
-  <a href="https://github.com/citizenofai/agent-sdk-go/commits/main/scripts/sources/model_registry.json"><img src="https://img.shields.io/github/last-commit/citizenofai/agent-sdk-go/main?path=scripts/sources/model_registry.json&label=registry.json%20last%20update" alt="registry.json last update"></a>
-  <a href="https://pkg.go.dev/github.com/citizenofai/agent-sdk-go"><img src="https://pkg.go.dev/badge/github.com/citizenofai/agent-sdk-go.svg" alt="PkgGoDev"></a>
+  <a href="https://github.com/agentizen/agent-sdk-go/actions/workflows/code-quality.yml"><img src="https://github.com/agentizen/agent-sdk-go/actions/workflows/code-quality.yml/badge.svg" alt="Code Quality"></a>
+  <a href="https://github.com/agentizen/agent-sdk-go/actions/workflows/model-capabilities-sync.yml"><img src="https://github.com/agentizen/agent-sdk-go/actions/workflows/model-capabilities-sync.yml/badge.svg" alt="Model Registry Refresh"></a>
+  <a href="https://github.com/agentizen/agent-sdk-go/commits/main/scripts/sources/model_registry.json"><img src="https://img.shields.io/github/last-commit/agentizen/agent-sdk-go/main?path=scripts/sources/model_registry.json&label=registry.json%20last%20update" alt="registry.json last update"></a>
+  <a href="https://pkg.go.dev/github.com/agentizen/agent-sdk-go"><img src="https://pkg.go.dev/badge/github.com/agentizen/agent-sdk-go.svg" alt="PkgGoDev"></a>
 </p>
 
 ## Why Use This Repository
@@ -21,7 +21,7 @@ If you only need catalog data, you can use `pkg/model` without adopting the full
 ## Start in 2 Minutes
 
 ```bash
-go get github.com/citizenofai/agent-sdk-go
+go get github.com/agentizen/agent-sdk-go
 ```
 
 ```go
@@ -30,7 +30,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/citizenofai/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/model"
 )
 
 func main() {
@@ -162,7 +162,7 @@ Project docs:
 Quick setup:
 
 ```bash
-git clone https://github.com/citizenofai/agent-sdk-go.git
+git clone https://github.com/agentizen/agent-sdk-go.git
 cd agent-sdk-go
 ./scripts/ci_setup.sh
 ./scripts/check_all.sh
