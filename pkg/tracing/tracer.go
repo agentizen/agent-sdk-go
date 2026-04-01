@@ -23,6 +23,10 @@ const (
 	EventTypeHandoffComplete = "handoff_complete"
 	EventTypeAgentMessage    = "agent_message"
 	EventTypeError           = "error"
+	EventTypeSkillLoad       = "skill_load"
+	EventTypeMCPCall         = "mcp_call"
+	EventTypeMCPResult       = "mcp_result"
+	EventTypePluginInit      = "plugin_init"
 )
 
 // Event is a trace event
