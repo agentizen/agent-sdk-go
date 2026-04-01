@@ -12,8 +12,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
 	"github.com/agentizen/agent-sdk-go/pkg/result"
+	"github.com/agentizen/agent-sdk-go/pkg/skill"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 )
@@ -189,11 +191,14 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 			// Prepare model settings
 			modelSettings := r.prepareModelSettings(currentAgent, opts.RunConfig, consecutiveToolCalls)
 
+			// Resolve effective tools (agent tools + load_skill + MCP tools)
+			effectiveTools := r.resolveEffectiveTools(ctx, currentAgent)
+
 			// Prepare model request
 			request := &ModelRequestType{
-				SystemInstructions: currentAgent.Instructions,
+				SystemInstructions: r.buildSkillAwareInstructions(currentAgent),
 				Input:              currentInput,
-				Tools:              r.prepareTools(currentAgent.Tools),
+				Tools:              r.prepareTools(effectiveTools),
 				OutputSchema:       r.resolveOutputSchema(opts, currentAgent),
 				Handoffs:           r.prepareHandoffs(currentAgent.Handoffs),
 				Settings:           modelSettings,
@@ -237,6 +242,7 @@ func (r *Runner) RunStreaming(ctx context.Context, agent AgentType, opts *RunOpt
 				turn,
 				eventCh,
 				&consecutiveToolCalls,
+				effectiveTools,
 			)
 
 			if err == nil && streamedResult.ContinueLoop {
@@ -401,8 +407,11 @@ func (r *Runner) runAgentLoop(ctx context.Context, agent AgentType, input interf
 			return nil, err
 		}
 
+		// Resolve effective tools for this turn
+		effectiveTools := r.resolveEffectiveTools(ctx, currentAgent)
+
 		// Prepare and execute model request
-		response, err := r.executeModelRequest(ctx, currentAgent, currentInput, consecutiveToolCalls, opts, turn)
+		response, err := r.executeModelRequest(ctx, currentAgent, currentInput, consecutiveToolCalls, opts, turn, effectiveTools)
 		if err != nil {
 			return nil, err
 		}
@@ -443,7 +452,7 @@ func (r *Runner) runAgentLoop(ctx context.Context, agent AgentType, input interf
 		// Check if we have tool calls
 		if len(response.ToolCalls) > 0 {
 			// Process tool calls and update input
-			nextInput, continueLoop, toolCallCount := r.processToolCalls(ctx, currentAgent, response, currentInput, consecutiveToolCalls, runResult, turn, opts)
+			nextInput, continueLoop, toolCallCount := r.processToolCalls(ctx, currentAgent, response, currentInput, consecutiveToolCalls, runResult, turn, opts, effectiveTools)
 			if continueLoop {
 				currentInput = nextInput
 				consecutiveToolCalls = toolCallCount
@@ -543,15 +552,15 @@ func (r *Runner) callEndHooks(ctx context.Context, agent AgentType, runResult *r
 }
 
 // executeModelRequest prepares and executes a model request
-func (r *Runner) executeModelRequest(ctx context.Context, agent AgentType, input interface{}, consecutiveToolCalls int, opts *RunOptions, turn int) (*model.Response, error) {
+func (r *Runner) executeModelRequest(ctx context.Context, agent AgentType, input interface{}, consecutiveToolCalls int, opts *RunOptions, turn int, effectiveTools []tool.Tool) (*model.Response, error) {
 	// Prepare model settings
 	modelSettings := r.prepareModelSettings(agent, opts.RunConfig, consecutiveToolCalls)
 
 	// Prepare model request
 	request := &ModelRequestType{
-		SystemInstructions: agent.Instructions,
+		SystemInstructions: r.buildSkillAwareInstructions(agent),
 		Input:              input,
-		Tools:              r.prepareTools(agent.Tools),
+		Tools:              r.prepareTools(effectiveTools),
 		OutputSchema:       r.resolveOutputSchema(opts, agent),
 		Handoffs:           r.prepareHandoffs(agent.Handoffs),
 		Settings:           modelSettings,
@@ -860,7 +869,7 @@ func (r *Runner) processHandoff(ctx context.Context, currentAgent AgentType, cur
 }
 
 // processToolCalls processes tool calls and updates the input
-func (r *Runner) processToolCalls(ctx context.Context, agent AgentType, response *model.Response, currentInput interface{}, currentConsecutiveCalls int, runResult *result.RunResult, turn int, opts *RunOptions) (interface{}, bool, int) {
+func (r *Runner) processToolCalls(ctx context.Context, agent AgentType, response *model.Response, currentInput interface{}, currentConsecutiveCalls int, runResult *result.RunResult, turn int, opts *RunOptions, effectiveTools []tool.Tool) (interface{}, bool, int) {
 	// Track consecutive tool calls to the same tool
 	toolCallCount := currentConsecutiveCalls
 	if len(response.ToolCalls) == 1 {
@@ -874,7 +883,7 @@ func (r *Runner) processToolCalls(ctx context.Context, agent AgentType, response
 	toolResults := make([]interface{}, 0, len(response.ToolCalls))
 	for i, tc := range response.ToolCalls {
 		// Execute the tool call with our helper function
-		modelToolResult, toolCallItem, toolResultItem, err := r.executeToolCall(ctx, agent, tc, turn, i)
+		modelToolResult, toolCallItem, toolResultItem, err := r.executeToolCall(ctx, agent, tc, turn, i, effectiveTools)
 
 		// Add the items to the result
 		runResult.NewItems = append(runResult.NewItems, toolCallItem)
@@ -1013,10 +1022,10 @@ func (r *Runner) updateInputWithToolResults(currentInput interface{}, response *
 }
 
 // executeToolCall executes a tool call and returns the result
-func (r *Runner) executeToolCall(ctx context.Context, agent AgentType, tc model.ToolCall, turn int, idx int) (interface{}, *result.ToolCallItem, *result.ToolResultItem, error) {
-	// Find the tool
+func (r *Runner) executeToolCall(ctx context.Context, agent AgentType, tc model.ToolCall, turn int, idx int, effectiveTools []tool.Tool) (interface{}, *result.ToolCallItem, *result.ToolResultItem, error) {
+	// Find the tool in the effective tools list (includes agent tools + load_skill + MCP tools)
 	var toolToCall tool.Tool
-	for _, t := range agent.Tools {
+	for _, t := range effectiveTools {
 		if t.GetName() == tc.Name {
 			toolToCall = t
 			break
@@ -1190,6 +1199,56 @@ func (r *Runner) resolveModel(agent AgentType, runConfig *RunConfig) (model.Mode
 	}
 
 	return nil, fmt.Errorf("invalid model type: %T", modelToUse)
+}
+
+// buildSkillAwareInstructions returns the agent's instructions augmented with
+// a listing of available skill headers when the agent has skills attached.
+func (r *Runner) buildSkillAwareInstructions(ag AgentType) string {
+	if len(ag.Skills) == 0 {
+		return ag.Instructions
+	}
+	var sb strings.Builder
+	sb.WriteString(ag.Instructions)
+	sb.WriteString("\n\n<available-skills>\n")
+	sb.WriteString("The following skills are available. Use the load_skill tool to load a skill's full content when relevant.\n\n")
+	for _, s := range ag.Skills {
+		h := s.Header()
+		sb.WriteString("- **")
+		sb.WriteString(h.Name)
+		sb.WriteString("**: ")
+		sb.WriteString(h.Description)
+		sb.WriteString("\n")
+	}
+	sb.WriteString("</available-skills>")
+	return sb.String()
+}
+
+// resolveEffectiveTools returns the full list of tools available to the agent,
+// including the automatic load_skill tool and MCP-adapted tools.
+func (r *Runner) resolveEffectiveTools(ctx context.Context, ag AgentType) []tool.Tool {
+	effectiveTools := make([]tool.Tool, len(ag.Tools))
+	copy(effectiveTools, ag.Tools)
+
+	// Add the load_skill tool when the agent has skills
+	if len(ag.Skills) > 0 {
+		effectiveTools = append(effectiveTools, skill.NewLoadSkillTool(ag.Skills))
+	}
+
+	// Add MCP-adapted tools — each server uses its own Client
+	for _, server := range ag.MCPServers {
+		if server.Client == nil {
+			tracing.Error(ctx, ag.Name, fmt.Sprintf("MCP server %s has no client configured", server.Handle), nil)
+			continue
+		}
+		mcpTools, err := mcp.ToolsFromServer(ctx, server)
+		if err != nil {
+			tracing.Error(ctx, ag.Name, fmt.Sprintf("failed to discover MCP tools for %s", server.Handle), err)
+			continue
+		}
+		effectiveTools = append(effectiveTools, mcpTools...)
+	}
+
+	return effectiveTools
 }
 
 // prepareTools prepares tools for the model request
@@ -1449,6 +1508,7 @@ func (r *Runner) processModelStream(
 	turn int,
 	eventCh chan model.StreamEvent,
 	consecutiveToolCalls *int,
+	effectiveTools []tool.Tool,
 ) error {
 	for event := range modelStream {
 		// Check for errors
@@ -1541,6 +1601,7 @@ func (r *Runner) processModelStream(
 					streamedResult.RunResult,
 					turn,
 					opts,
+					effectiveTools,
 				)
 				if streamedResult.ContinueLoop {
 					return nil

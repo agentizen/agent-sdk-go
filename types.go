@@ -1,8 +1,12 @@
 package agentsdk
 
 import (
+	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/plugin"
 	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/skill"
+	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
 // Extended type aliases for advanced use cases such as multi-agent workflows,
@@ -58,6 +62,52 @@ type (
 	// HandoffCall describes the parameters of an agent-to-agent handoff or
 	// return-to-delegator event.
 	HandoffCall = model.HandoffCall
+
+	// Skill is a markdown document with a YAML header, loadable by an agent
+	// via the load_skill tool.
+	Skill = skill.Skill
+
+	// SkillHeader contains skill metadata (name, description, version).
+	SkillHeader = skill.Header
+
+	// SkillRegistry manages skill discovery and storage.
+	SkillRegistry = skill.Registry
+
+	// MCPServerConfig describes an MCP server and its transport.
+	MCPServerConfig = mcp.ServerConfig
+
+	// MCPClient is the transport interface for communicating with MCP servers.
+	MCPClient = mcp.Client
+
+	// MCPHTTPClient is the default HTTP implementation of MCPClient.
+	MCPHTTPClient = mcp.HTTPClient
+
+	// MCPClientOptions configures the HTTP MCP client transport.
+	MCPClientOptions = mcp.ClientOptions
+
+	// MCPToolInfo describes a tool exposed by an MCP server.
+	MCPToolInfo = mcp.ToolInfo
+
+	// MCPRegistry manages MCP server configurations.
+	MCPRegistry = mcp.Registry
+
+	// Plugin is a bundle of tools, skills, and MCP servers pluggable to an agent.
+	Plugin = plugin.Plugin
+
+	// BasePlugin provides a default embeddable implementation of Plugin.
+	BasePlugin = plugin.BasePlugin
+
+	// PluginRegistry manages registered plugins.
+	PluginRegistry = plugin.Registry
+
+	// ToolRegistry is a thread-safe tool registry with group support.
+	ToolRegistry = tool.Registry
+
+	// ExecutableTool runs an external process as a tool.
+	ExecutableTool = tool.ExecutableTool
+
+	// ToolMiddleware wraps a Tool with additional behavior.
+	ToolMiddleware = tool.Middleware
 )
 
 // Validation severity constants.
