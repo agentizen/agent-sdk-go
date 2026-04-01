@@ -1,11 +1,15 @@
 package agent
 
 import (
+	"context"
 	"reflect"
 	"strings"
 	"sync"
 
+	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/plugin"
+	"github.com/agentizen/agent-sdk-go/pkg/skill"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
@@ -24,6 +28,15 @@ type Agent struct {
 	Tools    []tool.Tool
 	Handoffs []*Agent
 
+	// Skills attached to this agent
+	Skills []skill.Skill
+
+	// MCP servers — each server carries its own transport (Client)
+	MCPServers []mcp.ServerConfig
+
+	// Plugins registered on this agent
+	Plugins []plugin.Plugin
+
 	// Output configuration
 	OutputType reflect.Type
 
@@ -37,8 +50,11 @@ type Agent struct {
 // NewAgent creates a new agent with the given name and instructions
 func NewAgent(name ...string) *Agent {
 	agent := &Agent{
-		Tools:    make([]tool.Tool, 0),
-		Handoffs: make([]*Agent, 0),
+		Tools:      make([]tool.Tool, 0),
+		Handoffs:   make([]*Agent, 0),
+		Skills:     make([]skill.Skill, 0),
+		MCPServers: make([]mcp.ServerConfig, 0),
+		Plugins:    make([]plugin.Plugin, 0),
 	}
 
 	// Set name and instructions if provided
@@ -84,6 +100,49 @@ func (a *Agent) WithHandoffs(handoffs ...*Agent) *Agent {
 	return a
 }
 
+// WithSkills adds skills to the agent
+func (a *Agent) WithSkills(skills ...skill.Skill) *Agent {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.Skills = append(a.Skills, skills...)
+	return a
+}
+
+// WithMCPServers adds MCP server configurations to the agent
+func (a *Agent) WithMCPServers(servers ...mcp.ServerConfig) *Agent {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.MCPServers = append(a.MCPServers, servers...)
+	return a
+}
+
+// WithPlugins registers plugins on the agent, calling Init on each plugin
+// and firing the OnPluginInit hook. It merges each plugin's tools, skills,
+// and MCP servers into the agent's configuration.
+// Uses context.Background(); use WithPluginsContext for a custom context.
+func (a *Agent) WithPlugins(plugins ...plugin.Plugin) *Agent {
+	return a.WithPluginsContext(context.Background(), plugins...)
+}
+
+// WithPluginsContext registers plugins on the agent with the given context,
+// calling Init on each plugin and firing the OnPluginInit hook. It merges
+// each plugin's tools, skills, and MCP servers into the agent's configuration.
+func (a *Agent) WithPluginsContext(ctx context.Context, plugins ...plugin.Plugin) *Agent {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for _, p := range plugins {
+		_ = p.Init(ctx)
+		if a.Hooks != nil {
+			_ = a.Hooks.OnPluginInit(ctx, a, p)
+		}
+		a.Plugins = append(a.Plugins, p)
+		a.Tools = append(a.Tools, p.Tools()...)
+		a.Skills = append(a.Skills, p.Skills()...)
+		a.MCPServers = append(a.MCPServers, p.MCPServers()...)
+	}
+	return a
+}
+
 // WithOutputType sets the output type for the agent
 func (a *Agent) WithOutputType(outputType interface{}) *Agent {
 	a.mu.Lock()
@@ -123,15 +182,19 @@ func (a *Agent) Clone(overrides map[string]interface{}) *Agent {
 		ModelSettings: a.ModelSettings,
 		Tools:         make([]tool.Tool, len(a.Tools)),
 		Handoffs:      make([]*Agent, len(a.Handoffs)),
+		Skills:        make([]skill.Skill, len(a.Skills)),
+		MCPServers:    make([]mcp.ServerConfig, len(a.MCPServers)),
+		Plugins:       make([]plugin.Plugin, len(a.Plugins)),
 		OutputType:    a.OutputType,
 		Hooks:         a.Hooks,
 	}
 
-	// Copy tools
+	// Copy slices
 	copy(clone.Tools, a.Tools)
-
-	// Copy handoffs
 	copy(clone.Handoffs, a.Handoffs)
+	copy(clone.Skills, a.Skills)
+	copy(clone.MCPServers, a.MCPServers)
+	copy(clone.Plugins, a.Plugins)
 
 	// Apply overrides
 	for key, value := range overrides {

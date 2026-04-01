@@ -159,3 +159,64 @@ func Error(ctx context.Context, agentName string, message string, err error) {
 
 	RecordEventContext(ctx, event)
 }
+
+// SkillLoad records a skill load event
+func SkillLoad(ctx context.Context, agentName, skillName string) {
+	RecordEventContext(ctx, Event{
+		Type:      EventTypeSkillLoad,
+		AgentName: agentName,
+		Timestamp: time.Now(),
+		Details: map[string]interface{}{
+			"skill_name": skillName,
+		},
+	})
+}
+
+// MCPCall records an MCP tool call event
+func MCPCall(ctx context.Context, agentName, serverHandle, toolName string, params interface{}) {
+	RecordEventContext(ctx, Event{
+		Type:      EventTypeMCPCall,
+		AgentName: agentName,
+		Timestamp: time.Now(),
+		Details: map[string]interface{}{
+			"server_handle": serverHandle,
+			"tool_name":     toolName,
+			"parameters":    params,
+		},
+	})
+}
+
+// MCPResult records an MCP tool result event
+func MCPResult(ctx context.Context, agentName, serverHandle, toolName string, result interface{}, err error) {
+	details := map[string]interface{}{
+		"server_handle": serverHandle,
+		"tool_name":     toolName,
+		"result":        result,
+	}
+
+	event := Event{
+		Type:      EventTypeMCPResult,
+		AgentName: agentName,
+		Timestamp: time.Now(),
+		Details:   details,
+	}
+
+	if err != nil {
+		event.Error = err
+	}
+
+	RecordEventContext(ctx, event)
+}
+
+// PluginInit records a plugin initialization event
+func PluginInit(ctx context.Context, agentName, pluginName, pluginVersion string) {
+	RecordEventContext(ctx, Event{
+		Type:      EventTypePluginInit,
+		AgentName: agentName,
+		Timestamp: time.Now(),
+		Details: map[string]interface{}{
+			"plugin_name":    pluginName,
+			"plugin_version": pluginVersion,
+		},
+	})
+}

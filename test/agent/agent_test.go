@@ -1,11 +1,17 @@
 package agent_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/plugin"
+	"github.com/agentizen/agent-sdk-go/pkg/skill"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // MockModelProvider is a mock implementation of model.Provider for testing
@@ -161,4 +167,87 @@ func TestSetModelProvider(t *testing.T) {
 	if a.Model != provider {
 		t.Errorf("Agent model provider not set correctly")
 	}
+}
+
+// spyPlugin is a test plugin that tracks whether Init was called.
+type spyPlugin struct {
+	plugin.BasePlugin
+	initCalled bool
+	initCtx    context.Context
+}
+
+func (p *spyPlugin) Init(ctx context.Context) error {
+	p.initCalled = true
+	p.initCtx = ctx
+	return nil
+}
+
+// spyHooks tracks OnPluginInit calls.
+type spyHooks struct {
+	agent.DefaultAgentHooks
+	pluginInitCalls []plugin.Plugin
+}
+
+func (h *spyHooks) OnPluginInit(_ context.Context, _ *agent.Agent, p plugin.Plugin) error {
+	h.pluginInitCalls = append(h.pluginInitCalls, p)
+	return nil
+}
+
+func TestWithPlugins_CallsInit(t *testing.T) {
+	a := agent.NewAgent("TestAgent")
+	p := &spyPlugin{
+		BasePlugin: plugin.BasePlugin{
+			PluginName:       "spy",
+			PluginVersion:    "1.0",
+			PluginTools:      []tool.Tool{},
+			PluginSkills:     []skill.Skill{},
+			PluginMCPServers: []mcp.ServerConfig{},
+		},
+	}
+
+	a.WithPlugins(p)
+
+	assert.True(t, p.initCalled, "Init should have been called on the plugin")
+}
+
+func TestWithPlugins_CallsOnPluginInit(t *testing.T) {
+	hooks := &spyHooks{}
+	a := agent.NewAgent("TestAgent").WithHooks(hooks)
+
+	p := &spyPlugin{
+		BasePlugin: plugin.BasePlugin{
+			PluginName:       "spy",
+			PluginVersion:    "1.0",
+			PluginTools:      []tool.Tool{},
+			PluginSkills:     []skill.Skill{},
+			PluginMCPServers: []mcp.ServerConfig{},
+		},
+	}
+
+	a.WithPlugins(p)
+
+	require.Len(t, hooks.pluginInitCalls, 1)
+	assert.Equal(t, "spy", hooks.pluginInitCalls[0].Name())
+}
+
+type ctxKey string
+
+func TestWithPluginsContext_UsesProvidedContext(t *testing.T) {
+	a := agent.NewAgent("TestAgent")
+	p := &spyPlugin{
+		BasePlugin: plugin.BasePlugin{
+			PluginName:       "ctx-spy",
+			PluginVersion:    "1.0",
+			PluginTools:      []tool.Tool{},
+			PluginSkills:     []skill.Skill{},
+			PluginMCPServers: []mcp.ServerConfig{},
+		},
+	}
+
+	ctx := context.WithValue(context.Background(), ctxKey("test"), "hello")
+	a.WithPluginsContext(ctx, p)
+
+	assert.True(t, p.initCalled, "Init should have been called")
+	require.NotNil(t, p.initCtx)
+	assert.Equal(t, "hello", p.initCtx.Value(ctxKey("test")))
 }

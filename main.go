@@ -1,8 +1,8 @@
 // Package agentsdk provides a Go SDK for building multi-agent AI applications.
 //
-// It supports tool use, agent handoffs, streaming responses, multi-turn
-// conversations, and integrations with multiple LLM providers (OpenAI,
-// Anthropic, Gemini, Mistral, LM Studio, Azure OpenAI).
+// It supports tool use, skills, MCP integrations, plugins, agent handoffs,
+// streaming responses, multi-turn conversations, and integrations with multiple
+// LLM providers (OpenAI, Anthropic, Gemini, Mistral, LM Studio, Azure OpenAI).
 //
 // # Quick Start
 //
@@ -29,10 +29,15 @@
 package agentsdk
 
 import (
+	"io"
+
 	"github.com/agentizen/agent-sdk-go/pkg/agent"
+	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/plugin"
 	"github.com/agentizen/agent-sdk-go/pkg/result"
 	"github.com/agentizen/agent-sdk-go/pkg/runner"
+	"github.com/agentizen/agent-sdk-go/pkg/skill"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
@@ -44,7 +49,8 @@ var Version = "dev"
 // Core type aliases — re-exported for convenience so callers only need to
 // import this package for the most common use cases.
 type (
-	// Agent is an AI agent with tools, handoffs, and lifecycle hooks.
+	// Agent is an AI agent with tools, skills, MCP servers, plugins,
+	// handoffs, and lifecycle hooks.
 	Agent = agent.Agent
 
 	// Runner executes agents, managing the turn loop, tool execution, and
@@ -137,4 +143,63 @@ func NewRunner() *Runner {
 // Use (*FunctionTool).WithSchema to override it.
 func NewFunctionTool(name, description string, fn interface{}) *FunctionTool {
 	return tool.NewFunctionTool(name, description, fn)
+}
+
+// --- Tool factories ---
+
+// NewToolRegistry creates a new thread-safe tool registry with group support.
+func NewToolRegistry() *ToolRegistry {
+	return tool.NewRegistry()
+}
+
+// NewExecutableTool creates a tool that runs an external process (shell, python, node).
+// Parameters are JSON-serialized to stdin; stdout is parsed as the result.
+func NewExecutableTool(name, description, command string, args []string) *ExecutableTool {
+	return tool.NewExecutableTool(name, description, command, args)
+}
+
+// WithToolMiddleware wraps a tool with one or more middleware layers.
+func WithToolMiddleware(t Tool, mw ...ToolMiddleware) Tool {
+	return tool.WithMiddleware(t, mw...)
+}
+
+// --- Skill factories ---
+
+// LoadSkillFromFile loads a skill from a markdown file with YAML frontmatter.
+func LoadSkillFromFile(path string) (Skill, error) {
+	return skill.LoadFromFile(path)
+}
+
+// LoadSkillFromReader loads a skill from an io.Reader.
+func LoadSkillFromReader(r io.Reader) (Skill, error) {
+	return skill.LoadFromReader(r)
+}
+
+// LoadSkillFromString loads a skill from a raw markdown string.
+func LoadSkillFromString(content string) (Skill, error) {
+	return skill.LoadFromString(content)
+}
+
+// NewSkillRegistry creates a new skill registry.
+func NewSkillRegistry() *SkillRegistry {
+	return skill.NewRegistry()
+}
+
+// --- MCP factories ---
+
+// NewMCPHTTPClient creates an HTTP client for communicating with MCP servers.
+func NewMCPHTTPClient(opts MCPClientOptions) *MCPHTTPClient {
+	return mcp.NewHTTPClient(opts)
+}
+
+// NewMCPRegistry creates a new MCP server registry.
+func NewMCPRegistry() *MCPRegistry {
+	return mcp.NewRegistry()
+}
+
+// --- Plugin factories ---
+
+// NewPluginRegistry creates a new plugin registry.
+func NewPluginRegistry() *PluginRegistry {
+	return plugin.NewRegistry()
 }
