@@ -18,4 +18,6 @@ type ClientOptions struct {
 	AllowHTTP        bool          // allow http:// URLs (dev only, default false)
 	MaxResponseBytes int64         // max response body size (default 10MB)
 	DefaultTimeout   time.Duration // default per-request timeout (default 30s)
+	ClientName       string        // client name sent during initialize (default "agent-sdk-go")
+	ClientVersion    string        // client version sent during initialize (default "1.0.0")
 }

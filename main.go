@@ -29,6 +29,7 @@
 package agentsdk
 
 import (
+	"context"
 	"io"
 
 	"github.com/agentizen/agent-sdk-go/pkg/agent"
@@ -185,6 +186,12 @@ func NewSkillRegistry() *SkillRegistry {
 	return skill.NewRegistry()
 }
 
+// NewLoadSkillTool creates a tool that allows an agent to load
+// the full content of a skill by name at runtime.
+func NewLoadSkillTool(skills []Skill) Tool {
+	return skill.NewLoadSkillTool(skills)
+}
+
 // --- MCP factories ---
 
 // NewMCPHTTPClient creates an HTTP client for communicating with MCP servers.
@@ -195,6 +202,12 @@ func NewMCPHTTPClient(opts MCPClientOptions) *MCPHTTPClient {
 // NewMCPRegistry creates a new MCP server registry.
 func NewMCPRegistry() *MCPRegistry {
 	return mcp.NewRegistry()
+}
+
+// MCPToolsFromServer discovers all tools from an MCP server and returns them
+// as standard tool.Tool values, ready to be attached to an agent.
+func MCPToolsFromServer(ctx context.Context, server MCPServerConfig) ([]Tool, error) {
+	return mcp.ToolsFromServer(ctx, server)
 }
 
 // --- Plugin factories ---
