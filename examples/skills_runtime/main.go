@@ -203,7 +203,7 @@ func main() {
 	}
 
 	// Execute: load test-writer skill
-	result, err = loadTool.Execute(ctx, map[string]interface{}{"name": "test-writer"})
+	_, err = loadTool.Execute(ctx, map[string]interface{}{"name": "test-writer"})
 	check("Execute load_skill('test-writer')", err)
 
 	// Execute: unknown skill should fail

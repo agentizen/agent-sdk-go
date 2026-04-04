@@ -41,6 +41,13 @@ type jsonrpcResponse struct {
 	Error   interface{} `json:"error,omitempty"`
 }
 
+// sanitizeLog strips newlines from user-provided values before logging
+// to prevent log injection (CodeQL go/log-injection).
+func sanitizeLog(s string) string {
+	r := strings.NewReplacer("\n", "", "\r", "")
+	return r.Replace(s)
+}
+
 // mcpServer is a minimal MCP server that exposes two tools: "add" and "greet".
 type mcpServer struct {
 	sessionID    string
@@ -67,14 +74,14 @@ func (s *mcpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var req jsonrpcRequest
 	_ = json.Unmarshal(body, &req)
 
-	fmt.Printf("  [server] Method: %s\n", req.Method)
+	fmt.Printf("  [server] Method: %s\n", sanitizeLog(req.Method))
 
 	// Always set session ID
 	w.Header().Set("Mcp-Session-Id", s.sessionID)
 
 	// Handle notifications (no ID)
 	if req.ID == nil {
-		fmt.Printf("  [server] Notification received: %s\n", req.Method)
+		fmt.Printf("  [server] Notification received: %s\n", sanitizeLog(req.Method))
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
@@ -127,7 +134,8 @@ func (s *mcpServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Arguments map[string]interface{} `json:"arguments"`
 		}
 		_ = json.Unmarshal(req.Params, &params)
-		fmt.Printf("  [server] Tool call: %s(%v)\n", params.Name, params.Arguments)
+		argsJSON, _ := json.Marshal(params.Arguments)
+		fmt.Printf("  [server] Tool call: %s(%s)\n", sanitizeLog(params.Name), sanitizeLog(string(argsJSON)))
 
 		switch params.Name {
 		case "add":
