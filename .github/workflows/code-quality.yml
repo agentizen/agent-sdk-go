@@ -1,4 +1,5 @@
 name: Code Quality
+
 on:
   push:
     branches: [main, master]
@@ -42,4 +43,4 @@ jobs:
           go-version: '1.25.7'
 
       - name: Test with coverage
-        run: go test -race -coverprofile=coverage.out -covermode=atomic $(go list ./... | grep -v '/examples')
+        run: make test-coverage

@@ -20,18 +20,27 @@ jobs:
       with:
         go-version: '1.25.7'
         cache: true
-        
-    - name: CI Environment Setup
-      run: ./scripts/ci_setup.sh
-        
-    - name: Update dependencies
-      run: go mod tidy
-      
+
+    - name: Install tools
+      run: make ci-setup
+
+    - name: Tidy
+      run: make tidy
+
+    - name: Format
+      run: make fmt
+
+    - name: Vet
+      run: make vet
+
     - name: Lint
-      run: ./scripts/lint.sh
-      
+      run: make lint
+
     - name: Build
-      run: go build -v ./...
+      run: make build
 
     - name: Test
-      run: cd test && make test 
+      run: make test
+
+    - name: Examples
+      run: make examples
