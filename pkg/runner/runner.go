@@ -1234,18 +1234,26 @@ func (r *Runner) resolveEffectiveTools(ctx context.Context, ag AgentType) []tool
 		effectiveTools = append(effectiveTools, skill.NewLoadSkillTool(ag.Skills))
 	}
 
-	// Add MCP-adapted tools — each server uses its own Client
-	for _, server := range ag.MCPServers {
-		if server.Client == nil {
-			tracing.Error(ctx, ag.Name, fmt.Sprintf("MCP server %s has no client configured", server.Handle), nil)
-			continue
+	// Add MCP-adapted tools — each server uses its own Client.
+	// Use a context detached from the agent run lifecycle so that MCP
+	// initialization (handshake + tool discovery) is not aborted when
+	// the parent context is canceled (e.g. user stops generation).
+	// context.WithoutCancel preserves context values (X-User-ID, tracing)
+	// but is immune to parent cancellation.
+	if len(ag.MCPServers) > 0 {
+		mcpCtx := context.WithoutCancel(ctx)
+		for _, server := range ag.MCPServers {
+			if server.Client == nil {
+				tracing.Error(ctx, ag.Name, fmt.Sprintf("MCP server %s has no client configured", server.Handle), nil)
+				continue
+			}
+			mcpTools, err := mcp.ToolsFromServer(mcpCtx, server)
+			if err != nil {
+				tracing.Error(ctx, ag.Name, fmt.Sprintf("failed to discover MCP tools for %s", server.Handle), err)
+				continue
+			}
+			effectiveTools = append(effectiveTools, mcpTools...)
 		}
-		mcpTools, err := mcp.ToolsFromServer(ctx, server)
-		if err != nil {
-			tracing.Error(ctx, ag.Name, fmt.Sprintf("failed to discover MCP tools for %s", server.Handle), err)
-			continue
-		}
-		effectiveTools = append(effectiveTools, mcpTools...)
 	}
 
 	return effectiveTools
