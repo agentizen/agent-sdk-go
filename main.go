@@ -35,10 +35,12 @@ import (
 	"github.com/agentizen/agent-sdk-go/pkg/agent"
 	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	"github.com/agentizen/agent-sdk-go/pkg/network"
 	"github.com/agentizen/agent-sdk-go/pkg/plugin"
 	"github.com/agentizen/agent-sdk-go/pkg/result"
 	"github.com/agentizen/agent-sdk-go/pkg/runner"
 	"github.com/agentizen/agent-sdk-go/pkg/skill"
+	"github.com/agentizen/agent-sdk-go/pkg/streaming"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
@@ -82,8 +84,16 @@ type (
 	// FunctionTool wraps a Go function as an agent tool.
 	FunctionTool = tool.FunctionTool
 
-	// StreamEvent is a single event emitted during a streaming run.
+	// StreamEvent is a single low-level event emitted during a streaming run.
 	StreamEvent = model.StreamEvent
+
+	// StreamingEvent is a higher-level event emitted by the enriched streaming
+	// helpers.
+	StreamingEvent = streaming.Event
+
+	// NetworkStreamEvent is a single event emitted during a multi-agent network
+	// streaming run.
+	NetworkStreamEvent = network.NetworkStreamEvent
 
 	// ContentPart is one segment of a multi-modal message (text, image, or
 	// document).
@@ -101,9 +111,22 @@ type (
 	// StreamedRunResult is the handle returned by Runner.RunStreaming. Consume
 	// events from its Stream channel, then read FinalOutput when done.
 	StreamedRunResult = result.StreamedRunResult
+
+	// StreamResult aggregates content, thinking, usage, and tool lifecycle data
+	// from an enriched streaming run.
+	StreamResult = streaming.StreamResult
+
+	// ToolCallRecord tracks a single tool invocation and its outcome during an
+	// enriched streaming run.
+	ToolCallRecord = streaming.ToolCallRecord
+
+	// StreamEventRecord is a coalesced entry in the enriched streaming event
+	// timeline.
+	StreamEventRecord = streaming.StreamEventRecord
 )
 
-// Streaming event type constants — forwarded from the model package.
+// Streaming event type constants — forwarded from the model and streaming
+// packages.
 const (
 	// StreamEventTypeContent is emitted for each streaming text chunk.
 	StreamEventTypeContent = model.StreamEventTypeContent
@@ -120,6 +143,53 @@ const (
 	// StreamEventTypeError is emitted when an unrecoverable error occurs
 	// during streaming.
 	StreamEventTypeError = model.StreamEventTypeError
+
+	// StreamingEventTypeThinkingStart is emitted when enriched streaming enters
+	// the thinking phase.
+	StreamingEventTypeThinkingStart = streaming.EventThinkingStart
+
+	// StreamingEventTypeThinkingChunk is emitted for each enriched thinking chunk.
+	StreamingEventTypeThinkingChunk = streaming.EventThinkingChunk
+
+	// StreamingEventTypeThinkingEnd is emitted when the thinking phase ends.
+	StreamingEventTypeThinkingEnd = streaming.EventThinkingEnd
+
+	// StreamingEventTypeContentStart is emitted when enriched streaming enters
+	// the content phase.
+	StreamingEventTypeContentStart = streaming.EventContentStart
+
+	// StreamingEventTypeContentChunk is emitted for each enriched content chunk.
+	StreamingEventTypeContentChunk = streaming.EventContentChunk
+
+	// StreamingEventTypeContentEnd is emitted when the content phase ends.
+	StreamingEventTypeContentEnd = streaming.EventContentEnd
+
+	// StreamingEventTypeToolCall is emitted when an enriched stream records a
+	// tool invocation.
+	StreamingEventTypeToolCall = streaming.EventToolCall
+
+	// StreamingEventTypeToolCallResult is emitted when the last tool call is
+	// resolved.
+	StreamingEventTypeToolCallResult = streaming.EventToolCallResult
+
+	// StreamingEventTypeHandoff is emitted when an enriched stream forwards a
+	// handoff event.
+	StreamingEventTypeHandoff = streaming.EventHandoff
+
+	// StreamingEventTypeDone is emitted when the enriched stream completes.
+	StreamingEventTypeDone = streaming.EventDone
+
+	// StreamingEventTypeError is emitted when the enriched stream encounters an
+	// unrecoverable error.
+	StreamingEventTypeError = streaming.EventError
+
+	// StreamingEventTypeAgentStart is emitted when a sub-agent begins work in a
+	// network stream.
+	StreamingEventTypeAgentStart = streaming.EventAgentStart
+
+	// StreamingEventTypeAgentEnd is emitted when a sub-agent finishes work in a
+	// network stream.
+	StreamingEventTypeAgentEnd = streaming.EventAgentEnd
 )
 
 // NewAgent creates a new Agent. An optional name and instructions can be
@@ -131,6 +201,32 @@ func NewAgent(name ...string) *Agent {
 // NewRunner creates a new Runner with default configuration (max 10 turns).
 func NewRunner() *Runner {
 	return runner.NewRunner()
+}
+
+// --- Streaming helpers ---
+
+// Enrich converts raw streaming events into higher-level streaming events with
+// thinking extraction, tool lifecycle tracking, and aggregated results.
+func Enrich(raw <-chan StreamEvent, bufferSize int) (<-chan StreamingEvent, *StreamResult) {
+	return streaming.Enrich(raw, bufferSize)
+}
+
+// EnrichNetworkStream converts multi-agent network streaming events into
+// higher-level streaming events with agent lifecycle tracking and aggregated
+// results.
+func EnrichNetworkStream(raw <-chan NetworkStreamEvent, bufferSize int) (<-chan StreamingEvent, *StreamResult) {
+	return streaming.EnrichNetworkStream(raw, bufferSize)
+}
+
+// CoalesceEvents merges consecutive compatible streaming timeline records.
+func CoalesceEvents(events []StreamEventRecord) []StreamEventRecord {
+	return streaming.CoalesceEvents(events)
+}
+
+// ExtractThinkingText extracts `<think>...</think>` text from a stream chunk,
+// if present.
+func ExtractThinkingText(chunk string) (string, bool) {
+	return streaming.ExtractThinkingText(chunk)
 }
 
 // NewFunctionTool creates a tool backed by an arbitrary Go function.
