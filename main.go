@@ -35,11 +35,18 @@ import (
 	"github.com/agentizen/agent-sdk-go/pkg/agent"
 	"github.com/agentizen/agent-sdk-go/pkg/mcp"
 	"github.com/agentizen/agent-sdk-go/pkg/model"
+	anthropicprovider "github.com/agentizen/agent-sdk-go/pkg/model/providers/anthropic"
+	geminiprovider "github.com/agentizen/agent-sdk-go/pkg/model/providers/gemini"
+	mistralprovider "github.com/agentizen/agent-sdk-go/pkg/model/providers/mistral"
+	openaiprovider "github.com/agentizen/agent-sdk-go/pkg/model/providers/openai"
+	"github.com/agentizen/agent-sdk-go/pkg/network"
 	"github.com/agentizen/agent-sdk-go/pkg/plugin"
 	"github.com/agentizen/agent-sdk-go/pkg/result"
 	"github.com/agentizen/agent-sdk-go/pkg/runner"
 	"github.com/agentizen/agent-sdk-go/pkg/skill"
+	"github.com/agentizen/agent-sdk-go/pkg/streaming"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 )
 
 // Version is the SDK version. It is overridden at release time via:
@@ -82,8 +89,16 @@ type (
 	// FunctionTool wraps a Go function as an agent tool.
 	FunctionTool = tool.FunctionTool
 
-	// StreamEvent is a single event emitted during a streaming run.
+	// StreamEvent is a single low-level event emitted during a streaming run.
 	StreamEvent = model.StreamEvent
+
+	// StreamingEvent is a higher-level event emitted by the enriched streaming
+	// helpers.
+	StreamingEvent = streaming.Event
+
+	// NetworkStreamEvent is a single event emitted during a multi-agent network
+	// streaming run.
+	NetworkStreamEvent = network.NetworkStreamEvent
 
 	// ContentPart is one segment of a multi-modal message (text, image, or
 	// document).
@@ -101,9 +116,22 @@ type (
 	// StreamedRunResult is the handle returned by Runner.RunStreaming. Consume
 	// events from its Stream channel, then read FinalOutput when done.
 	StreamedRunResult = result.StreamedRunResult
+
+	// StreamResult aggregates content, thinking, usage, and tool lifecycle data
+	// from an enriched streaming run.
+	StreamResult = streaming.StreamResult
+
+	// ToolCallRecord tracks a single tool invocation and its outcome during an
+	// enriched streaming run.
+	ToolCallRecord = streaming.ToolCallRecord
+
+	// StreamEventRecord is a coalesced entry in the enriched streaming event
+	// timeline.
+	StreamEventRecord = streaming.StreamEventRecord
 )
 
-// Streaming event type constants — forwarded from the model package.
+// Streaming event type constants — forwarded from the model and streaming
+// packages.
 const (
 	// StreamEventTypeContent is emitted for each streaming text chunk.
 	StreamEventTypeContent = model.StreamEventTypeContent
@@ -120,6 +148,53 @@ const (
 	// StreamEventTypeError is emitted when an unrecoverable error occurs
 	// during streaming.
 	StreamEventTypeError = model.StreamEventTypeError
+
+	// StreamingEventTypeThinkingStart is emitted when enriched streaming enters
+	// the thinking phase.
+	StreamingEventTypeThinkingStart = streaming.EventThinkingStart
+
+	// StreamingEventTypeThinkingChunk is emitted for each enriched thinking chunk.
+	StreamingEventTypeThinkingChunk = streaming.EventThinkingChunk
+
+	// StreamingEventTypeThinkingEnd is emitted when the thinking phase ends.
+	StreamingEventTypeThinkingEnd = streaming.EventThinkingEnd
+
+	// StreamingEventTypeContentStart is emitted when enriched streaming enters
+	// the content phase.
+	StreamingEventTypeContentStart = streaming.EventContentStart
+
+	// StreamingEventTypeContentChunk is emitted for each enriched content chunk.
+	StreamingEventTypeContentChunk = streaming.EventContentChunk
+
+	// StreamingEventTypeContentEnd is emitted when the content phase ends.
+	StreamingEventTypeContentEnd = streaming.EventContentEnd
+
+	// StreamingEventTypeToolCall is emitted when an enriched stream records a
+	// tool invocation.
+	StreamingEventTypeToolCall = streaming.EventToolCall
+
+	// StreamingEventTypeToolCallResult is emitted when the last tool call is
+	// resolved.
+	StreamingEventTypeToolCallResult = streaming.EventToolCallResult
+
+	// StreamingEventTypeHandoff is emitted when an enriched stream forwards a
+	// handoff event.
+	StreamingEventTypeHandoff = streaming.EventHandoff
+
+	// StreamingEventTypeDone is emitted when the enriched stream completes.
+	StreamingEventTypeDone = streaming.EventDone
+
+	// StreamingEventTypeError is emitted when the enriched stream encounters an
+	// unrecoverable error.
+	StreamingEventTypeError = streaming.EventError
+
+	// StreamingEventTypeAgentStart is emitted when a sub-agent begins work in a
+	// network stream.
+	StreamingEventTypeAgentStart = streaming.EventAgentStart
+
+	// StreamingEventTypeAgentEnd is emitted when a sub-agent finishes work in a
+	// network stream.
+	StreamingEventTypeAgentEnd = streaming.EventAgentEnd
 )
 
 // NewAgent creates a new Agent. An optional name and instructions can be
@@ -131,6 +206,32 @@ func NewAgent(name ...string) *Agent {
 // NewRunner creates a new Runner with default configuration (max 10 turns).
 func NewRunner() *Runner {
 	return runner.NewRunner()
+}
+
+// --- Streaming helpers ---
+
+// Enrich converts raw streaming events into higher-level streaming events with
+// thinking extraction, tool lifecycle tracking, and aggregated results.
+func Enrich(raw <-chan StreamEvent, bufferSize int) (<-chan StreamingEvent, *StreamResult) {
+	return streaming.Enrich(raw, bufferSize)
+}
+
+// EnrichNetworkStream converts multi-agent network streaming events into
+// higher-level streaming events with agent lifecycle tracking and aggregated
+// results.
+func EnrichNetworkStream(raw <-chan NetworkStreamEvent, bufferSize int) (<-chan StreamingEvent, *StreamResult) {
+	return streaming.EnrichNetworkStream(raw, bufferSize)
+}
+
+// CoalesceEvents merges consecutive compatible streaming timeline records.
+func CoalesceEvents(events []StreamEventRecord) []StreamEventRecord {
+	return streaming.CoalesceEvents(events)
+}
+
+// ExtractThinkingText extracts `<think>...</think>` text from a stream chunk,
+// if present.
+func ExtractThinkingText(chunk string) (string, bool) {
+	return streaming.ExtractThinkingText(chunk)
 }
 
 // NewFunctionTool creates a tool backed by an arbitrary Go function.
@@ -215,4 +316,119 @@ func MCPToolsFromServer(ctx context.Context, server MCPServerConfig) ([]Tool, er
 // NewPluginRegistry creates a new plugin registry.
 func NewPluginRegistry() *PluginRegistry {
 	return plugin.NewRegistry()
+}
+
+// --- Model registry helpers ---
+
+// GetProvider returns public metadata for a model provider.
+func GetProvider(id string) (ProviderSpec, bool) {
+	return model.GetProvider(id)
+}
+
+// GetModelMetadata returns descriptive metadata for a provider/model pair.
+func GetModelMetadata(provider, modelID string) (ModelMetadata, bool) {
+	return model.GetModelMetadata(provider, modelID)
+}
+
+// GetModelPricing returns pricing information for a provider/model pair.
+func GetModelPricing(provider, modelID string) (ModelPricingSpec, bool) {
+	return model.GetModelPricing(provider, modelID)
+}
+
+// GetModelSpec returns the complete registered specification for a model.
+func GetModelSpec(provider, modelID string) (ModelSpec, bool) {
+	return model.GetModelSpec(provider, modelID)
+}
+
+// ModelSpecsForProvider returns all registered models for the provider.
+func ModelSpecsForProvider(provider string) []ModelSpec {
+	return model.ModelSpecsForProvider(provider)
+}
+
+// AllProviders returns the registered provider list.
+func AllProviders() []ProviderSpec {
+	return model.AllProviders()
+}
+
+// ProviderSupports reports whether a provider/model exposes a capability.
+func ProviderSupports(provider, modelID string, cap Capability) bool {
+	return model.ProviderSupports(provider, modelID, cap)
+}
+
+// CapabilitiesFor returns the full capability set for a provider/model pair.
+func CapabilitiesFor(provider, modelID string) ModelCapabilitySet {
+	return model.CapabilitiesFor(provider, modelID)
+}
+
+// --- Network helpers ---
+
+// NewNetworkConfig creates a default multi-agent network configuration.
+func NewNetworkConfig() NetworkConfig {
+	return network.NewNetworkConfig()
+}
+
+// NewNetworkRunner creates a multi-agent network runner from a base runner.
+func NewNetworkRunner(base *Runner) *NetworkRunner {
+	return network.NewNetworkRunner(base)
+}
+
+// --- MCP context helpers ---
+
+// WithUserID attaches a user ID to the context for MCP transports.
+func WithUserID(ctx context.Context, userID string) context.Context {
+	return mcp.WithUserID(ctx, userID)
+}
+
+// UserIDFromContext extracts the MCP user ID from a context.
+func UserIDFromContext(ctx context.Context) string {
+	return mcp.UserIDFromContext(ctx)
+}
+
+// WithHeaders attaches additional MCP headers to the context.
+func WithHeaders(ctx context.Context, headers map[string]string) context.Context {
+	return mcp.WithHeaders(ctx, headers)
+}
+
+// HeadersFromContext extracts MCP headers from a context.
+func HeadersFromContext(ctx context.Context) map[string]string {
+	return mcp.HeadersFromContext(ctx)
+}
+
+// --- Tracing helpers ---
+
+// SetGlobalTracer sets the process-wide tracer.
+func SetGlobalTracer(tracer Tracer) {
+	tracing.SetGlobalTracer(tracer)
+}
+
+// GetGlobalTracer returns the process-wide tracer.
+func GetGlobalTracer() Tracer {
+	return tracing.GetGlobalTracer()
+}
+
+// RecordEvent records an event using the process-wide tracer.
+func RecordEvent(ctx context.Context, event Event) {
+	tracing.RecordEvent(ctx, event)
+}
+
+// --- Provider constructors ---
+
+// NewOpenAIProvider creates an OpenAI provider with default settings.
+func NewOpenAIProvider(apiKey string) *OpenAIProvider {
+	return openaiprovider.NewProvider(apiKey)
+}
+
+// NewAnthropicProvider creates an Anthropic provider with default settings.
+func NewAnthropicProvider(apiKey string) *AnthropicProvider {
+	return anthropicprovider.NewProvider(apiKey)
+}
+
+// NewGeminiProvider creates a Gemini provider with default settings.
+func NewGeminiProvider(apiKey string) *GeminiProvider {
+	return geminiprovider.NewProvider(apiKey)
+}
+
+// NewMistralProvider creates a Mistral provider with default settings.
+func NewMistralProvider(apiKey string) *MistralProvider {
+	return mistralprovider.NewProvider(apiKey)
 }
