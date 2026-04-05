@@ -11,6 +11,7 @@ import (
 	"github.com/agentizen/agent-sdk-go/pkg/plugin"
 	"github.com/agentizen/agent-sdk-go/pkg/runner"
 	"github.com/agentizen/agent-sdk-go/pkg/skill"
+	"github.com/agentizen/agent-sdk-go/pkg/streaming"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 )
@@ -234,6 +235,45 @@ const (
 
 	// EventNetworkError is emitted on unrecoverable network execution errors.
 	EventNetworkError = network.EventNetworkError
+
+	// EventThinkingStart is emitted when enriched streaming enters the thinking phase.
+	EventThinkingStart = streaming.EventThinkingStart
+
+	// EventThinkingChunk is emitted for each thinking chunk.
+	EventThinkingChunk = streaming.EventThinkingChunk
+
+	// EventThinkingEnd is emitted when the thinking phase ends.
+	EventThinkingEnd = streaming.EventThinkingEnd
+
+	// EventContentStart is emitted when enriched streaming enters the content phase.
+	EventContentStart = streaming.EventContentStart
+
+	// EventContentChunk is emitted for each content chunk.
+	EventContentChunk = streaming.EventContentChunk
+
+	// EventContentEnd is emitted when the content phase ends.
+	EventContentEnd = streaming.EventContentEnd
+
+	// EventToolCall is emitted when an enriched stream records a tool call.
+	EventToolCall = streaming.EventToolCall
+
+	// EventToolCallResult is emitted when an enriched stream records a tool result.
+	EventToolCallResult = streaming.EventToolCallResult
+
+	// EventHandoff is emitted when an enriched stream forwards a handoff.
+	EventHandoff = streaming.EventHandoff
+
+	// EventDone is emitted when an enriched stream completes.
+	EventDone = streaming.EventDone
+
+	// EventError is emitted when an enriched stream encounters an error.
+	EventError = streaming.EventError
+
+	// EventAgentStart is emitted when a sub-agent starts in a network stream.
+	EventAgentStart = streaming.EventAgentStart
+
+	// EventAgentEnd is emitted when a sub-agent ends in a network stream.
+	EventAgentEnd = streaming.EventAgentEnd
 
 	// ValidationWarning is a non-blocking validation failure logged but not
 	// halting.
