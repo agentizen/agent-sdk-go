@@ -26,6 +26,9 @@ const (
 	// EventOrchestratorDone is emitted once the orchestrator synthesis is complete.
 	EventOrchestratorDone NetworkStreamEventType = "orchestrator_done"
 
+	// EventOrchestratorToolCall is emitted when the orchestrator invokes a tool during synthesis.
+	EventOrchestratorToolCall NetworkStreamEventType = "orchestrator_tool_call"
+
 	// EventNetworkError is emitted when the network encounters an unrecoverable error.
 	EventNetworkError NetworkStreamEventType = "network_error"
 )
@@ -36,8 +39,9 @@ const (
 //   - EventSubAgentStart:      AgentName, SubTaskID
 //   - EventSubAgentEnd:        AgentName, SubTaskID, Content, Usage, Duration
 //   - EventOrchestratorContent: Content (per-token chunk)
-//   - EventOrchestratorDone:   FinalOutput, Usage
-//   - EventNetworkError:       Error, AgentName (optional — empty for global errors)
+//   - EventOrchestratorDone:      FinalOutput, Usage
+//   - EventOrchestratorToolCall:  ToolCall
+//   - EventNetworkError:          Error, AgentName (optional — empty for global errors)
 type NetworkStreamEvent struct {
 	// Type identifies the event kind.
 	Type NetworkStreamEventType
@@ -63,6 +67,9 @@ type NetworkStreamEvent struct {
 
 	// Error is the error that caused a network_error event.
 	Error error
+
+	// ToolCall carries the tool invocation details, populated on orchestrator_tool_call.
+	ToolCall *model.ToolCall
 }
 
 // AgentRunResult holds the outcome of running a single agent within the network.

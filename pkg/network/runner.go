@@ -266,6 +266,11 @@ func (nr *NetworkRunner) RunNetworkStreaming(
 					Type:    EventOrchestratorContent,
 					Content: evt.Content,
 				}
+			case model.StreamEventTypeToolCall:
+				ch <- NetworkStreamEvent{
+					Type:     EventOrchestratorToolCall,
+					ToolCall: evt.ToolCall,
+				}
 			case model.StreamEventTypeDone:
 				if evt.Response != nil && evt.Response.Usage != nil {
 					synthUsage = evt.Response.Usage
