@@ -46,6 +46,7 @@ import (
 	"github.com/agentizen/agent-sdk-go/pkg/skill"
 	"github.com/agentizen/agent-sdk-go/pkg/streaming"
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
+	"github.com/agentizen/agent-sdk-go/pkg/tooldata"
 	"github.com/agentizen/agent-sdk-go/pkg/tracing"
 )
 
@@ -60,6 +61,12 @@ type (
 	// Agent is an AI agent with tools, skills, MCP servers, plugins,
 	// handoffs, and lifecycle hooks.
 	Agent = agent.Agent
+
+	// Hooks defines the lifecycle hook interface for an agent.
+	Hooks = agent.Hooks
+
+	// DefaultAgentHooks provides a no-op embeddable implementation of Hooks.
+	DefaultAgentHooks = agent.DefaultAgentHooks
 
 	// Runner executes agents, managing the turn loop, tool execution, and
 	// agent-to-agent handoffs.
@@ -128,6 +135,11 @@ type (
 	// StreamEventRecord is a coalesced entry in the enriched streaming event
 	// timeline.
 	StreamEventRecord = streaming.StreamEventRecord
+
+	// ToolDataBus is a request-scoped, thread-safe store for large binary
+	// payloads that must reach tool handlers without transiting through the
+	// LLM context. It lives for the duration of a single RunStreaming call.
+	ToolDataBus = tooldata.ToolDataBus
 )
 
 // Streaming event type constants — forwarded from the model and streaming
@@ -431,4 +443,20 @@ func NewGeminiProvider(apiKey string) *GeminiProvider {
 // NewMistralProvider creates a Mistral provider with default settings.
 func NewMistralProvider(apiKey string) *MistralProvider {
 	return mistralprovider.NewProvider(apiKey)
+}
+
+// --- ToolDataBus helpers ---
+
+// NewToolDataBus creates an empty ToolDataBus.
+func NewToolDataBus() *ToolDataBus { return tooldata.NewToolDataBus() }
+
+// WithToolDataBus returns a new context carrying the given bus.
+func WithToolDataBus(ctx context.Context, bus *ToolDataBus) context.Context {
+	return tooldata.WithBus(ctx, bus)
+}
+
+// ToolDataBusFromContext extracts the ToolDataBus from ctx.
+// Returns nil if no bus is present — callers must handle nil.
+func ToolDataBusFromContext(ctx context.Context) *ToolDataBus {
+	return tooldata.BusFromContext(ctx)
 }
