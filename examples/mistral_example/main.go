@@ -36,11 +36,11 @@ func (h *mistralExampleHooks) OnBeforeModelCall(ctx context.Context, a *agent.Ag
 	return nil
 }
 
-func (h *mistralExampleHooks) OnAfterToolCall(ctx context.Context, a *agent.Agent, t tool.Tool, result interface{}, err error) error {
+func (h *mistralExampleHooks) OnAfterToolCall(ctx context.Context, a *agent.Agent, t tool.Tool, result interface{}, err error) (interface{}, error) {
 	if err == nil {
 		h.toolCallCount++
 	}
-	return nil
+	return result, err
 }
 
 func (h *mistralExampleHooks) OnAgentStart(ctx context.Context, a *agent.Agent, input interface{}) error {

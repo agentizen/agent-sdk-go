@@ -24,8 +24,10 @@ type Hooks interface {
 	// OnBeforeToolCall is called before a tool is called
 	OnBeforeToolCall(ctx context.Context, agent *Agent, tool tool.Tool, params map[string]interface{}) error
 
-	// OnAfterToolCall is called after a tool is called
-	OnAfterToolCall(ctx context.Context, agent *Agent, tool tool.Tool, result interface{}, err error) error
+	// OnAfterToolCall is called after a tool is called.
+	// It returns (result, error) to allow the hook to transform the result before
+	// it enters the LLM context. Return the original result and err for pass-through.
+	OnAfterToolCall(ctx context.Context, agent *Agent, tool tool.Tool, result interface{}, err error) (interface{}, error)
 
 	// OnBeforeHandoff is called before a handoff to another agent
 	OnBeforeHandoff(ctx context.Context, agent *Agent, handoffAgent *Agent) error
@@ -42,8 +44,10 @@ type Hooks interface {
 	// OnBeforeMCPCall is called before an MCP tool is invoked
 	OnBeforeMCPCall(ctx context.Context, agent *Agent, server mcp.ServerConfig, toolName string, params map[string]interface{}) error
 
-	// OnAfterMCPCall is called after an MCP tool returns
-	OnAfterMCPCall(ctx context.Context, agent *Agent, server mcp.ServerConfig, toolName string, result interface{}, err error) error
+	// OnAfterMCPCall is called after an MCP tool returns.
+	// It returns (result, error) to allow the hook to transform the result before
+	// it enters the LLM context. Return the original result and err for pass-through.
+	OnAfterMCPCall(ctx context.Context, agent *Agent, server mcp.ServerConfig, toolName string, result interface{}, err error) (interface{}, error)
 
 	// OnPluginInit is called when a plugin is initialized on the agent
 	OnPluginInit(ctx context.Context, agent *Agent, p plugin.Plugin) error
@@ -73,8 +77,8 @@ func (h *DefaultAgentHooks) OnBeforeToolCall(_ context.Context, _ *Agent, _ tool
 }
 
 // OnAfterToolCall is called after a tool is called
-func (h *DefaultAgentHooks) OnAfterToolCall(_ context.Context, _ *Agent, _ tool.Tool, _ interface{}, _ error) error {
-	return nil
+func (h *DefaultAgentHooks) OnAfterToolCall(_ context.Context, _ *Agent, _ tool.Tool, result interface{}, err error) (interface{}, error) {
+	return result, err
 }
 
 // OnBeforeHandoff is called before a handoff to another agent
@@ -103,8 +107,8 @@ func (h *DefaultAgentHooks) OnBeforeMCPCall(_ context.Context, _ *Agent, _ mcp.S
 }
 
 // OnAfterMCPCall is called after an MCP tool returns
-func (h *DefaultAgentHooks) OnAfterMCPCall(_ context.Context, _ *Agent, _ mcp.ServerConfig, _ string, _ interface{}, _ error) error {
-	return nil
+func (h *DefaultAgentHooks) OnAfterMCPCall(_ context.Context, _ *Agent, _ mcp.ServerConfig, _ string, result interface{}, err error) (interface{}, error) {
+	return result, err
 }
 
 // OnPluginInit is called when a plugin is initialized on the agent

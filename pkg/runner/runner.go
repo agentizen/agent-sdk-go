@@ -1072,20 +1072,18 @@ func (r *Runner) executeToolCall(ctx context.Context, agent AgentType, tc model.
 	// Record tool result event
 	tracing.ToolResult(ctx, agent.Name, tc.Name, toolResult, err)
 
-	// Call agent hooks if provided
+	// Call agent hooks if provided — hooks may transform the result before it
+	// enters the LLM context (e.g. intercept CSV payloads and replace with a ref).
 	if agent.Hooks != nil {
-		if hookErr := agent.Hooks.OnAfterToolCall(ctx, agent, toolToCall, toolResult, err); hookErr != nil {
-			return createToolResultForError(tc, hookErr, turn, idx),
-				&result.ToolCallItem{
-					Name:       tc.Name,
-					Parameters: tc.Parameters,
-				},
-				&result.ToolResultItem{
-					Name:   tc.Name,
-					Result: fmt.Sprintf("Error: %v", hookErr),
-				},
-				fmt.Errorf("after tool call hook error: %w", hookErr)
+		// MCP-specific hook: called first so it can intercept the raw MCP result.
+		// Any transformed toolResult/err returned here is then passed into
+		// OnAfterToolCall below.
+		if mcpT, ok := toolToCall.(mcp.MCPTool); ok {
+			toolResult, err = agent.Hooks.OnAfterMCPCall(ctx, agent, mcpT.GetServerConfig(), tc.Name, toolResult, err)
 		}
+		// Generic post-tool hook: always called, receives the original result for
+		// non-MCP tools, or the transformed result returned from OnAfterMCPCall.
+		toolResult, err = agent.Hooks.OnAfterToolCall(ctx, agent, toolToCall, toolResult, err)
 	}
 
 	// Handle tool execution error

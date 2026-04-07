@@ -7,6 +7,12 @@ import (
 	"github.com/agentizen/agent-sdk-go/pkg/tool"
 )
 
+// MCPTool is implemented by tools created via ToolAdapter.
+// It allows the runner to detect MCP tools and call MCP-specific hooks.
+type MCPTool interface {
+	GetServerConfig() ServerConfig
+}
+
 // mcpTool adapts an MCP server endpoint into a standard tool.Tool.
 type mcpTool struct {
 	server ServerConfig
@@ -17,6 +23,9 @@ type mcpTool struct {
 func ToolAdapter(server ServerConfig, info ToolInfo) tool.Tool {
 	return &mcpTool{server: server, info: info}
 }
+
+// GetServerConfig implements MCPTool.
+func (t *mcpTool) GetServerConfig() ServerConfig { return t.server }
 
 func (t *mcpTool) GetName() string {
 	return t.info.Name
